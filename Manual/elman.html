@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Simple Recurrent Networks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Simple Recurrent Networks</h1>
+    <hr>
+    <p>
+      Simple recurrent networks (SRNs) are similar to standard feed-forward
+      networks in that information propagates all the way through the network
+      during the forward pass on each tick.  In such networks, groups are
+      updated in the order in which they appear in the network's <i>group</i>
+      array.  A group update in this case consists of computing its inputs and
+      immediately computing its outputs.  This differs from fully recurrent
+      networks which have all groups update their inputs and then have all
+      groups compute their outputs.  Therefore, we say that continuous
+      networks have <i>synchronous</i> update and standard or simple recurrent
+      networks have <i>sequential</i> update.
+    <p>
+      An SRN is just a feed-forward network with one or more ELMAN type
+      groups.  An Elman context group is affiliated with a source group that
+      has the same number of units.  The context group should have the type
+      ELMAN, but the source group can have any type.
+    <p>
+      When the context group computes its output, each unit increments its
+      output by the output of the corresponding unit in the source group.  If
+      ELMAN_CLAMP is the only output function, this essentially copies the
+      outputs of the source group.  Ordinarily, the context group should
+      appear before the source group in the group order.  In this case, the
+      values copied will be the output of the source group from the previous
+      tick.  Therefore, the context group is able to provide a bit of history.
+    <p>
+      It is customary to create a normal projection from the context group
+      back to the source group, but this need not be the case.  You might
+      chain context groups together to get a history of length two or three
+      ticks.  If the source group is the output layer and the context group
+      projects to a hidden layer, you will have a Jordan network.
+    <p>
+      During training, standard networks, including SRNs, perform a
+      backpropagation sweep on each tick immediately after the forward pass.
+      Continuous networks, on the other hand, perform a single backprop sweep
+      that runs from the end of the example to the beginning of the example.
+      You can <a href="#partialBPTT">extend the backpropagation phases of an
+      SRN</a> by increasing the <i>backpropTicks</i> parameter.  A value of 3
+      will mean that, after each tick, the error will be backpropagated across
+      the current tick and the previous two ticks.  This can help SRNs learn
+      long or difficult sequences.  However, the training time of the network
+      will increase in proportion to the <i>backpropTicks</i>.
+    <p>
+      An alternative is to use a <a href="#SRBPTT">simple recurrent
+      backprop through time (SRBPTT)</a> network.  This is similar to
+      an SRN in that it uses <i>sequential</i> updating.  But it is
+      similar to a continuous backprop through time network in that it
+      uses a single backward sweep that runs from the end of the
+      example to the beginning.  It is like having the number of
+      <i>backpropTicks</i> always equal to the number of ticks in the
+      example, but much more efficient because there is just a single
+      backward pass, rather than one for each tick.
+
+      
+    <h3>Building SRNs</h3>
+    <p>
+      A simple SRN can be constructed as follows:
+    <pre>
+    addNet srn -i 5
+    addGroup input   4  INPUT
+    addGroup hidden  10
+    addGroup context 10 ELMAN
+    addGroup output  4  OUTPUT
+    connectGroups {input context} hidden output
+    elmanConnect  hidden  context
+    orderGroups bias input context hidden output</pre>
+    <p>
+      This is a network with 5 time intervals, but only 1 tick per time
+      interval.  We normally would not want a tick per time interval value
+      other than 1 for an SRN.  We give the context group the type ELMAN.
+      Given that basic type, the default will be to have no input function, no
+      bias inputs, and an ELMAN_CLAMP output function.  <b>Note that, in the
+      group order, the context group must appear before its source group and
+      all groups the context projects to</b>.  The <a
+      href="Commands/orderGroups.html">orderGroups</a> step could be avoided
+      if the context group was initially created before the hidden group.
+    <p>
+      The <a href="Commands/addNet.html">addNet</a> command is also able to
+      construct Elman networks provided that the context group has full
+      connectivity back into its source.  The above network could have been
+      built with this one command:
+    <pre>
+    addNet srn -i 5 4 10 ELMAN 4</pre>
+    <p>
+      Notice that there are only three groups specified in the group list to
+      the <code>addNet</code> command.  If the <code>ELMAN</code> type is
+      used for a group, two groups will actually be created.  The groups will
+      have the same size but one will be a hidden (or output) layer with all
+      of the specified types except <code>-ELMAN</code> and the other will be
+      a context layer of type ELMAN.  The context layer will precede the
+      source layer in the 
+      group list and there will be an Elman connection from source to context
+      and a full projection from context to source.
+    <p>
+
+    <h3>Unit Output Initialization</h3>
+    <p>
+      Before running the first tick of each example, any group with type
+      RESET_ON_EXAMPLE (which is the default) will reset its
+      outputs to the <i>initOutput</i>.  If a source group is reset in this
+      way, its context group will copy those initialized values.  This is
+      probably desirable if no information should be maintained from one
+      example to the next.
+    <p>
+      However, if the examples form a sequence, you may want the context to
+      carry from the end of one example to the beginning of the next.  This
+      can be done by giving the source groups the flag -RESET_ON_EXAMPLE when
+      you specify its type.  To save some time, you can change this flag
+      in the call to <a href="Commands/elmanConnect.html">elmanConnect</a>
+      with the "-reset" option.  You can also set the source group's
+      <i>initOutput</i> using the "-initOutput" option.
+    <p>
+      You can reset the source group on demand using the <a
+	href="Commands/resetUnitValues.html">resetUnitValues</a> command.
+
+    <h3>Extended Context Groups</h3>
+    <p>
+      It is possible to chain context groups together to get context that
+      extends back in time more than one tick.  To do this, just create more
+      than one context group and elmanConnect the first to the second and so
+      on.  However, it is important to note that the groups must appear <i>in
+      reverse order</i> in the group list so that information does not
+      propagate all the way through them on a single tick.  Here is an example
+      of how to create a hidden layer with context from the previous three
+      ticks:
+    <pre>
+    addGroup hidden 10
+    addGroup context1 10 ELMAN
+    addGroup context2 10 ELMAN
+    addGroup context3 10 ELMAN
+    elmanConnect hidden   context1
+    elmanConnect context1 context2
+    elmanConnect context2 context3
+    connectGroups {context1 context2 context3} hidden
+    orderGroups input context3 context2 context1 hidden output</pre>
+
+    <h3>Partial Simple Recurrent Backprop Through Time</h3>
+    <a name="partialBPTT">
+    <p>
+      In the basic SRN algorithm, the network learns to produce correct
+      outputs on the current tick given whatever information happens to be in
+      the context groups.  However, there is no pressure to store particular
+      representations in the context groups that will best aid in later
+      outputs.  Thus, standard SRNS can have trouble learning difficult
+      temporal tasks.
+    <p>
+      To help remedy this problem, Lens provides an extension of the SRN
+      algorithm 
+      that will backpropagate error across multiple ticks.  This allows the
+      weights to be adjusted based on the derivative of future error
+      w.r.t. the weights, which can lead to significant performance
+      improvements.
+    <p>
+      The <i>backpropTicks</i> parameter controls how far back error is
+      propagated.  The default value is 1, which acts like a normal SRN.
+      A value of 3 would cause the error to be propagated back through 2 ticks
+      prior to the current one.
+    <p>
+      Unless the hidden groups are reset at the start of each example, the
+      backprop phase will wrap around from the start of the current example to
+      the end of the previous example.  In order for this to work properly,
+      the <i>historyLength</i> should be at least as long as the
+      <i>backpropTicks</i>.  Therefore, if you are using a minimal history
+      length, to set <i>backpropTicks</i> to 4, you will want to do:
+
+    <pre>
+    setObj backpropTicks 4
+    setTime -h 4</pre>
+    <p>
+      In doing the extended backpropagation, only relevant groups are
+      involved. 
+      Therefore, if your network has a small recurrent projection but a very
+      large hidden to output projection, this could be relatively cheap
+      because the hidden to output projection is ignored in the
+      backpropagation.  Using partial simple recurrent backprop through time
+      can result in significant performance improvements.
+
+
+    <h3>Full Simple Recurrent Backprop Through Time</h3>
+    <a name="SRBPTT">
+    <p>
+      If you need to use very large <i>backpropTicks</i> values to learn a
+      particular problem, the network could be rather slow to train.  A better
+      solution is provided by the simple recurrent backprop through time
+      network.  This is similar to an SRN in that it uses <i>sequential</i>
+      updating.  But it is similar to a continuous backprop through time
+      network in that it uses a single backward sweep that runs from the end
+      of the example to the beginning.  The backpropagation does not extend
+      from the start of an example to the end of the previous example.  An
+      SRBPTT network must be given the type SRBPTT when it is created, as in:
+
+    <pre>
+    addNet foo SRBPTT 10 20 10</pre>
+    <p>
+      The <i>backpropTicks</i> parameter does not affect SRBPTT networks.
+      However, the <i>historyLength</i> should be as long as the maximum
+      number of ticks per example for it to work properly.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 15:54:37 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

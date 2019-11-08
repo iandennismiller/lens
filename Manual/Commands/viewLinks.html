@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: viewLinks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>viewLinks</font> - opens the link viewer
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    viewLinks [-out &lt;group-list> | -in &lt;group-list> | -size &lt;unitCellSize> | 
+        -gap &lt;linkCellSpacing> | -updates &lt;updateRate>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This opens the link viewer if it is closed or deiconifies it
+      and brings it to the front if it is open.
+    <p>
+      The <code>-out</code> flag is used to specify the group or groups whose
+      outputs will be displayed.  These are the "Sending Groups".
+    <p>
+      The <code>-in</code> flag is used to specify the group or groups whose
+      inputs will be displayed.  These are the "Receiving Groups".
+    <p>
+      If <i>linkCellSize</i> is given, it sets the network's
+      <i>linkCellSize</i> field, which determines the size of the
+      rectangles in the display.  The initial default is 8.
+    <p>
+      If <i>linkCellSpacing</i> is given, it sets the network's
+      <i>linkCellSpacing</i> field, which determines the gap between
+      rectangles in the display.  The initial default is 0.
+    <p>
+      If <i>updateRate</i> is given, it sets the frequency with which the Link
+      Viewer is updated.  A value of 0 means never, 3 is after each example, 4
+      is after weight updates, 5 is after progress reports, and 6 is after
+      training or testing.  The default is 5, after progress reports.
+
+    <h3>SEE ALSO</h3>
+    <a href="view.html">view</a>,
+    <a href="viewUnits.html">viewUnits</a>,
+    <a href="viewObject.html">viewObject</a>,
+    <a href="graphObject.html">graphObject</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Jul 15 21:00:13 EDT 1999
+<!-- hhmts end -->
+  </body>
+</html>

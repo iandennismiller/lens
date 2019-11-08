@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: noiseType</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>noiseType</font> - sets a group's noise parameters
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    noiseType &lt;group-list> [-range &lt;range> | -multiply | -flat]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command sets the type of noise function and range of the
+      distribution used by all of the input, output, or link derivative noise
+      procedures in the groups.  A group can only have a single noise function
+      and range, as it is assumed that no more than one of these forms of
+      noise will be used at any one time.  The actual noise procedures are
+      activated by including one of the following group types: DERIV_NOISE,
+      IN_NOISE, IN_DERIV_NOISE, OUT_NOISE, OUT_DERIV_NOISE.
+    <p>
+      The default <i>range</i> is 0.1 and the default noise procedure is
+      additive and gaussian.  In this case the range is the standard deviation
+      and the
+      distribution is centered on 0.0.  <code>-multiply</code> will make the
+      noise procedure multiplicative, scaling the values based on a
+      distribution centered around 1.0.  <code>-flat</code> will make the
+      distribution uniform, rather than gaussian, where the range is half the
+      distribution width.
+    <p>
+      Using * in place of the group name will affect all groups.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To use additive noise selected uniformly from the range [-0.01, +0.01)
+      on the "hidden" group:
+    <pre>
+    lens> noise hidden -flat -r 0.01</pre>
+
+    <p>
+      To use multiplicative noise sampled from a gaussian distribution with
+      standard deviation 0.1 centered around 1.0:
+    <pre>
+    lens> noise hidden -r 0.1 -m</pre>
+    <p>
+      To eliminate the effect of noise in the network:
+    <pre>
+    lens> noise * -r 0</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="lesionLinks.html">lesionLinks</a>,
+    <a href="lesionUnits.html">lesionUnits</a>,
+    <a href="train.html">train</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Feb 28 21:37:34 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

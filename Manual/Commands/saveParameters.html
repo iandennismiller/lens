@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: saveParameters</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>saveParameters</font> - writes network or group parameters to a script file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    saveParameters &lt;file-name> [-append] [&lt;object> ...]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command is used to save network parameter values to a file.
+      Sourcing the parameter file will restore the values.  Only
+      writable fields are stored.  If the <i>-append</i> flag is
+      given, parameters will be appended to the file.
+    <p>
+      The object list is a list of container objects from which writable
+      fields are to be stored.  It is not a list of parameter names.  If no
+      objects are specified, all parameters in the network and each group are
+      saved.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To store the parameters from groups 2 and 3 to the file foo.tcl:
+    <pre>
+    lens> saveParameters foo.tcl group(2) group(3)</pre>
+    <p>
+      To append just the network-level parameters to your network building file:
+    <pre>
+    lens> saveParam net.in -a {}</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="source.html">source</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:59:51 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

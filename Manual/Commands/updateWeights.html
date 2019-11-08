@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: updateWeights</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>updateWeights</font> - updates the weights using the current link derivatives
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    updateWeights [-algorithm &lt;algorithm> | -noreset | -report]</pre>
+
+    <h3>DESCRIPTION</h3>
+    <p>
+      This performs a single weight update using the currently accumulated
+      link derivatives.  This is useful in conjunction with <a
+	href="doExample.html">doExample</a> for designing custom training
+      patterns other than the standard fixed batch size.
+    <p>
+      If an algorithm, such as <i>steepest</i>, <i>momentum</i>, or
+      <i>dougsMomentum</i>, is specified, it will be used to update the
+      weights, but the network's default algorithm will not change.  If no
+      algorithm is specified, the network default will be used.
+    <p>
+      By default the link and unit derivatives will be reset after the
+      update, but this can be prevented with the <code>-noreset</code>
+      option.
+    <p>
+      <code>-report</code> will cause a report to be printed.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      Here's a way to train using random batch sizes:
+    <pre>
+    repeat 1000 {
+      repeat [randInt 100] {doExample -train};
+      updateWeights
+    }</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="train.html">train</a>,
+    <a href="doExample.html">doExample</a>,
+    <a href="steepest.html">steepest</a>,
+    <a href="momentum.html">momentum</a>,
+    <a href="deltaBarDelta.html">deltaBarDelta</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 12:39:05 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

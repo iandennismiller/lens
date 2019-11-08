@@ -1,0 +1,116 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:577: checking for ranlib
+configure:849: checking for gcc
+configure:962: checking whether the C compiler (cc  ) works
+configure:978: cc -o conftest    conftest.c  1>&5
+configure:1004: checking whether the C compiler (cc  ) is a cross-compiler
+configure:1009: checking whether we are using GNU C
+configure:1018: cc -E conftest.c
+configure:1037: checking whether cc accepts -g
+configure:1074: checking how to run the C preprocessor
+configure:1095: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:1157: checking for unistd.h
+configure:1167: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:1157: checking for limits.h
+configure:1167: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:1200: checking for building with threads
+configure:1485: checking if the compiler understands -pipe
+configure:1496: cc -pipe -c   conftest.c 1>&5
+configure:1531: checking for Tcl configuration
+configure:1604: checking for existence of /export/home/barmstrong/Lens/TclTk/tcl8.3.4/unix/tclConfig.sh
+configure:1635: checking if 64bit support is requested
+configure:1655: checking if 64bit Sparc VIS support is requested
+configure:1679: checking system version (for dynamic loading)
+configure:1705: checking for dlopen in -ldl
+configure:1724: cc -pipe -o conftest    conftest.c -ldl   1>&5
+configure:1769: checking for ar
+configure:2864: checking for build with symbols
+configure:2908: checking for sin
+configure:2936: cc -pipe -o conftest   -rdynamic conftest.c  1>&5
+configure:2920: warning: conflicting types for built-in function 'sin'
+/tmp/ccPTAHqU.o: In function `main':
+conftest.c:(.text+0xa): undefined reference to `sin'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 2913 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char sin(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char sin();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_sin) || defined (__stub___sin)
+choke me
+#else
+sin();
+#endif
+
+; return 0; }
+configure:2957: checking for main in -lieee
+configure:2972: cc -pipe -o conftest   -rdynamic conftest.c -lieee   1>&5
+configure:3053: checking stdlib.h
+configure:3116: checking fd_set and sys/select
+configure:3125: cc -pipe -c   conftest.c 1>&5
+configure:3169: checking for ANSI C header files
+configure:3182: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:3249: cc -pipe -o conftest   -rdynamic conftest.c  1>&5
+configure: In function 'main':
+configure:3244: warning: incompatible implicit declaration of built-in function 'exit'
+configure:3273: checking for mode_t
+configure:3306: checking for pid_t
+configure:3339: checking for size_t
+configure:3372: checking for uid_t in sys/types.h
+configure:3414: checking for sys/time.h
+configure:3424: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:3451: checking whether time.h and sys/time.h may both be included
+configure:3465: cc -pipe -c   conftest.c 1>&5
+configure:3491: checking pw_gecos in struct pwd
+configure:3500: cc -pipe -c   conftest.c 1>&5
+configure:3533: checking for X
+configure:3600: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:3676: cc -pipe -o conftest   -rdynamic conftest.c -lXt  1>&5
+configure:3771: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:3767:28: error: X11/XIntrinsic.h: No such file or directory
+configure: failed program was:
+#line 3766 "configure"
+#include "confdefs.h"
+#include <X11/XIntrinsic.h>
+configure:3791: checking for X11 header files
+configure:3799: cc -E  conftest.c >/dev/null 2>conftest.out
+configure:3959: checking for main in -lXbsd
+configure:3974: cc -pipe -o conftest   -rdynamic conftest.c -lXbsd   1>&5
+/usr/bin/ld: cannot find -lXbsd
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 3967 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+configure:3997: checking for connect
+configure:4025: cc -pipe -o conftest   -rdynamic conftest.c  1>&5
+configure:4138: checking for gethostbyname
+configure:4166: cc -pipe -o conftest   -rdynamic conftest.c  1>&5
+configure:4283: checking for sin
+configure:4332: checking for main in -lieee
+configure:4374: checking whether char is unsigned
+configure:4446: checking for strtod
+configure:4474: cc -pipe -o conftest   -rdynamic conftest.c  1>&5
+configure:4496: checking for Solaris2.4/Tru64 strtod bugs
+configure:4521: cc -pipe -o conftest   -rdynamic conftest.c  1>&5
+configure: In function 'main':
+configure:4511: warning: incompatible implicit declaration of built-in function 'exit'
+configure:4515: warning: incompatible implicit declaration of built-in function 'exit'
+configure:4517: warning: incompatible implicit declaration of built-in function 'exit'
+configure:4553: checking how to build libraries

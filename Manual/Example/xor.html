@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: xor.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: xor.in</h1>
+    <hr>
+    <p>
+      This is the classic exclusive-or problem.  Hit "Train Network" and watch
+      the error in the graph window.  It should hit a small plateau and then
+      head down to zero.
+    <p>
+      If the error levels out above zero, you hit a local minimum and the
+      network has learned the wrong function.  This is a particularly common
+      problem with the XOR function.  You should find that with the default
+      setup the network solves the problem about 75% of the time.
+    <p>
+      Can you find parameters that result in success 100% of the time?  Try
+      playing with the learning rate, momentum, and init rand range.  Does
+      using a target radius help?  How does regular momentum descent compare
+      to Doug's momentum?
+    <p>
+      In order to save some work and to get practice writing Tcl scripts, try
+      writing a procedure that will automatically train a network 100 times
+      and report back the success percentage.
+    <p>
+      Ok.  In case you're confused, I went ahead and wrote one for you.  But
+      this is the last time.  It's called trainIt and it's located in the
+      xor.in file.  It takes one optional parameter: the number of trials,
+      which defaults to 100.  It returns the number of successful trials.  Be
+      sure to close or disable the graphs and the Unit Viewer before running
+      it or it or things will be slow.
+
+    <h3>Generating Examples On-The-Fly</h3>      
+    <p>
+      In order to improve performance on the XOR task, we might think of
+      trying to weight the examples presented to the network more heavily in
+      favor of the ones it gets wrong.  One way to do this is to activate
+      pseudo-example-frequencies by setting the network's
+      <i>pseudoExampleFreq</i> to 1.  The error on an example will then be
+      scaled by the example's frequency value.
+    <p>
+      We would like to adjust the frequencies based on the network's
+      performance.  We could do this using a static example set by
+      changing the frequency field of the examples after each example has been
+      run.  However, another way to do it is to write a program that generates
+      a stream of examples.  We can then open this process as an example file
+      in PIPED mode and read the examples as they are delivered.
+    <p>
+      The reason for doing this is that the process that is generating the
+      examples can also be reading the network's output and tailoring the
+      examples to the current behavior of the network.  How this is done is
+      illustrated by the useSelectedExamples procedure, also defined in
+      xor.in.  Try calling the procedure and then training the network a few
+      times.
+    <p>
+      This procedure opens a channel for reading and writing to the
+      xor.chooseEx program.  This program is actually a Tcl script and will
+      only work if /usr/bin/tclsh exists on your machine.  <a
+	href="../Commands/openNetOutputFile.html">openNetOutputFile</a> is
+      then called to begin writing the network's outputs to the process.  Then
+      <a href="../Commands/loadExamples.html">loadExamples</a> is called to
+      create a new example set that reads its examples from the process.
+    <p>
+      The xor.chooseEx process itself does two things.  It reads the output of
+      the network on the four examples and figures out the difference between
+      the target and actual outputs on each example.  It then generates four
+      new examples and scales their frequencies based on the error.  The more
+      error on an example, the higher its frequency.  Because
+      pseudo-example-frequencies are being used by the network, this causes
+      the subsequent error on those examples to be greater.
+    <p>
+      You will probably find that doing all this actually hurts learning in
+      this case.  Although the network sometimes learns, it usually goes into
+      weird cyclical patterns.  It seems that the whole notion of presenting
+      harder examples more frequently may be flawed in this case.  Because
+      weight changes are proportional to error, the network already does more
+      learning on examples that it gets wrong.  Enhancing that isn't
+      necessarily a good thing.
+    <p>
+      However, the reason I did all this was to illustrate how you can
+      generate examples on the fly based on the network's performance.
+      Hopefully, you can make use of this general method in actually doing
+      something productive.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 20 17:54:12 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: source</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>source</font> - runs a script file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    source &lt;file></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command interprets the contents of the specified file as a text
+      script.  If an error occurs while the script is running,
+      <code>source</code> will return immediately with an error code.
+      Otherwise the return value is the return value of the last command in
+      the file.
+    <p>
+      The current working directory will be changed to the directory
+      containing the script file while the script is executing.  This allows
+      script files to contain relative references to other files.
+    <p>
+      You can learn more about using scripts in the "<a
+      href="../scriptFiles.html">Script Files</a>" manual page.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To run the script file "init.in":
+    <pre>
+    lens> source init.in</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/return.htm">return</a>,
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/eval.htm">eval</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.34:25:46 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

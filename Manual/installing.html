@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Installing Lens</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Getting Started: Installing Lens</h1>
+    <hr>
+    <p>
+      This explains how to install your own copy of Lens.  The procedures
+      differ between <a href="#windows">Windows</a> and <a
+	href="#unix">Unix/Mac OS X</a>.
+
+      <a name="unix"></a>
+    <h3>Installing Under Unix and Mac OS X</h3>
+    <ol>
+      <li>To install Lens under Mac OS X, you will first need to
+      install <a href="http://fink.sourceforge.net">Fink</a>, which
+      will give you a Unix and X-windows emulation environment.  I
+      can't give you much support where this is concerned.  Be sure to
+      install the xfree* packages.  From here on in, I will assume you
+      are running a Unix shell (xterm).
+    
+      <li>Make a Lens directory for yourself.  Why not call it "~/Lens".  Go
+	there.<br>
+	<b>mkdir ~/Lens<br>
+        cd ~/Lens</b>
+
+      <li><a href="Dist/lens.tar.gz">Download the complete
+	  distribution, lens.tar.gz</a> into your new directory.
+      <li>Untar the distribution.  If you have a smart version of tar, you can
+	do this with:<br>
+	<b>tar xvzf lens.tar.gz</b><br>
+	If you have a dumb version of tar, you will need to do:<br>
+	<b>zcat lens.tar.gz | tar xv</b><br>
+      <li><b>rm lens.tar.gz</b><br>
+
+      <li><b>mv Bin/i586 Bin/${HOSTTYPE}</b>
+      <li>Next you need to compile the TclTk libraries for your machine.  If
+      you're running on a Linux machine with glibc (the equivalent of RedHat
+      6.0 or later), you may be in luck because the TclTk libraries are already
+	compiled and you can go right to the next step.  If you have problems
+	with shared libraries at the end of the Lens compilation, you should
+	go back and compile your own TclTk libraries as follows:
+	<ol>
+	  <li><b>cd TclTk/tcl8.3.4/unix</b>
+	  <li><b>rm config.cache</b>
+	  <li>Linux: <b>./configure --enable-shared</b><br>
+	  OS X: <b>./configure --disable-shared --disable-load</b>
+	  <li><b>make</b>
+	  <li>Pray that nothing bad happens.  If all went well, a new
+	    <i>libtcl8.3.so</i> file should have been created.  There is a
+	    chance a <i>libtcl8.3.a</i> was built instead.  If so <i>you
+	      will not be using shared libraries</i>.  But that's ok.
+	      If all didn't go well, I'm afraid I can't help you much.  
+	      Start reading the README file.
+	  <li>Remove the .o files we don't need anymore:<br>
+	    <b>rm -f *.o</b>
+	  <li><b>cd ../../tk8.3.4/unix</b>
+	  <li><b>rm config.cache</b>
+	  <li>Linux: <b>./configure --enable-shared --with-tcl=../../tcl8.3.4/unix</b><br>
+	  OS X: <b>./configure --disable-shared --disable-load --with-tcl=../../tcl8.3.4/unix</b>
+	  <li><b>make</b>
+	  <li>Pray pray pray...and voilá you have a Tk library, maybe.
+	  <li><b>rm -f *.o</b>
+	  <li>Now you should move the two libraries to your Lens Bin directory:
+	    <br>
+	    <b>cd ~/Lens</b> (or wherever you installed it)<br>
+	  <b>mv TclTk/tcl8.3.4/unix/libtcl8.3.* Bin/${HOSTTYPE}</b><br>
+	  <b>mv TclTk/tk8.3.4/unix/libtk8.3.* Bin/${HOSTTYPE}</b><br>
+	  <li>On OS X:<br>
+          <b>ranlib Bin/${HOSTTYPE}/libtcl8.3.a</b><br>
+          <b>ranlib Bin/${HOSTTYPE}/libtk8.3.a</b>
+	</ol>
+<h4>Compiling Lens</h4>
+
+    <li>Go back to your Lens directory and take a look at the
+      Makefile.  If you do not see a section at the top for your
+      HOSTTYPE, you may need to add one and set it up appropriately.
+      When compiling on Mac OS X, the HOSTTYPE should be "macintosh".
+      If you are compiling on an Alpha, you should use
+      "MACHINE=ALPHA".
+
+      <li>Check to be sure the file /usr/X11R6/include/X11/Xlib.h
+      exists. If it doesn't you will need to install the XFree86-devel
+      RPM package that is appropriate for your version of Unix.  If
+      you don't have the CDs you used to install your Unix in the
+      first place, you may be able to find the package <a
+      href="http://www.rpmfind.net">here</a>.
+
+      <li>Now you're ready to compile.  So type:<br>
+	<b>make all</b><br>
+	This will compile <i>alens</i> and then <i>lens</i>.
+      <li>If something went wrong, it is probably because you have funny
+	C header files in your <i>/usr/include</i> or <i>/usr/include/sys</i>
+	directories.  Try to fix this by:
+	<ol>
+	  <li>Creating a MACHINE_... definition for your machine in sysext.h.
+	  <li>Inside of the test for your machine type in sysext.h,
+	  #include any necessary header files, #define things to prevent bad
+	  header files from being included, or #undef things that cause
+          problems.
+
+          <li>If you really can't figure it out, send the compile message to
+          <a href=mailto:dr+lens@tedlab.mit.edu>Doug Rohde</a>.  He'll probably
+          want a temporary account on your machine so he can take a look at
+          your header files and test for byte ordering and such.
+	</ol>
+
+      <li>When everything builds correctly, you will have two executables,
+      <i>lens</i> and <i>alens</i>, which are actually pointers to the real
+      executables that sit in the <i>Bin/${HOSTTYPE}</i> directory.  Now
+      you're ready to <a href="running.html">run Lens</a>.
+
+      <li>If you ever want to recompile, you have to be careful whether the
+      object files that aren't being changed are for the correct version
+      (either <i>lens</i> or <i>alens</i>).  To compile only <i>alens</i>,
+      do:</br><b>make alens</b></br> To compile only <i>lens</i>, do:<br>
+      <b>make lens</b> or just <b>make</b><br> If you ever switch from
+      compiling one to the other, always do:<br> <b>make clean</b><br> to
+      remove the object files.
+      <li>Be sure to read the section on <a href="running.html">Running
+Lens</a> before you try to run it.  It won't work unless you set the right
+environment variables.
+    </ol>
+
+    <a name="windows"></a>
+    <h3>Installing Under Windows</h3>
+    <ol>
+      The first thing you will need to do is to install the Cygwin Utilities.
+      These provide a Unix-like environment for Windows, including a shell,
+      compiler, C libraries, and other goodies.
+    <li>Download the latest Cygwin release from the <a
+href="http://sources.redhat.com/cygwin/">Cygwin homepage</a>. 
+    <li>To install the Cygwin stuff, just run the setup.exe program and follow
+    the instructions.  It will take some time, especially if you have a slow
+    internet connection.  When choosing packages for Cygwin, be sure to include
+    Devel/gcc, Devel/make, Text/less, and Text/more.   
+    <li>Now start up a Cygwin shell window.  They probably made an icon in your
+    Start menu for just that purpose.
+    <li>Make a Lens directory for yourself.  Why not call it "Lens".<br>
+ 	<b>mkdir Lens<br>
+        cd Lens</b>
+    <li><a href="Dist/lens-win.tar.gz">Download the complete windows
+	  distribution, lens-win.tar.gz</a> into your new directory.  If
+          Windows mangled the name, mutter offensive things about Emperor Gates 
+          and rename it <b>lens-win.tar.gz</b>.
+    <li><b>tar xvzf lens-win.tar.gz<br>
+    rm lens-win.tar.gz</b>
+
+    <li>If all you want is the plain Lens release.  You should be
+ready to go.  Head straight to <a href="running.html">Running
+Lens</a>.  If Lens seg faults when you try to run it, it is likely
+that the precompiled binary is incompatible with your version of
+Cygwin, and you will need to compile it yourself.
+
+<h4>Compiling Lens</h4>
+      If you're going to want to customize the source code, you'll need to be
+      able to compile your own version of Lens.
+    <li>Look for the file /usr/include/X11/Xlib.h.  If it isn't there, do
+    this:
+    <ol>
+    <li><a href="Dist/xlib.tar.gz">Download this tar file</a>.
+
+    <li>Be warned that when you untar this file it may write over some
+    of the include files in your /usr/include/X11 directory.  If you
+    don't want it to do this, leave off the P flag and then move the
+    results by hand from the <b>usr</b> directory that will be
+    created.
+
+    <li><b>tar xvzfP xlib.tar.gz</b>
+    </ol>
+
+    <li>If you don't have one already, create a .bash_profile file in
+    your Cygwin home directory.  In it, you should put:<br> <b>export
+    HOSTTYPE=i686</b><br>
+    And be sure to source that file or run that command before proceeding.
+    <li>Now you're ready to compile.  So type:<br>
+	<b>make all</b><br>
+	This will compile <i>alens</i> and then <i>lens</i>.
+
+    <li>If something went wrong, it may be because stuff in the Windows
+    section of the Makefile needs to be changed.
+
+      <li>When everything builds correctly, you will have two executables,
+      <i>lens</i> and <i>alens</i>, which are actually pointers to the real
+      executables that sit in the <i>Bin/</i> directory.  Now
+      you're ready to <a href="running.html">run Lens</a>.
+
+      <li>If you ever want to recompile, you have to be careful whether the
+      object files that aren't being changed are for the correct version
+      (either <i>lens</i> or <i>alens</i>).  To compile only <i>alens</i>,
+      do:<br><b>make alens</b><br> To compile only <i>lens</i>, do:<br>
+      <b>make lens</b> or just <b>make</b><br> If you ever switch from
+      compiling one to the other, always do:<br> <b>make clean</b><br> to
+      remove the object files.
+      <li>Be sure to read the section on <a href="running.html">Running
+Lens</a> before you try to run it.  It won't work unless you set the right
+environment variables.
+
+    </ol>
+
+    <a name="newversion"></a>
+    <h3>New Versions</h3> New versions of Lens appear every few months.  To
+    keep up with things, you will need to download the new source code and
+    recompile.  You don't need to download the full distribution, just the <a
+    href="Dist/lens-src.tar.gz">lens-src.tar.gz</a> file.
+   <p>
+Untarring <b>this
+    will overwrite the files</b> in your <i>Src/</i>, <i>Commands/</i>, and
+    <i>Examples/</i> directories.  The only files it will not overwrite are
+    Src/extension.c, Src/type.h, Src/sysext.h, and the Makefile.  For these
+    files, it will write a ".default" file instead.
+   <p>
+    If you have not customized those files, rename the ".default" file to the
+    same name without the ".default".  If you have made changes to those files and
+the default file has changed (which should only happen rarely), you may need
+to update your version or reimplement your changes in the default one.
+<p>
+If you have customized any files other than Src/extension.c, Src/type.h,
+Src/sysext.h, and the Makefile, you should rename your copy before untarring
+the lens-src.tar.gz or the files will be overwritten.  You may want to write a
+script to do this so you don't forget.
+    <p>
+    There is a handy link to the source update distribution on the main Manual
+page.
+
+    <h3>Working Offline?</h3> If so, you may need to install a local version
+    of the manual.  To do that, just <a href="Dist/lens-manual.tar.gz">grab a
+    copy of this tar file</a>, put it in your Lens directory, and untar it.
+    Then just load the file Manual/index.html in your web browser.  The search
+    engine won't work, but you can always use <i>grep</i> once you have local
+    copies of the files.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 28.35:01:03 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

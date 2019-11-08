@@ -1,0 +1,299 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: The Code</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: The Code</h1>
+    <hr>
+    <p>
+      Other than the Tcl/Tk libraries, which are in the TclTk/
+      directory, the code for Lens is all located in the Src/
+      directory.  This guide briefly describes the contents of each of the
+      source files.
+
+    <h3>Makefiles</h3>
+    <p>
+      The Makefile in the main Lens directory defines the machine-specific
+      compiler and flags.  It also determines the flags used when compiling
+      the different versions of Lens: <code>lens</code>, <code>alens</code>,
+      <code>liblens</code>, and <code>libalens</code>.  If Lens doesn't
+      compile properly, you may need to customize the header of that file to
+      your machine and/or add special definition in sysext.h to fix
+      compatibility problems with the C libraries on your system.
+    <p>
+      The Makefile in the Src/ directory defines the dependencies for each
+      code module and sets the version number used thoughout the simulator.
+      You may want to make a private copy of this file just so you can
+      maintain your own version names.  That way, when you start Lens and it
+      prints the version number, you will know you are running the right one.
+    
+    <h3>C Files</h3>
+    <p>
+      The Lens code is fairly cleanly partitioned, although data structures
+      are not strongly protected and virtually all modules have access to the
+      internals of the network structures.  Within a module, the
+      <code>*.c</code> file contains the important code.  The <code>*.h</code>
+      file defines any data structures primarily under the control of the
+      module but used elsewhere.  It also contains declarations of functions
+      and variables defined within the module that can be called from the
+      outside.  Finally, it may contain #define macros or constants used both
+      inside and outside the module.
+    <p>
+      The <code>*Com.c</code> file defines and registers the C functions that
+      will become shell commands.  These are essentially intermediaries
+      between the shell commands and the underlying code.  The functions in
+      the <code>*Com.c</code> file should mainly do error checking and
+      argument parsing and then call other functions in the <code>*.c</code>
+      file to do the real work.
+    <p>
+      The following is a brief description of each of the C source files:
+    <dl>
+      <dt><b>system.h</b> 
+      <dd>
+	This mainly contains #defines.  It sets limits on the sizes of common
+	static arrays and contains all of the machine-specific definitions
+	that affect such things as the representations of NaNs,
+	transformations from host to network byte ordering, and whether
+	single- or double-precision floating point is used.
+	<dt><b>sysext.h</b>
+      <dd>
+	You should place any machine-specific customizations that alter the
+	defaults from system.h in here.  It will not be overwritten when you
+	download a new source distribution.
+      <dt><b>main.c</b>
+      <dd>
+	This contains the code that interprets command line arguments and
+	initializes the simulator.  It is the only module not included when
+	the Lens library is compiled.
+      <dt><b>library.c, lens.h</b>
+      <dd>
+	This module is include in place of main.c when Lens is compiled as a
+	library.  It defines the startLens() and Lens() commands that are the
+	main interface to the library.  lens.h is the header file for the
+	library.
+      <dt><b>type.h, type.c</b>
+      <dd>
+	These files define the "type" bitmasks that are used throughout the
+	code.  These include network, group, unit, and link types, types of 
+	projection creation patterns, example selection modes, noise types,
+	and training algorithms.  The header file defines the bitmasks for
+	each type and the code file, type.c, contains commands for registering
+	types and an initialization procedure that registers all of the
+	built-in types.  It also contain the function cleanupGroupType() that
+	ensures that group types are coherent.
+	<p>
+	  If you want to add new types, you should add them to type.h to be
+	  sure they don't conflict with the types provided.  The type.h file
+	  will not be overwritten when you download a new source distribution
+	  and you should merge your additions with the new type.h file, if it
+	  has changed.
+      <dt><b>util.h, util.c</b>
+      <dd>
+	This contains all of the helper utilities that are used throughout the
+	code, including commands for returning Tcl messages as errors and
+	results, evaluating Tcl commands from within C, allocating stuff in a
+	safe manner, working with the "String" datatype, opening and closing
+	files, low-level commands for parsing files such as example files,
+	generating random numbers and other math functions, producing noise,
+	and some things that depend on system calls, such as time.  Basically,
+	if a function is relatively simple or low-level and may be used in
+	more than one module, it goes in here.  Furthermore, any
+	machine-specific code than is not handled in system.h is put in
+	here.
+      <dt><b>defaults.h</b>
+      <dd>
+	This contains a number of #define constants that set the default
+	values for various fields in the objects and some parameters that
+	control the behavior of Lens, such as how frequently the display is
+	updated.  Rather than editing this file, you may want to <a
+	href="customization.html">customize</a> your version by using the
+	.initNetwork, .initGroup and other procedures in the .lensrc file.
+      <dt><b>extension.h, extension.c</b>
+      <dd>
+	This is where most user-defined code should go.  The default versions
+	basically contain empty templates for adding fields to the extension
+	records of various structures, adding new C functions that use those
+	structures, and registering those as Tcl commands.  If you make a
+	large number of additions to extension.c, you may want to create some
+	new modules and add those modules to the Makefile in the Src/
+	directory or just #include them in extension.c.
+      <dt><b>network.h, network.c, networkCom.c</b>
+      <dd>
+	This module defines the data structures for networks, groups, units,
+	and links.  Any commands that deal primarily with networks, groups,
+	and units, but not links, are located here.  Mainly these deal with
+	building and destroying parts of networks.  network.h contains macros
+	for iterating over the network in various ways, making it very easy to
+	write looping code.
+      <dt><b>connect.h, connect.c, connectCom.c</b>
+      <dd>
+	This does not define any data structures but implements a number of
+	commands used in creating, destroying, randomizing, freezing, and
+	saving and loading links and their weights.
+      <dt><b>example.h, example.c, exampleCom.c</b>
+      <dd>
+	This defines the data structures used to store example sets and the
+	procedures that operate on them.  It contains the code for loading and
+	saving example sets, choosing examples and loading them into the
+	network, and writing network <a
+	href="Commands/openNetOutputFile.html">output files</a>.
+      <dt><b>train.h, train.c, trainCom.c</b>
+      <dd>
+	This contains the code used in updating weights during training.  It
+	defines the data structure and commands used to register a new weight
+	update algorithm and contains the code for the built-in algorithms.
+	Otherwise, the standardTrainNet() function is the one of interest in
+	this module.  It controls the presenting of batches of examples to the
+	network, updating weights, and printing reports.
+      <dt><b>act.h, act.c</b>
+      <dd>
+	This may be the most interesting module to the programmer.  It
+	contains all of the code used in doing the forward and backward passes
+	in the network.  Everything from the processing of a single batch to
+	calculating a unit's input is in here.  The main functions of interest
+	are standardNetTrainBatch(), standardNetTestBatch(), and
+	standardNetTestExample(), which train the network on a batch, test the
+	network on a set of examples, or run the network on a single example.
+	The command configureProcs() sets the group updating and
+	backpropagation procedures based on the group types.  This module also
+	defines and makes available some low-level procedures for operating on
+	inputs, outputs, and targets.
+      <dt><b>object.h, object.c, objectCom.c</b>
+      <dd>
+	This module allows the C structures to be accessed from the Tcl shell.
+	object.h defines ObjInfo and MemInfo structures that are used in
+	registering fields in the C structures so they can be traversed and
+	displayed with the <a href="Commands/getObject.html">getObject</a> and
+	<a href="Commands/setObject.html">setObject</a> commands and the <a
+	href="objectViewer.html">Object Viewer</a>.
+	<p>
+	  object.c defines the newObject() and addMember() functions that can 
+	  be used to make any user-defined data structures accessible.  It
+	  also uses these commands to describe all of the main Lens
+	  structures, including networks and their parts, example sets and
+	  their parts, and low-level types such as integers and strings.  The
+	  lookupObject() function is used to traverse the object tree and
+	  printObject() is used to print the tree to a particular depth.
+      <dd>
+      <dt><b>parallel.h, parallel.c, parallelCom.c</b>
+      <dd>
+	This handles parallel training.  Because parallel training requires
+	maintaining consistent state while receiving asynchronous messages and
+	the ability to recover from faults such as disconnected clients, the
+	code in here is pretty complex.  You probably don't want to mess with
+	it until you are very familiar with the pecularities of coding with
+	Tcl libraries and interpreters.
+      <dt><b>command.h, command.c</b>
+      <dd>
+	This module defines new Tcl commands that don't really fit into other
+	modules, such as ones that do low-level system or shell things, like
+	<a href="Commands/nice.html">nice</a> and <a
+	href="Commands/seed.html">seed</a>.  It also calls the functions,
+	located in the *Com.c files, to	register all of the other Tcl commands.
+      <dt><b>control.h, control.c</b>
+      <dd>
+	This contains some of the commands used to interface between C and
+	the Tcl interpreter.  It defines the functions for registering C
+	functions as Tcl commands, and commands to tell the interpreter when
+	the network or training sets have changed so the displays can be
+	updated.  It also deals with <a href="tasks.html">tasks</a> and has the
+	code for handling interrupt signals.
+      <dt><b>display.h, display.c, displayCom.c</b>
+      <dd>
+	This contains the code for building and updating the pictures of the
+	network in the <a href="unitViewer.html">Unit</a> and <a
+	  href="linkViewer.html">Link</a> Viewers.
+      <dt><b>canvRect.h, canvRect.c</b>
+      <dd>
+	This defines a new type of Tk canvas object used in the Unit and Link
+	Viewers.  It is similar to a rectangle but optimized for fast updates.
+      <dt><b>graph.h, graph.c, graphCom.c</b>
+      <dd>
+	This updates the information in the graphs.
+      <dt><b>tkConsole.c</b>
+      <dd>
+	This is a modified version of the standard TclTk module.  It handles
+	the graphical console.
+    </dl>
+
+    <h3>Tcl Files</h3>
+    The Tcl source files are primarily used for building the graphical
+    displays and defining shell commands.
+    <dl>
+      <dt><b>shell.tcl</b>
+      <dd>
+	This customizes aspects of the shell and defines shell commands,
+	including code used to register C commands, display command help
+	pages, create command aliases, do <a href="shell.html">completion</a>
+	of unknown commands, and contains the front ends to some of the
+	training and testing procedures.  Unlike most of the Tcl files, this
+	is used even in batch mode.
+ 
+      <dt><b>lensrc.tcl</b>
+      <dd>
+	This contains definitions that <a
+	href="customization.html">customize</a> the look and feel of Lens.
+	Rather than making changes directly to this, you can override its
+	definitions in your own .lensrc file in your home directory.
+      <dt><b>init.tcl</b>
+      <dd>
+	This is a slightly modified version of the standard Tcl init.tcl file.
+	It contains modifications to the command <a
+	href="Commands/index.html">indexing</a> code.  It is used in batch
+	mode as well.
+
+      <dt><b>auto.tcl</b>
+      <dd>
+	This is a slightly modified version of the standard Tcl auto.tcl file.
+	This also contains some improvements to the <a
+	href="Commands/index.html">indexing</a> code.  It is used in batch
+	mode as well.
+
+      <dt><b>interface.tcl</b>
+      <dd>
+	This builds the main Lens display.  Unlike the other Tcl files
+	defining displays, this will rebuild the display whenever it is
+	sourced.
+
+      <dt><b>display.tcl</b>
+      <dd>
+	This defines commands which build the <a
+	href="unitViewer.html">Unit</a> and <a href="linkViewer.html">Link</a>
+	Viewers.
+
+      <dt><b>graph.tcl</b>
+      <dd>
+	This builds the graphs.
+
+      <dt><b>object.tcl</b>
+      <dd>
+	This builds the object viewers.
+
+      <dt><b>file.tcl</b>
+      <dd>
+	This handles requests for doing file operations, such as loading
+	example files, saving and loading weights, and printing viewers or
+	graphs.  It usually calls the fileselect box and then does error
+	checking.
+
+      <dt><b>fileselect.tcl</b>
+      <dd>
+	This was a generic file browser that has been improved for Lens.  You
+	might want to borrow this if you write any other Tcl applications.
+
+      <dt><b>console.tcl</b>
+      <dd>
+	This defines the operation of the graphical console.
+    </dl>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 14:29:10 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

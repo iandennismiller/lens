@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Reading From Pipes</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: Reading From Pipes</h1>
+    <hr>
+    <p>
+      If you open a pipe for reading, as in the command:
+    <pre>
+    lens> loadExamples "| genex" -s "my set" -n 100</pre>
+    you could have a problem when the pipe is closed.  A pipe might be closed
+    if you read enough examples or if Lens exits.  The problem is that
+    the command started in the pipe, <code>genex</code> in this case, may not
+    die and will continue to spew data.
+
+    If the genex program was written in C, you can solve this problem by
+    inserting the following call in its main() function:
+    <pre>
+    signal(SIGPIPE, SIG_DFL);</pre>
+    You may need to <code>#include &lt;signal.h></code> to do this.
+
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 18.38:46 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

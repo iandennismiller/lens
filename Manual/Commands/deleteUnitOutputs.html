@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: deleteUnitOutputs</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>deleteUnitOutputs</font> - deletes outputs of a specified
+      type from a unit
+    
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    deleteUnitOutputs &lt;unit-list> [-type &lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This removes all unit outputs of the specified type.  If no type is 
+      given, all outputs are removed, including any Elman connections.
+
+   <h3>EXAMPLES</h3>
+    <p>
+      To remove outputs of type "foo" from the unit "hidden:99":
+    <pre>
+    lens> deleteUnitOutputs hidden:99 -t foo</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="disconnectGroups.html">disconnectGroups</a>,
+    <a href="disconnectGroupUnit.html">disconnectGroupUnit</a>,
+    <a href="disconnectUnits.html">disconnectUnits</a>,
+    <a href="deleteLinks.html">deleteLinks</a>,
+    <a href="deleteGroupInputs.html">deleteGroupInputs</a>,
+    <a href="deleteGroupOutputs.html">deleteGroupOutputs</a>,
+    <a href="deleteUnitInputs.html">deleteUnitInputs</a>,
+    <a href="connectUnits.html">connectUnits</a>,
+    <a href="addLinkType.html">addLinkType</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Feb 28 21:11:30 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

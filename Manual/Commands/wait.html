@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: wait</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>wait</font> - stops the interactive shell for batch jobs
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    wait [&lt;max-time>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      Ordinarily Lens cannot be run in the background if it is idle.  It may
+      be run in the background if it is just going to process a script and
+      then exit, which is the normal case when training on a single
+      processor.  However, because it attempts to read from standard input
+      when it is idle, Lens will suspend itself if it is simply put in the 
+      background where it cannot access standard input.
+    <p>
+      There are cases, which primarily arise during parallel training, when a
+      Lens process must sit idle while it waits for network communications.
+      We would often like such processes to run in the background.  To do
+      this, the <code>wait</code> command must be used.  This causes Lens to
+      enter a loop in which it will process GUI and network events but will
+      not attempt to read from standard input.  Typically, a parallel training
+      client would load a network, connect to the server, and then call 
+      <code>wait</code>, never to return until the server tells it to exit.
+    <p>
+      The default behavior of the command is to wait indefinitely.  Given a
+      <i>max-time</i> in seconds, <code>wait</code> will return at that point
+      and, if it was called in the shell, the shell will once more be active.
+      A wait can be terminated by an interrupt signal (<code>Ctrl-C</code>) or
+      by pressing the button at the bottom of the <a
+      href="../mainWindow.html">Main Window</a> when it reads "Stop Waiting".
+    <p>
+      If "<code>wait 0</code>" is executed during a wait, the wait will end.
+      If several waits are occurring simultaneously, the top one on the stack
+      will be terminated.  Telling the client to execute "<code>wait 0</code>"
+      is one way a parallel training server could tell a client to stop
+      waiting without actually killing the client.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To wait indefinitely:
+    <pre>
+    lens> wait</pre>
+    To make a "perpetual client" that repeatedly tries to connect to a server
+    at a particular machine and port:
+    <pre>
+    while 1 {catch {startClient spock.starfleet.edu 9999}; wait 60}</pre>
+
+    In this way, server processes could come and go and the client would
+    automatically connect into whatever server was listening at port 9999 at
+    the time.  Once a connection to a server was established, it would not be
+    affected by attempts to reconnect.
+
+    <h3>SEE ALSO</h3> <a href="waitForClients.html">waitForClients</a>, <a
+    href="sendEval.html">sendEval</a>, <a
+    href="startClient.html">startClient</a>,
+    <a href="trainParallel.html">trainParallel</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 21:04:17 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

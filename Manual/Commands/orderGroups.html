@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: orderGroups</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>orderGroups</font> - sets the order in which groups
+      are updated
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    orderGroups (&lt;group>)*</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This sets the order of the groups in the network's <i>group</i> array
+      and thus the order in which the groups are updated.  This is crucial for
+      standard networks, but less important for continuous networks since
+      continuous networks are updated synchronously.
+    <p>
+      Any groups not listed in the order will follow those listed, but the
+      previous order of such groups will not be retained.  Groups will
+      originally be in the order in which they were created so this command is
+      unnecessary if groups were created in the desired updating order.
+    <p>
+      For simple recurrent networks, it is important that context groups come
+      before their source group.
+
+    <h3>EXAMPLES</h3>
+    <pre>
+    lens> orderGroups bias input context hidden output</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Feb 23 22:11:48 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

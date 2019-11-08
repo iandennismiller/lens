@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: boltz.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: boltz.in</h1>
+    <hr>
+    <p>
+      In this example, a deterministic Boltzmann machine is trained to solve
+      the simple digits task.  You should begin by reading <a
+      href="../boltzmann.html">the manual page on DBMS</a>.
+    <p>
+      There are actually two networks in this example, Boltz-small and
+      Boltz-big.  The former just has an input and an output layer, the latter
+      adds a hidden layer. Let's start by training the Boltz-small network.
+      Go ahead and hit train once or twice.
+    <p>
+      As mentioned in the manual page, a Boltzmann machine goes through two
+      phases while training on an example, a positive and a negative phase.
+      Click on an example in the Unit Viewer and step through the ticks in the
+      example.
+    <p>
+      On the first tick all of the units are clamped to either their
+      externalInput or their target value.  The positive phase only lasts one
+      tick in this network because there are no free units to settle.  The
+      next tick starts the negative phase.  The output units have been reset
+      to their <i>initOutput</i>, which is 0.5.
+    <p>
+      Now step forward to the end of the example.  You should see the output
+      units ramp up towards their target values.  Use the Procedure pulldown
+      menu to change to the Test procedure.  Now when you click on a unit,
+      only the negative phase will be run.
+    <p>
+      Now switch to the Boltz-big network and train it.  This network has more
+      trouble reaching the targets because it has two layers and it takes
+      longer for activity to build up.  So error will be higher.  Set the Unit
+      Viewer back to the Train procedure and click an example.  Now you should
+      see a distinct settling process in both the positive and negative phases.
+    <p>
+      Experiment with changing the network's initGain, finalGain, and
+      annealTime parameters, which control the automatic adjustment of the
+      network's gain during settling.  The annealTime is the half-life, in
+      time intervals, of the decay from the initGain to the finalGain.  You
+      may find that if the annealing is too rapid or the finalGain is too
+      high, the network becomes unstable.  But if the gain remains too low, it
+      will be hard for the network to drive the units towards the targets.
+      To train a Boltzmann machine effectively, it's important to find a good
+      balance.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 22 18:08:20 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

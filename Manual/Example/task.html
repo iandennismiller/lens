@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: task.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: task.in</h1>
+    <hr>
+    <p>
+      In this example, a network is given a task on one set of units and some
+      data on another set of units.  The task tells the network what to do
+      with the data.  This example is fairly simple, but illustrates how you
+      might structure a network to solve a more complicated task.
+    <p>
+      The data input has three sets of two units and the output has two units.
+      The problem is to map from one of the input pairs to the output.
+      The task input has three units, one of which will be on, indicating
+      which of the three input pairs determines the output.
+    <p>
+      Each unit in the "hidden" layer has two inputs, one from the
+      corresponding unit in the "taskHidden" layer and one from the
+      corresponding input unit.  The weights of these links are fixed at 1.0
+      and the input to the unit is the product of the activations of the
+      sending units.  Thus, this is a <i>gating</i> network.  You might think
+      of the outputs of the "taskHidden" layer as determining the weights used
+      in the input-to-hidden projection.
+    <p>
+      As you will see, learning is a bit slow in this network, but it does
+      achieve a set of weights that allows it to generalize to the held-out
+      testing examples.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 16:12:16 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

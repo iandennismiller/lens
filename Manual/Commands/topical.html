@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Command Reference</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Command Reference</h1>
+    <hr>
+    <center><table border=0 cellspacing=0 cellpadding=0>
+	<tr><td><b><font size=4>
+	      <a href="alphabetic.html">Alphabetical Listing</a>
+	  </td><td width=30>
+	  </td><td><b><font size=4>
+	      <a href="../shell.html">Invoking Commands</a>
+	  </td><td width=30>
+	  </td><td><b><font size=4>
+	      <a href="../usage.html">Usage Syntax</a>
+      </table>
+    </center>
+    <hr>
+<br>    
+<center><table border=2 cellspacing=2 cellpadding=2>
+<tr><td colspan=2 align=center> 
+<font size=4><b>Network and Group Commands</b></font>
+<tr><td><a href="addNet.html">addNet</a>
+    <td>creates a new network and makes it the active network
+<tr><td><a href="useNet.html">useNet</a>
+    <td>activates a network or prints a list of all networks
+<tr><td><a href="addGroup.html">addGroup</a>
+    <td>adds a group to the active network
+<tr><td><a href="orderGroups.html">orderGroups</a>
+    <td>sets the order in which groups are updated
+<tr><td><a href="deleteNets.html">deleteNets</a>
+    <td>deletes a list of networks or the active network
+<tr><td><a href="deleteGroups.html">deleteGroups</a>
+    <td>deletes a list of groups from the active network
+
+
+<tr><tr><td colspan=2 align=center>
+<tr><td><a href="groupType.html">groupType</a>
+    <td>sets or displays the types of a group
+<tr><td><a href="changeGroupType.html">changeGroupType</a>
+    <td>adds, removes, or toggles group types
+<tr><td><a href="setTime.html">setTime</a>
+    <td>sets the network's time and history parameters
+<tr><td><a href="copyUnitValues.html">copyUnitValues</a>
+    <td>copies inputs, outputs, or other fields between groups
+<tr><td><a href="resetUnitValues.html">resetUnitValues</a>
+    <td>resets inputs, outputs, or other fields for a group
+<tr><td><a href="printUnitValues.html">printUnitValues</a>
+    <td>prints values for each unit in a list of groups to a file
+<tr><td><a href="polarity.html">polarity</a>
+    <td>compute the avg polarization of unit outputs in a group
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Connection Commands</b></font>
+<tr><td><a href="connectGroups.html">connectGroups</a>
+    <td>creates links with a specified pattern between groups
+<tr><td><a href="connectGroupToUnits.html">connectGroupToUnits</a>
+    <td>creates links from all units in a group to given units
+<tr><td><a href="connectUnits.html">connectUnits</a>   
+    <td>creates a link from one unit to another
+<tr><td><a href="elmanConnect.html">elmanConnect</a>    
+    <td>connects a source group to an Elman context group
+<tr><td><a href="copyConnect.html">copyConnect</a>    
+    <td>connects a group to an IN_, OUT_, or TARGET_COPY group
+<tr><td><a href="addLinkType.html">addLinkType</a>  
+    <td>creates a new link type
+<tr><td><a href="deleteLinkType.html">deleteLinkType</a>      
+    <td>deletes a user-defined link type
+<tr><td><a href="saveWeights.html">saveWeights</a>         
+    <td>saves the link weights and other values in a file
+<tr><td><a href="loadWeights.html">loadWeights</a>
+    <td>loads the link weights and other values from a file
+<tr><td><a href="loadXerionWeights.html">loadXerionWeights</a>
+    <td>loads weights from a Xerion text-format weight file
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Disconnection Commands</b></font>
+<tr><td><a href="disconnectGroups.html">disconnectGroups</a>
+    <td>deletes links of a specified type between two groups
+<tr><td><a href="disconnectGroupUnit.html">disconnectGroupUnit</a>
+    <td>deletes links from a group to a unit
+<tr><td><a href="disconnectUnits.html">disconnectUnits</a>     
+    <td>deletes links of a specified type between two units
+<tr><td><a href="deleteLinks.html">deleteLinks</a>      
+    <td>deletes all links of a specified type
+<tr><td><a href="deleteGroupInputs.html">deleteGroupInputs</a>   
+    <td>deletes inputs to a group (including Elman inputs)
+<tr><td><a href="deleteGroupOutputs.html">deleteGroupOutputs</a> 
+    <td>deletes outputs from a group (including Elman outputs)
+<tr><td><a href="deleteUnitInputs.html">deleteUnitInputs</a>    
+    <td>deletes inputs of a specified type to a unit
+<tr><td><a href="deleteUnitOutputs.html">deleteUnitOutputs</a>  
+    <td>deletes outputs of a specified type from a unit
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Link Commands</b></font>
+<tr><td><a href="randWeights.html">randWeights </a>  
+    <td>randomizes all of the weights of a selected type
+<tr><td><a href="freezeWeights.html">freezeWeights</a>       
+    <td>stops weight updates on specified links
+<tr><td><a href="thawWeights.html">thawWeights</a>       
+    <td>resumes weight updates on specified links
+<tr><td><a href="setLinkValues.html">setLinkValues</a>
+    <td>sets parameters for specified links
+<tr><td><a href="printLinkValues.html">printLinkValues</a>
+    <td>prints values for specified links to a file
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Lesioning and Noise Commands</b></font>
+<tr><td><a href="lesionLinks.html">lesionLinks</a>
+    <td>removes links or zeros or adds noise to their weights
+<tr><td><a href="lesionUnits.html">lesionUnits</a>
+    <td>inactivates units
+<tr><td><a href="healUnits.html">healUnits</a>
+    <td>restores lesioned units
+<tr><td><a href="noiseType.html">noiseType</a>
+    <td>sets a group's noise parameters
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Example Commands</b></font>
+<tr><td><a href="loadExamples.html">loadExamples</a>        
+    <td>reads an example file into an example set
+<tr><td><a href="useTrainingSet.html">useTrainingSet</a>      
+    <td>makes an example set the current training set
+<tr><td><a href="useTestingSet.html">useTestingSet</a>       
+    <td>makes an example set the current testing set
+<tr><td><a href="deleteExampleSets.html">deleteExampleSets</a>   
+    <td>deletes a list of example sets
+<tr><td><a href="moveExamples.html">moveExamples</a>     
+    <td>moves examples from one set to another
+<tr><td><a href="saveExamples.html">saveExamples</a>    
+    <td>writes an example set to an example file
+<tr><td><a href="exampleSetMode.html">exampleSetMode</a>      
+    <td>sets or returns the example set's example selection mode
+<tr><td><a href="resetExampleSets.html">resetExampleSets</a>     
+    <td>returns the example set to the first example
+<tr><td><a href="doExample.html">doExample</a>        
+    <td>runs the network on the next or a specified example
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Training Commands</b></font>
+<tr><td><a href="train.html">train</a>              
+    <td>trains the network using a specified algorithm
+<tr><td><a href="steepest.html">steepest</a>            
+    <td>trains the network using steepest descent
+<tr><td><a href="momentum.html">momentum</a>            
+    <td>trains the network using momentum descent
+<tr><td><a href="dougsMomentum.html">dougsMomentum</a>            
+    <td>trains the network using bounded momentum descent
+<tr><td><a href="deltaBarDelta.html">deltaBarDelta</a>       
+    <td>trains the network using delta-bar-delta
+<tr><td><a href="updateWeights.html">updateWeights</a>
+    <td>updates the weights using the current link derivatives
+<tr><td><a href="test.html">test</a>                
+    <td>tests the network on the testing set
+<tr><td><a href="resetNet.html">resetNet</a>
+    <td>randomizes all weights and clears direction information
+<tr><td><a href="resetDerivs.html">resetDerivs</a>
+    <td>clears the unit and link error derivatives
+<tr><td><a href="openNetOutputFile.html">openNetOutputFile</a>   
+    <td>begins writing network output activations to a file
+<tr><td><a href="closeNetOutputFile.html">closeNetOutputFile</a>  
+    <td>stops writing network output activations
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Object Commands</b></font>
+<tr><td><a href="setObject.html">setObject</a>           
+    <td>sets the value of an object field
+<tr><td><a href="getObject.html">getObject</a>           
+    <td>prints the contents of an object
+<tr><td><a href="path.html">path</a>       
+    <td>returns the full object path name of a major object
+<tr><td><a href="saveParameters.html">saveParameters</a>       
+    <td>writes network or group parameters to a script file
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Display Commands</b></font>
+<tr><td><a href="view.html">view</a>               
+    <td>opens the main control display
+<tr><td><a href="viewConsole.html">viewConsole</a>               
+    <td>opens the shell console
+<tr><td><a href="viewUnits.html">viewUnits</a>           
+    <td>opens the unit viewer
+<tr><td><a href="viewLinks.html">viewLinks</a>           
+    <td>opens the link viewer
+<tr><td><a href="viewObject.html">viewObject</a>          
+    <td>opens an object viewer
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Graph Commands</b></font>
+<tr><td><a href="graphObject.html">graphObject</a>         
+    <td>opens a graph of the value of an object or command
+<tr><td><a href="graph.html">graph</a>         
+    <td>creates, deletes, or manipulates graphs
+<tr><td><a href="exportGraph.html">exportGraph</a>         
+    <td>exports the data in a graph to a file
+<tr><td><a href="trace.html">trace</a>         
+    <td>creates, deletes, or manipulates traces within a graph
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Unit Plotting Commands</b></font>
+<tr><td><a href="resetPlot.html">resetPlot</a>           
+    <td>resets the plot layout
+<tr><td><a href="plotRow.html">plotRow</a>             
+    <td>defines one or more rows of the unit display plot
+<tr><td><a href="plotAll.html">plotAll</a>             
+    <td>plots all the units in a group in as many rows as needed
+<tr><td><a href="drawUnits.html">drawUnits</a>            
+    <td>actually renders a new plot on the unit display
+<tr><td><a href="autoPlot.html">autoPlot</a>           
+    <td>plots the entire network in a charming format
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Parallel Commands</b></font>
+<tr><td><a href="startServer.html">startServer</a>         
+    <td>makes the current process a parallel training server
+<tr><td><a href="stopServer.html">stopServer</a>          
+    <td>disengages all clients and stops running as a server
+<tr><td><a href="startClient.html">startClient</a>         
+    <td>makes the current process a parallel training client
+<tr><td><a href="stopClient.html">stopClient</a>          
+    <td>closes the connection with the server
+<tr><td><a href="sendEval.html">sendEval</a>            
+    <td>executes a command on the server or on one or all clients
+<tr><td><a href="sendObject.html">sendObject</a>          
+    <td>a shortcut for doing a local and remote setObject
+<tr><td><a href="clientInfo.html">clientInfo</a>    
+    <td>returns information about one or all clients
+<tr><td><a href="waitForClients.html">waitForClients</a>    
+    <td>executes a command when enough clients have connected
+<tr><td><a href="trainParallel.html">trainParallel</a>       
+    <td>trains the network in parallel on the clients
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Shell Commands</b></font>
+<tr><td><a href="help.html">help</a>                
+    <td>prints this list or explains a command
+<tr><td><a href="manual.html">manual</a>                
+    <td>opens the Lens manual in a web browser
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/set.htm">set</a>                
+    <td>creates and sets the value of a variable
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/unset.htm">unset</a>                
+    <td>removes variables
+<tr><td><a href="alias.html">alias</a>               
+    <td>creates or prints a command alias
+<tr><td><a href="unalias.html">unalias</a>             
+    <td>deletes a command alias
+<tr><td><a href="index.html">index</a>
+    <td>creates a .tclIndex file recording the locations of commands
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/history.htm">history</a>                
+    <td>manipulates the command history list
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/exec.htm">exec</a>                
+    <td>runs a subprocess
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/expr.htm">expr</a>                
+    <td>performs a mathematical calculation
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/open.htm">open</a>
+    <td>opens a Tcl channel
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/close.htm">close</a>
+    <td>closes a Tcl channel
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/puts.htm">puts</a>                
+    <td>prints a string to standard output or a Tcl channel
+<tr><td><a href="ls.html">ls</a>                  
+    <td>lists the contents of a directory
+<tr><td><a href="cd.html">cd</a>                  
+    <td>changes the current directory
+<tr><td><a href="pwd.html">pwd</a>                 
+    <td>returns the current directory
+<tr><td><a href="seed.html">seed</a>                
+    <td>seeds the random number generator
+<tr><td><a href="getSeed.html">getSeed</a>            
+    <td>returns the last seed used on the random number generator
+<tr><td><a href="rand.html">rand</a>            
+    <td>returns a random real number in a given range
+<tr><td><a href="randInt.html">randInt</a>            
+    <td>returns a random integer in a given range
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/pid.htm">pid</a>                
+    <td>returns the current process id
+<tr><td><a href="nice.html">nice</a>                
+    <td>increments or returns the process's priority
+<tr><td><a href="time.html">time</a>                
+    <td>runs a command and returns the time elapsed
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/glob.htm">glob</a>                
+    <td>performs file name lookup
+<tr><td><a href="signal.html">signal</a>                
+    <td>raises a signal in the current process
+
+<tr><tr><td colspan=2 align=center>
+<font size=4><b>Control Flow Commands</b></font>
+<tr><td><a href="source.html">source</a>                
+    <td>runs a script file
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/eval.htm">eval</a>                
+    <td>performs an evaluation pass on a command
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/if.htm">if</a>                
+    <td>conditional test
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/for.htm">for</a>                
+    <td>for loop
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/while.htm">while</a>                
+    <td>while loop
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/foreach.htm">foreach</a>                
+    <td>loops over the elements in a list
+<tr><td><a href="repeat.html">repeat</a>
+    <td>loops a specified number of times
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/switch.htm">switch</a>                
+    <td>switch statement
+<tr><td><a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/return.htm">return</a>                
+    <td>returns from the current procedure or script
+<tr><td><a href="wait.html">wait</a>
+    <td>stops the interactive shell for batch jobs
+<tr><td><a href="verbosity.html">verbosity</a>
+    <td>check or set how verbose Lens is (mostly during training)
+<tr><td><a href="exit.html">exit</a>                
+    <td>exits from the simulator
+</table></center>
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Dec 11 12:04:37 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

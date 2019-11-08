@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Hey, I found a bug!</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Miscellanea: Hey, I found a bug!</h1>
+    <hr>
+    <p>
+      Not possible.  Actually, if you think you've found a bug in Lens, you're
+      probably right.  Particularly if you got Lens to seg-fault.  That should
+      never happen.  This isn't a Microsoft product, you know.  But before you
+      tell Doug about it, it would be very helpful to him if you do a few
+      things first:
+    <ol>
+      <li>Check <a href="problems.html">Common Problems</a> to make sure it
+	isn't one of those.
+      <li>If you have your own install, do a "make clean; make".  Many
+	apparent bugs are due to an inconsistent compilation.
+      <li>Figure out how to replicate the problem.
+      <li>If Lens is seg-faulting and you have your own install, compile using
+	the "-g" option.  Then <a
+	  href="http://tedlab.mit.edu/~dr/gdbintro.html">run it under the
+	  debugger, gdb</a>. 
+	That will tell you which line the problem occurs on.  Try to pinpoint
+	its cause.
+      <li>If you customized your version of Lens, does the bug depend on
+	running code that you wrote or can it be replicated in the standard
+	release.
+      <li>If it is something that happens only for certain scripts, try to
+	find the minimal script that results in the problem.  Does it clear up
+	when you remove certain commands?
+      <li>Finally, send a note to <a
+	  href="mailto:dr+lens@tedlab.mit.edu">Doug</a>.  Be sure to
+	include the version number you are using, whether you have customized
+	it and, if so, whether the bug appears in the standard version as well.
+	If you need a certain script to cause the bug, Doug will need it.  If
+	the necessary files are small and few in number, attach copies to your
+	email.  If the files are large or there are a lot of them,
+	put them in a directory where Doug can access them either via ftp or
+	the web and then tell him how to get them.
+    </ol>
+
+
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Apr 19 19:05:20 EDT 2000 -->
+<!-- hhmts start -->
+Last modified: Wed Apr 19 19:49:12 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>

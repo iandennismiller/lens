@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: boltz-complete.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: boltz-complete.in</h1>
+    <hr>
+    <p>
+      One traditional use of Boltzmann machines is to perform pattern
+      completion.  In this task, the network is given degraded versions of the
+      8 digits from the digits task (each bit has been removed with 60%
+      probability) and it must clean up the patterns to the full digit.
+    <p>
+      There are again two networks in this example: Boltz-Complete and
+      Boltz-Complete2.  The former has a single layer, the latter has two
+      layers.
+    <p>
+      Let's begin with Boltz-Complete.  Notice that it has a single layer that
+      is both an INPUT and an OUTPUT group.  The positive phase is not very
+      interesting in this network.  Units that have external inputs
+      specified will be clamped by them.  Otherwise the units are
+      clamped to their target values.  Since all units have targets, they are
+      all clamped and the positive phase takes only one tick.
+    <p>
+      In the negative phase, only the units with inputs are clamped.  The
+      others are reset to the init value and are then free to update.  Try
+      training the network now.
+    <p>
+      Check out the network's performance in the Unit Viewer.  You should
+      find that it is mostly able to complete the patterns, but not always.
+    <p>
+      The Boltz-Complete2 network is similar, but it has distinct input and
+      output groups.  Train that one now.  You'll probably find that its
+      performance is a bit better than Boltz-Complete, but that it doesn't get
+      as close to the targets because it takes longer to settle.
+    <p>
+      Choose one of the networks and see if you can get it to learn to
+      complete all of the training set patterns.  You may need to adjust the
+      gain parameters, the learning parameters, or use weight decay.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 19:44:30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

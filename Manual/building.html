@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Building and Initializing Networks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Building and Initializing Networks</h1>
+    <hr>
+    <p>
+      The primary commands for building networks are <a
+      href="Commands/addNet.html">addNet</a>, <a
+      href="Commands/addGroup.html">addGroup</a>, and <a
+      href="Commands/connectGroups.html">connectGroups</a>.
+      <code>addNet</code> takes the name of the network and optionally the
+      maximum number of time intervals that an example may run, the number of
+      ticks per interval (equal to 1/dt), and flags specifying the network
+      type.  For standard feed-forward and simple recurrent networks, you only
+      need to specify the name of the network and the number of time
+      intervals.  The special network types at the moment are
+      <a href="elman.html#SRBPTT"><code>SRBPTT</code></a>, <a
+	href="continuous.html"><code>CONTINUOUS</code></a> and <a
+	href="boltzmann.html"><code>BOLTZMANN</code></a>. 
+      The ticks per interval should only be set to something other than 1 for
+      continuous or Boltzmann networks.
+    <p>
+      <code>addNet</code> can also be used to create many feed-forward or
+      simple-recurrent networks with a single command.  Or it could be used
+      in conjunction with some additional <a
+      href="Commands/connectGroups.html">connectGroups</a> commands to create
+      nearly any network with a minimum number of commands.
+    <p>
+      There is no way to save the structure of the network or generate any
+      sort of project files in Lens.  You must write scripts by hand if you
+      would like to reuse an architecture.  The only parts of a network that
+      can be saved are the raw <a href="Commands/saveWeights.html">weights</a>
+      and the <a href="Commands/saveParameters.html">parameters</a>.
+
+    <h3>Groups</h3>
+    <p>
+      When a group is constructed, you must specify its name, number of units
+      and <a href="types.html">type</a>.  The number of units in a group is
+      fixed when the group is created.  There is no way to add or delete units
+      short of destroying the group and building a new one.  All of the units
+      in a group have basically the same type (although it is possible to have
+      FROZEN and non-FROZEN units and LESIONED and non-LESIONED units in the
+      same group).  Therefore most interesting types in the network are at the
+      group level.
+    <p>
+      The <i>group order</i> is the order in which the groups appear in the
+      Network's <i>group</i> array.  This is the order in which groups will be
+      traversed during forward passes.  The default group order will be the
+      order in which groups are created.  However, it can be changed with the
+      <a href="Commands/orderGroups.html">orderGroups</a> command.
+    <p>
+      A "bias" group is automatically created with the network.
+      
+    <h3>Connections</h3>
+    <p>
+      Projections are normally formed between groups using <a
+      href="Commands/connectGroups.html">connectGroups</a>, although finer
+      control over connectivity can be obtained using <a
+      href="Commands/connectGroupToUnit.html">connectGroupToUnit</a> or <a
+      href="Commands/connectUnits.html">connectUnits</a>.
+      <code>connectGroups</code> builds full connectivity by default, but it
+      can create one-to-one connections or several patterns of randomized
+      sparse connectivity.
+    <p>
+      In Lens, connections, or <i>links</i>, are owned by the <i>receiving</i>
+      unit. 
+      Units only keep an array of <i>incoming</i> connections and it is a bit
+      difficult to locate the links coming out of a particular unit.  Links
+      are organized into <i>blocks</i>.  A block is a set of links that come
+      from consecutive units in the same sending group.  When using full
+      connectivity, a typical hidden unit might have two blocks: one
+      containing the link from the bias unit and one containing the links from
+      the input units.  The links themselves are stored in a single array,
+      the unit's <i>incoming</i> array, with no physical partitioning into
+      blocks.  The unit also has a <i>block</i> array containing the
+      information for each block.  This includes a number of other parameters
+      specific to the links in the block.  It also includes the number of
+      links in the block, which is used to determines which links belong
+      to which blocks.
+    <p>
+      Each block of links also has a <i>link type</i> associated with it.
+      Link types are handles that allow operations to be performed on selected
+      links.  From the user's point of view, the link type is a string label.
+      If no type is specified, the type of a new set of links will be the name
+      of the sending group.  For example:
+    <pre>
+    connectGroups input1 hidden</pre>
+    would create blocks of links with type "input1".  On the other hand,
+    <pre>
+    connectGroups input1 hidden -t studly</pre>
+    would create links with type "studly".
+    <p>
+      A given pair of sending and receiving units may have more than one
+      connection between them, but the connections must be of different types
+      or they would be indistinguishable.  Most users need not be concerned
+      with link types as the automatically created types will usually suffice.
+    <p>
+      To connect a source group to an ELMAN context group, the <a
+	href="Commands/elmanConnect.html">elmanConnect</a> command must be
+      used.  When a projection of type ONE_TO_ONE is created, the link weights
+      are by default frozen at 1.0.
+
+
+    <h3>Link Weights</h3>
+    <p>
+      Each block of links has associated with it a <i>randMean</i> and
+      <i>randRange</i>.  These determine the mean and range of the link
+      weights when the block is randomized.  Weights will be selected
+      uniformly over the range [<i>randMean-randRange,
+      randMean+randRange</i>].  If either value is equal to NaN, which is the
+      default, then the corresponding value in the group structure will be
+      used.  If that too is NaN, the network's value will be used.  Most users
+      will just want to randomize all weights with the same parameters and
+      need only be concerned with the network-wide values.
+    <p>
+      The block's <i>min</i> and <i>max</i> fields can be used to set bounds
+      on the link weights.  By default, these are NaN, which means there is no
+      bound.  If <i>min</i> is set, any link weight less than <i>min</i> is
+      set to <i>min</i> following each weight update.  Likewise, weights
+      cannot be larger than <i>max</i>.  If <i>min</i> or <i>max</i> is 0 and
+      a link hits the bound, the weight will be set to zero and, in the
+      absence of noise, will remain at zero because it will have no effect on
+      the error.  If you wish to avoid this, you might want to use a small
+      positive or negative value rather than 0.  Also be sure to set the
+      <i>randMean</i> and <i>randRange</i> so that the initial weights will
+      fall within the bounds.
+    <p>
+      The <a href="Commands/setLinkValues.html">setLinkValues</a> command can
+      be used to change the <i>randMean</i> and <i>randRange</i> or other
+      block parameters for selected
+      types of blocks in the entire network or part of the network.
+      The <a href="Commands/randWeights.html">randWeights</a> command will
+      randomize the weights of all or selected link types in the whole network
+      or just part of it.  Normally the user need only use the <a
+      href="Commands/resetNet.html">resetNet</a> procedure, which randomizes
+      all non-frozen weights in the network and performs other initializations
+      in preparation for training.
+    <p>
+
+    <h3>Freezing</h3>
+    <p>
+      Often you want a set of links in the network to be fixed.  For example,
+      you might pre-train half the network and then fix that part while you
+      train the rest.  This is accomplished by freezing the links.
+      When links are frozen, their weights will not be changed during weight
+      updates.  Frozen links will also not be randomized by the <a
+      href="Commands/resetNet.html">resetNet</a> command, but they will be
+      randomized by <a href="Commands/randWeights.html">randWeights</a>. 
+      Furthermore, frozen links will not contribute to the <i>weightCost</i>
+      or <i>gradientLinearity</i>.
+    <p>
+      Another important use of freezing is in assembling a network from one or
+      more pre-trained parts.  The <a
+	href="Commands/loadWeights.html">loadWeights</a> command can
+      selectively load weights into frozen or thawed parts of a network.
+      Therefore, temporary freezing can be used to load weights into
+      selective parts of a network.
+    <p>
+      The smallest grain at which freezing can occur is at the block level.
+      Individual links within a block cannot be selectively frozen.  In order
+      to freeze some links in a projection and not others, the links must be
+      given different link types so that they will not become part of the same
+      block.
+    <p>
+      The <a href="Commands/freezeWeights.html">freezeWeights</a> command is
+      used to freeze links in all or part of the network.  Each accepts an
+      optional link type if only certain blocks are to be frozen.  If all the
+      links into a unit or group are frozen, the entire unit or group will be
+      skipped during weight updates, which is a bit faster.  The effects of
+      freezing is reversed with 
+      <a href="Commands/thawWeights.html">thawWeights</a>.
+    <p>
+      It is possible to selectively save and load only certain links in the
+      network by freezing the links you do not want saved or changed and
+      calling <a href="Commands/saveWeights.html">saveWeights</a> or <a
+	href="Commands/loadWeights.html">loadWeights</a> with the "-nofrozen"
+      parameter.  If part of your network has been pre-trained and is stored
+      in a weight file, you may need to freeze the other links in the network,
+      load the file, thaw the links and then freeze the ones you just loaded.
+
+    <h3>Lesioning</h3>
+    <p>
+      Lesioning is a form of instantaneous, relatively permanent damage to a
+      set of links or a unit.  Links are lesioned with the <a
+      href="Commands/lesionLinks.html">lesionLinks</a> command.  This will
+      affect the incoming links of a particular type to a specified group.
+      You may specify the percentage of links that will be affected.  There
+      are three forms of link lesions: the links could be permanently removed,
+      they could have their weights set to a particular value (normally 0.0),
+      or noise could be added to their weights.  These changes are permanent
+      in that the old link weights are not stored.  It is advisable to save
+      the link weights before lesioning the network.  Deleted links cannot be
+      restored short of creating them again.
+    <p>
+      The second major form of lesioning is at the unit level and relies on
+      the <a href="Commands/lesionUnits.html">lesionUnits</a> command.
+      Lesioning is a temporary state for a unit.  A lesioned unit has 0.0
+      output and output derivative.  It will not compute its input or output
+      or their reverses during forward and backward passes.  Lesioned output
+      units will not contribute to the error.  Units can be unlesioned with <a
+      href="Commands/healUnits.html">healUnits</a>.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+    <!-- Created: Wed Jan 14 14:32:59 EST 1998 --> <!-- hhmts start --> Last
+    modified: Thu Feb 12 23:18:36 EST 1998 <!-- hhmts end -->
+  </body>
+</html>

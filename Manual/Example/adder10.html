@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: adder10.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: adder10.in</h1>
+    <hr>
+    <p>
+      This is similar to the adder2.in example, except that the network must
+      now add base-10 numbers.  Two networks have been created: adder-a and
+      adder-b.
+    <p>
+      Let's start with the adder-a network.  This is a standard SRN.  You will
+      probably find that the network learns the task fairly consistently,
+      although the learning gets slow near the end and you may need 1000 or
+      1500 updates to get really good performance.
+    <p>
+      The adder-b network has an architecture specifically designed for this
+      task.  There is a single "carry" unit that feeds back into the hidden
+      layer.  We're hoping the network will be able to learn to use this unit 
+      to represent the carry.
+    <p>
+      Compare the training curve of adder-b to that of adder-a.  You'll
+      probably find that adder-b settles into a local minimum.  If you watch
+      the value in the carry group, it isn't doing much, and the network is
+      hedging its bets about whether there is a carry and guessing two digits
+      in the output.
+    <p>
+      Why can't this network learn?  We'll, lets think about the SRN learning
+      rule for a minute.  The standard SRN backprop phase only occurs over the
+      current tick.  It does not extend backward in time.  So, in fact, there
+      is no teaching signal for the hidden-to-carry weights.  Those weights
+      never change and the network can't learn to use its carry unit
+      effectively.
+    <p>
+      We can make things easier for the network by setting the backpropTicks
+      to 2.  This will extend the backprop phase backward one tick in time.
+      This is enough to provide a training signal for the hidden-to-carry
+      units that will allow it to learn.  Try setting the backpropTicks to 2
+      and increasing the learning rate to 0.2.  Has the network learned to use
+      the carry group as a carry or anti-carry?
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 16:23:18 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

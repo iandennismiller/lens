@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: exampleSetMode</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>exampleSetMode</font> - sets or returns the example set's
+      example selection mode
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    exampleSetMode &lt;example-set-list> [&lt;mode>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      The example set mode determines how it chooses the next example during
+      training.  There are six modes: <i>ORDERED</i>, <i>PERMUTED</i>,
+      <i>RANDOMIZED</i>, <i>PROBABILISTIC</i>, <i>PIPE</i>, and <i>CUSTOM</i>.
+      When no mode is specified, the names of the sets in the list along with
+      their current modes will be returned.  Given an example selection mode,
+      it will change the modes and reset the example sets (see <a
+      href="resetExampleSets.html">resetExampleSets</a>).
+    <p>
+      In ORDERED mode, which is the default, examples will be presented in the
+      order in which they were found in the example file.
+    <p>
+      In RANDOMIZED mode, examples will be selected at random with
+      replacement, each having the same probability of selection.  Note that 
+      this differs from PERMUTED because it uses replacement.  It differs from
+      PROBABILISTIC because it ignores the example <i>frequency</i>.
+    <p>
+      In PERMUTED mode, examples will be selected at random without
+      replacement, each having the same probability of selection.  A different
+      order will be computed for each pass through the set.
+    <p>
+      In PROBABILISTIC mode, examples are selected based on their given
+      <i>frequency</i>.  Specified frequency values will be normalized over all
+      examples and this distribution used for selection.  If example sets are
+      concatenated, the distribution will be recalculated based on the
+      specified frequencies.  An example with no frequency specified is given a
+      value of 1.0.
+    <p>
+      PIPE mode is used for example sets that are reading from a pipe.  The
+      next example will be read from the pipe and stored temporarily in the
+      example set's <i>pipeExample</i> field.  This mode can only be used with
+      example sets for which a pipe was opened with <code>"loadExamples
+      ... -m PIPE"</code>.  If the pipe is exhausted and the example set's
+      <i>pipeLoop</i> flag is set to TRUE, which is the default, the pipe will
+      be re-opened automatically.  If an example set contains both stored
+      examples and an open pipe, you can switch between them by changing from
+      PIPE mode to another mode.
+    <p>
+      CUSTOM mode allows you to write a procedure that generates the index of
+      the next example.  When it's time to choose the next example, the
+      example set's <i>chooseExample</i> procedure will be called.  This
+      should return an integer between 0 and one less than the number of
+      examples, inclusive.
+
+  <h3>EXAMPLES</h3>
+    <p>
+      To change the mode of set "set1" to RANDOMIZED:
+    <pre>
+    lens> exampleSetMode set1 RAND</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="resetExampleSets.html">resetExampleSets</a>,
+    <a href="loadExamples.html">loadExamples</a>,
+    <a href="doExample.html">doExample</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Apr 11 22:31:24 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>

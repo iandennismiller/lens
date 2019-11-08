@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: bench.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: bench.in</h1>
+    <hr>
+    <p>
+      This example is used for benchmarking the simulator on various
+      machines.  The <code>bench</code> command will build a network with 4
+      inputs and 
+      outputs and a specified number of links, or as close to it as possible.
+      It then trains the network for a while and analyzes the running time.
+    <p>
+      <code>benchAll</code> will benchmark networks of 6 different sizes.  You
+      should give it the name of a file for the results.
+    <p>
+      You might learn something about writing Tcl scripts by looking through
+      this example.
+    <p>
+      Here are the results I got on a 500MHz Pentium III running Linux:
+    <pre>
+Millions of weight traversals per second with 100 links:      5.2
+Millions of weight traversals per second with 1000 links:    25.9
+Millions of weight traversals per second with 10000 links:   52.4
+Millions of weight traversals per second with 100000 links:  24.9
+Millions of weight traversals per second with 300000 links:  27.1
+Millions of weight traversals per second with 1000000 links: 26.9</pre>
+    <p>
+      On Pentiums there is a replicable sweet spot for networks with around
+      10,000 links.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 22:09:32 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

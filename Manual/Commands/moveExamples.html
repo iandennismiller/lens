@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: moveExamples</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>moveExamples</font> - moves examples from one set
+      to another
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    moveExamples &lt;example-set1> &lt;example-set2> 
+        ([&lt;first-example> [&lt;num-examples>]] | &lt;proportion> | ) [-copy]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This moves examples from set1 to set2.  If set2
+      already exists, the examples are appended.  If set2 doesn't exist, it
+      will be created.
+    <p>
+      If only set1 and set2 are given, all examples will be moved, but set1
+      won't be deleted.
+    <p>
+      If just an example index is given, that example will be moved.  If
+      <i>num-examples</i> is also given, that many examples will be moved,
+      starting with the specified example.
+    <p>
+      If <i>proportion</i> is specified, that proportion of examples will be
+      randomly selected and moved.
+    <p>
+      The <i>-copy</i> flag causes examples to be copied, rather than moved.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To move 20% of the examples, at random, from a training set to a
+      testing set:
+    <pre>
+    lens> moveExamples training testing 0.2</pre>
+    <p>
+      To partition a set of 1000 examples into 5 sets of 200:
+    <pre>
+    lens> repeat i 5 {moveExamples bigset set$i 0 200}</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="loadExamples.html">loadExamples</a>,
+    <a href="deleteExampleSets.html">deleteExampleSets</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 17:53:56 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

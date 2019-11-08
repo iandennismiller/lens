@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Network Types</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Network Types</h1>
+    <hr>
+    <p>
+      The file type.h contains the bit-masks used to encode types for
+      networks, groups, units, link blocks, projection patterns, example set
+      selection modes, noise types, algorithms, and a number of other things.
+      Currently the only non-standard network types are CONTINUOUS and
+      BOLTZMANN.  You may want to create a new network type if you want to
+      run a network that uses substantially different training functions at
+      the network-level, not just the group level.
+    <p>
+      The first thing you need to do is to choose a bitmask for your type.
+      This should be put in your own personal version of the type.h file.  Be
+      sure to use comments to mark your addition so you can recreate it when
+      type.h is updated.  When adding a new type, you will need to add a
+      #define like those in util.h and choose an unused bit.  The shift (the
+      number following &lt;&lt; can range from 0 to 31).  Just be sure you
+      don't use a bit that has already been taken by one of the SHARED TYPES
+      or NETWORK TYPES.
+    <p>
+      For example, we might add:
+    <pre>
+    /* DOUG... */
+    #define COOL_NET    ((mask) 1 << 9)
+    /* ...DOUG */</pre>
+    <p>
+      Now you will probably want to write some functions to train or test your
+      network on an example or a tick.  Those should be placed in extension.c.
+      Let's pretend we wrote the functions coolNetTrainExample(),
+      coolNetTestExample(), and coolNetUpdate().
+    <p>
+      Next, you need to write a type initializer.  This will be used to set
+      the network's function pointers to the functions you just wrote when the
+      network is created.  Put it in extension.c as well.  Your initializer
+      might look like this:
+    <pre>
+    static flag initCoolNet(Network N) {
+      N->netTrainExample  = coolNetTrainExample;
+      N->netTestExample   = coolNetTestExample;
+      N->netRunExample    = coolNetTrainExample;
+      N->netTrainTick     = coolUpdate;
+      N->netTestTick      = coolUpdate;
+      N->netRunTick       = coolUpdate;
+      return TCL_OK;
+    }</pre>
+    <p>
+      All of the functions you don't set here will be set by the
+      initStandardNet() procedure in act.c.
+    <p>
+      Finally, you need to register your type.  This is done by
+      placing a call to <code>registerNetType()</code> in 
+      <code>userInit()</code> in extension.c.  For example:
+    <pre>
+    registerNetType("COOL_NET", COOL_NET, initCoolNet);</pre>
+    <p>
+      The first argument is the name users will call this type when issuing
+      shell commands.  The second is the code that you just defined in type.c
+      and the third is the type initialization function.
+      Now you should be able to issue the shell command:
+    <pre>
+    addNet foo COOL_NET</pre>
+    <p>
+      and the network will use the example- and tick-processing functions you
+      wrote.
+    <p>
+      If you need to do other things to initialize your network, you could
+      always <a href="progShell.html">define your own command</a> which could
+      do anything you like.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:09:45 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

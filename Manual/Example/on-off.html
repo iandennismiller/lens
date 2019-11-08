@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: on-off.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: on-off.in</h1>
+    <hr>
+    <p>
+      This is another example of a continuous network.  This network uses
+      input integrating units and has full connections between all hidden and
+      output units and between hidden and input units.
+    <p>
+      This network uses SOFT_CLAMP input units, which are often used in
+      continuous networks.  The input units will be driven towards their
+      external inputs, but the input will also include the normal input due to
+      incoming weights and be subject to integration.  Essentially, the inputs
+      will only be "softly" clamped.
+    <p>
+      The example sets each have six simple auto-associative patterns.  In
+      the "on" example set, the network is first given an input and must
+      activate the correct output.  In the second event, the input is
+      removed, but the output must be maintained.  Try clicking on an example
+      in the Unit Viewer and stepping through the ticks.
+    <p>
+      You will probably find that the network never gets to the second event.
+      That is because groupCritRequired was set to 1.  In this case, the group
+      criterion must be satisfied before moving on to the next event.  If not,
+      the example stops before all events have occurred.  The output layer has
+      the STANDARD_CRIT by default.  Thus, the output criterion is reached
+      when all output units are within the trainGroupCrit (during training) or
+      the testGroupCrit (during testing) of their target values.  In this
+      case, all outputs must be within 0.1 of their target value (during
+      testing) for the next event to begin.
+    <p>
+      Now try training the network.  Hit train a couple of times until the
+      network doesn't seem to want to train anymore.  There is a reason the
+      network is refusing to train.  If the network reaches criterion for all
+      events in all examples in 5 consecutive batches (as determined by the
+      network's minCritBatches parameter), then training will stop because it
+      is presumed that the network has reached an acceptable level of
+      performance.  If you don't want to stop training when the criterion is
+      reached, set the minCritBatches to 0.
+    <p>
+      You should find that, at the end of training, the network has activated
+      the correct output units at the end of each example.  You will also find
+      that the events don't last for their maximum time.  They will end as
+      soon as they have reached their minTime (0.5 intervals) and the network
+      has reached criterion.
+    <p>
+      But the "on" example set is not the interesting one.  Now switch
+      training sets to "on-off".
+    <p>
+      The on-off examples are similar, but with one important difference.  In
+      this case, when the inputs disappear in the second event, the network
+      must shut off the output units as well.  The question is whether the
+      network can learn to activate and then deactivate the output units.
+    <p>
+      Reset the network and try training on the on-off set.  The error should
+      drop smoothly and then start jumping around.  Don't panic.  Just
+      continue training for about 2500 epochs.  Now take a look at the
+      examples in the Unit Viewer.  You should see that the outputs ramp up.
+      Once they get close to their targets the next event will be triggered and
+      the outputs should go away again.
+    <p>
+      The reason the error was so unstable was because we set
+      groupCritRequired to 1 (true).  This means that the second event can't
+      occur unless the network reached criterion on the first event.  When the
+      second event occurs sporadically, the network gets an unstable training
+      signal and the error will jump around.  But requiring that the network
+      get one event correct before training it on the next one can help it to
+      learn sequential tasks like this one.  It forces the network to be
+      sensitive to the environment and not to simple learn a trajectory that
+      happens to reduce the error.
+    <p>
+      Try setting the groupCritRequired to 0 and retraining.  Now you should
+      see that the error decreases smoothly.  But take a look at the behavior
+      of the units in the Unit Viewer.  You will probably find that the
+      network tries to cut corners.  During the first event, the output unit's
+      activation increases, but doesn't get terribly close to 1.0 before
+      starting to decline.  Once the second event begins, the output unit has
+      already almost shut itself off.   The network is not really paying
+      attention to the disappearance of the input.  It has just learned to
+      excite the output units for a little while and then shut them down.
+    <p>
+      The reason for requiring that the group criterion is reached is to
+      prevent this sort of lazy behavior.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 21 19:04:55 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

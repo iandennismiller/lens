@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: startClient</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>startClient</font> - makes the current process a parallel training client
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    startClient &lt;hostname> &lt;port> [&lt;my-address>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command makes the current process a parallel training client and
+      creates a connection to a server.  <i>hostname</i> is the host name
+      (such as "vim.boltz.cs.cmu.edu") or the IP address (such as
+      "128.2.181.181") of the server machine. <i>port</i> is the port on which
+      the server process is listening.
+    <p>
+      Ordinarily, the name of the current machine, which is passed to the
+      server, will be determined by using the <i>gethostname</i> call.  If
+      <i>my-address</i> is specified, it will override that.  This may be
+      useful if a machine is attached to multiple networks.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To connect to a server on port 6789 on the current machine:
+    <pre>
+    lens> startClient localhost 6789</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="stopClient.html">stopClient</a>,
+    <a href="startServer.html">startServer</a>,
+    <a href="sendEval.html">sendEval</a>,
+    <a href="sendObject.html">sendObject</a>,
+    <a href="trainParallel.html">trainParallel</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 17:42:22 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

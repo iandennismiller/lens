@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: sendObject</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>sendObject</font> - a shortcut for doing a local and remote setObject
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    sendObject &lt;object> &lt;value></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This is a shortcut useful for setting an object field to the same value
+      on the server and on all clients.  It is equivalent to "<code>setObject
+      &lt;object> &lt;value>; sendEval {setObject &lt;object>
+      &lt;value>}</code>".
+    <p>
+      If invoked on the server, the object will be set on the server and on all
+      clients.  If invoked on a client, the value will be set on that client
+      and on the server.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      If called on the server, this will set the <i>batchSize</i> to 100 on
+      all clients as well as the server:
+    <pre>
+    lens> sendObject batchSize 100</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="setObject.html">setObject</a>,
+    <a href="sendEval.html">sendEval</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:24:48 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

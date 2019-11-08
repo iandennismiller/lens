@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Weight Files</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: Weight Files</h1>
+    <hr>
+    <p>
+      Weight files are used for saving and restoring link weights and other
+      link values.  They can be written in binary or text.  Links are
+      traversed in standard traversal order, which iterates over groups in
+      index order, over units in each group, and over incoming links to each
+      unit.  This ordering is highly dependent on the order in which the
+      network was built, so the exact same code should be used to build the
+      network from which values are saved and the network into which values
+      are loaded.
+    <p>
+      Note that Lens does not use the same traversal order as Xerion.
+      Xerion writes all bias links first and then traverses the other links in
+      the same order as Lens.  A Xerion text weight file may be loaded into
+      Lens using the <a
+	href="Commands/loadXerionWeights.html">loadXerionWeights</a> command.
+    <p>
+      Remember that if the structure of a network is randomized, as it may be
+      when using sparse connectivity, you must save the random seed value
+      before the network is built and reuse the same seed value to build
+      equivalent networks that may share weight files.  Otherwise, the weight
+      files may appear to load properly (because the networks happen to have
+      the same number of links) but the resulting network will produce
+      garbage.
+    <p>
+      Weight files can either contain just the weights (1 value), the weights
+      and the weight deltas (2 values), or the weights, deltas, and
+      <i>lastValue</i>s (3 values).  <i>num-values</i> specifies which format
+      is used.
+    <p>
+      The binary weight file is recognized because it begins with the magic
+      cookie 0x55555556 (decimal 1431655766).  It must be written with
+      four-byte integers and four-byte reals.  Both must be big-endian.  When
+      reading and writing binary files on your own, you can convert to
+      standard network byte order and back to your computer's byte order using
+      the <i>ntohl()</i> and <i>htonl()</i> commands.  Note that PCs use
+      little-endian order.
+    <p>
+      The binary and text formats are identical, except that the binary is
+      written in binary with no extra bits and the text format allows
+      arbitrary whitespace.  The format specification is described in the <a
+      href="exampleFiles.html">Example Files</a> page.
+    <pre>
+    <font color=red>&lt;I magic-weight-cookie>
+    &lt;I total-number-of-links>
+    &lt;I num-values>
+    &lt;I totalUpdates></font>
+    <font color=blue>for each group:
+      for each unit in group:
+        for each incoming link to unit:</font>
+          <font color=red>&lt;R link-weight></font>
+	  <font color=blue>if <i>num-values</i> >= 2:</font>
+            &lt;R link-lastWeightDelta>
+	  <font color=blue>if <i>num-values</i> >= 3:</font>
+            &lt;R link-lastValue></pre>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 19:37:56 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: train</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>train</font> - trains the network using a specified
+    algorithm
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    train [&lt;num-updates>] [-report &lt;report-interval> |
+        -algorithm &lt;algorithm> | -setOnly]</pre>
+
+    <h3>DESCRIPTION</h3>
+    <p>
+      This will train the network on the current training set.  Examples are
+      selected based on the training set's example mode.  The number of
+      examples per weight update is determined by the network's
+      <i>batchSize</i> parameter.  A batchSize of 0 indicates that the batch
+      size should be the number of examples in the training set.
+    <p>
+      If the <i>num-updates</i> is given, the network's <i>numUpdates</i>
+      parameter will be set.  This is the maximum number of weight updates, or
+      batches, allowed during training.  If not set, the network's previous
+      value will be used.
+    <p>
+      The <i>report-interval</i> will set the network's <i>reportInterval</i>
+      parameter, which is the number of weight updates between printing
+      training reports.  A report is always generated after the first and last
+      updates.
+    <p>
+      Finally, an algorithm name may be specified.  The available algorithms
+      are <i>steepest</i>, <i>momentum</i>, <i>dougsMomentum</i>, and
+      <i>deltaBarDelta</i>.  <i>deltaBarDelta</i> is only available with the
+      "advanced" version of Lens, <code>alens</code>.  If not given, the
+      previous algorithm is reused.  <i>dougsMomentum</i> is the initial
+      default.
+    <p>
+      If the -setOnly flag is used, no training will occur.  However, the
+      network's numUpdates, reportInterval, and default algorithm will be set.
+      This can be used to set the default training behavior in an
+      initialization script prior to actually training.
+    <p>
+      Training will stop if the total network error on a batch is less than or
+      equal to the network's <i>criterion</i> parameter.  Training will also
+      stop if the <i>unit criterion</i> is achieved.  For this to occur, the
+      distance between each output unit's activation and its target must be
+      smaller than a certain value at the end of every event in every example
+      in the batch.  The unit criterion for an output unit is given by its
+      group's <i>unitCriterion</i> parameter.
+    <p>
+      If the net's output file is open, the output units' activations and
+      targets will be recorded on each tick.
+    <p>
+      <a href="resetNet.html">resetNet</a> will randomize the weights, clear
+      the momentum direction information, and otherwise get the network ready
+      to start training from scratch.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To train with delta-bar-delta for 1000 batches, printing a report every
+      100 updates:
+    <pre>
+    lens> train 1000 -r 100 -a deltaBarDelta</pre>
+
+    <p>
+      To do it again, just do:
+    <pre>
+    lens> train</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="steepest.html">steepest</a>,
+    <a href="momentum.html">momentum</a>,
+    <a href="deltaBarDelta.html">deltaBarDelta</a>,
+    <a href="updateWeights.html">updateWeights</a>,
+    <a href="test.html">test</a>,
+    <a href="resetNet.html">resetNet</a>,
+    <a href="useTrainingSet.html">useTrainingSet</a>,
+    <a href="exampleSetMode.html">exampleSetMode</a>,
+    <a href="openNetOutputFile.html">openNetOutputFile</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 12:35:20 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

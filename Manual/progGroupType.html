@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Group Types</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Group Types</h1>
+    <hr>
+    <p>
+      The manual section on <a href="types.html">group types</a> explains the
+      different sorts of group types and you should be familiar with that.
+      Creating a new group type is a bit easier than creating a network type.
+    <p>
+      First decide if your type is an input type, output type, cost type
+      (which includes error and other cost functions) or some other type.
+      These correspond to the type classes GROUP_INPUT, GROUP_OUTPUT,
+      GROUP_COST, and GROUP.  For the purpose of illustration, we'll create an
+      output type.
+    <p>
+      Now you need to choose a bitmask for your type.  This should be put in
+      your own personal version of the type.h file.  Be sure to use comments
+      to mark your addition so you can recreate it when type.h is updated.
+      When adding a new type, you will need to add a #define like those in
+      util.h and choose an unused bit.  The shift (the number following
+      &lt;&lt; can range from 0 to 31).  Just be sure you don't use a bit that
+      has already been taken by one of the other types of your class, such as
+      GROUP_OUTPUT.
+    <p>
+      For example, we might add (under the heading GROUP_OUTPUT TYPES):
+    <pre>
+    /* DOUG... */
+    #define MY_OUTPUT    ((mask) 1 << 31)
+    /* ...DOUG */</pre>
+    <p>
+      A <i>basic output function</i> is one that computes the unit output
+      based on the unit input.  Otherwise it might just be a function that
+      modifies the output.  If yours is a basic output function, add it to the
+      BASIC_OUTPUT_TYPES.  If yours computes the output based on the
+      externalInput, then add it to the CLAMPING_OUTPUT_TYPES.
+    <p>
+      Now you will need to write some forward and backward procedures for your
+      function.  These will be similar to the ones in act.c, such as
+      integrateOutput() and integrateOutputBack() except you'll put yours in
+      extension.c.  Here's an example.  Because I'm lazy I just copied those
+      functions and renamed them:
+    <pre>
+    static void myOutput(Group G, GroupProc P) {
+      real dt = Net->dt * G->dtScale;
+      real *lastOutput = P->unitData;
+      real *instantOutput = P->unitHistoryData[HISTORY_INDEX(Net->currentTick)];
+      FOR_EACH_UNIT(G, {
+        instantOutput[u] = U->output;
+        lastOutput[u] += dt * (U->output - lastOutput[u]);
+        U->output = lastOutput[u];
+      });
+    }
+
+    static void myOutputBack(Group G, GroupProc P) {
+      real dt = Net->dt * G->dtScale;
+      real *lastOutputDeriv = P->unitData;
+      real *instantOutput = P->unitHistoryData[HISTORY_INDEX(Net->currentTick)];
+      FOR_EACH_UNIT(G, {
+        U->output = instantOutput[u];
+        lastOutputDeriv[u] += U->outputDeriv - dt * lastOutputDeriv[u];
+        U->outputDeriv = dt * lastOutputDeriv[u];
+      });
+    }</pre>    
+    <p>
+      A GroupProc will be allocated for each network that uses your type and
+      placed in the group's outputProcs linked list.  You will need to write a
+      type initializer which will initialize this GroupProc structure.  It
+      will set the GroupProc's function pointers to the functions you just
+      wrote and build any arrays used by those functions.  Here is ours:
+    <pre>
+    static void myOutputInit(Group G, GroupProc P) {
+      P->forwardProc  = myOutput;
+      P->backwardProc = myOutputBack;
+      P->unitData = realArray(G->numUnits, "OUT_INTEGR:unitData");
+      P->unitHistoryData = realMatrix(Net->historyLength, G->numUnits,
+    				  "OUT_INTEGR:unitHistoryData");
+    }</pre>
+    <p>
+      Finally, you need to register your type.  This is done by
+      placing a call to <code>registerGroupType()</code> in 
+      <code>userInit()</code> in extension.c.  For example:
+    <pre>
+    registerGroupType("MY_OUTPUT", MY_OUTPUT, GROUP_OUTPUT, myOutputInit);</pre>
+    <p>
+      The first argument is the name users will call this type when issuing
+      shell commands.  The second is the code that you just defined in type.c,
+      the third is the type class, and the fourth is the type initialization
+      function.
+      Now you should be able to issue the shell command:
+    <pre>
+    addGroup foo 10 MY_OUTPUT</pre>
+    <p>
+      and the group will use your output function.  Since we didn't make ours
+      a basic output type, it will also use the default basic output type,
+      LOGISTIC.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:15:16 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

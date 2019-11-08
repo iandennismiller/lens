@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: connectGroupToUnits</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>connectGroupToUnits</font> - creates links from all units
+    in a group to given units
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    connectGroupToUnits &lt;group-list> &lt;unit-list> [-mean &lt;mean> | 
+        -range &lt;range> | -type -&lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      For each group in the group list, this connects all units in the group 
+      to the specified receiving units.  Groups
+      and units should be identified with their given names rather than number
+      or path.  By default the new connections will have a type with the same
+      name as the sending group, but this can be overridden.
+    <p>
+      If <i>mean</i> and/or <i>range</i> are given, they will determine the
+      values used for randomizing weights in this projection.  If left
+      unspecified, the network defaults will be used for these links.
+
+    <h3>EXAMPLE</h3>
+    <p>
+      To connect each unit in the "in1" and "in2" groups to the fourth
+      and fifth units in the "hid" group with weight randomizations in the
+      range [-1.5, 0.5):
+    <pre>
+    lens> connectGroupToUnit {in1 in2} {hid:3 hid:4} -mean 0.5 -r 1.0</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>,
+    <a href="connectGroups.html">connectGroups</a>,
+    <a href="connectUnits.html">connectUnits</a>,
+    <a href="elmanConnect.html">elmanConnect</a>,
+    <a href="addLinkType.html">addLinkType</a>,
+    <a href="disconnectGroupUnit.html">disconnectGroupUnit</a>,
+    <a href="setLinkValues.html">setLinkValues</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:12:51 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

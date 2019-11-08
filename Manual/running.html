@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Running Lens</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Getting Started: Running Lens</h1>
+    <hr>
+    This page explains how to get Lens running once you have it properly
+    installed.  If you still need to install Lens, <a
+    href="installing.html">read this instead</a>.
+
+    <h3>Setting Up The Environment</h3>
+Once it is installed, you will need to set a few environment variables
+	before Lens will run.
+    <ol>
+      <li>
+	First make sure that you have the <b>HOSTTYPE</b>
+	environment variable set to something reasonable.  This should be done
+	by default if your computer is properly configured.  To check the
+	value of the variable, do:
+	<pre>
+    echo $HOSTTYPE</pre>
+    The variable should be set to <code>i586</code> for recent versions of Linux and <code>i686</code> for Cygwin under Windows.
+      <li>
+	You then need to set the <b>LENSDIR</b> environment variable to the
+	absolute path name of your main Lens directory.  Depending on your
+	shell, this can be done with one of the following:
+	<pre>
+    <b>bash:</b>  export LENSDIR=&lt;your Lens directory>
+    <b>tcsh:</b>  setenv LENSDIR &lt;your Lens directory></pre>
+<!--      <li><code>set LENSDIR=~dr/Lens</code>-->
+    <p>
+    You should put this line in your ~/.bash_profile file so it will be set
+    whenever you log in.
+    <p> 
+    When using Cygwin on Windows, you may need to set the LENSDIR using the
+    full windows path name, such as
+    <pre>
+    export LENSDIR=C:/cygwin/home/Owner/Lens</pre>
+    rather than the unix-style path name
+    <pre>
+    export LENSDIR=/home/Owner/Lens</pre>
+      <li>
+	If you are using Unix and Lens is using shared libraries (there will 
+be *.so files in your Bin/$HOSTTYPE/ directory) you must add this directory to
+your 
+	<b>LD_LIBRARY_PATH</b>.  Do this or the equivalent:
+    <pre>
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LENSDIR}/Bin/${HOSTTYPE}</pre>
+      <li>
+	You will probably want to add Lens to your executable search path.  You
+	can do this with something like:
+    <pre>
+    export PATH=${PATH}:${LENSDIR}/Bin/${HOSTTYPE}</pre>
+    <p>
+      or you may prefer to put a symbolic link to Lens in your
+      <code>~/bin</code> directory as follows:
+    <pre>
+    cd ~/bin
+    ln -s ${LENSDIR}/Bin/${HOSTTYPE}/*lens <b>.</b></pre>
+      <li>
+      If you're going to be running Lens on a Unix machine in anything but
+      batch mode, you must have the <b>DISPLAY</b> environment variable set
+      to your current display.
+    </ol>
+
+    <h4>Summary</h4>
+    Here is the reduced-thought version for those of you using bash.  Just put
+    this in your .bash_profile, replacing "<code><i>&lt;your Lens
+	directory></i></code>" with the absolute path to your Lens directory:
+    <pre>
+    export LENSDIR=<i>&lt;your Lens directory></i>
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LENSDIR}/Bin/${HOSTTYPE}
+    export PATH=${PATH}:${LENSDIR}/Bin/${HOSTTYPE}</pre>
+    <p>
+      After adding that to the .bash_profile, do <b>source ~/.bash_profile</b>
+      before you go on.
+
+    <h3>Using Lens</h3>
+    <p>
+      When fully compiled, the Lens directory contains two different
+      executables: <b>lens</b> and <b>alens</b>.  <b>lens</b> is the basic
+      compilation that handles most algorithms.  <b>alens</b> includes
+      delta-bar-delta and quick-prop as well. <b>lens</b> uses a smaller
+      structure for each link, but does not support the fancier algorithms.
+      It will run somewhat faster than <b>alens</b> for large networks.
+    <p>
+      The <a href="usage.html">usage specification</a> for Lens is as follows:
+    <pre>
+    lens [-console | -nogui | -batch] [&lt;script-file> | &lt;command>]*</pre>
+    <p>
+      Lens recognizes only three command line flags, each of which may be
+      abbreviated to its first character.  Ordinarily the main display window
+      will be opened automatically on startup and the current shell will be
+      used for command input.  If the first argument is <code>-nogui</code>,
+      the Main Window will not appear.  However, it can be opened later with
+      the <a href="Commands/view.html">view</a> command.  Therefore, a valid
+      <code>DISPLAY</code> environment variable must be set before running the
+      program and the machine hosting the display must allow the display to be
+      accessed (see the Unix <code>xhost</code> command) if no flag or
+      <code>-nogui</code> is used.
+    <p>
+      The <code>-console</code> flag will open a graphical shell to be used in
+      place of the current terminal.  This has a nicer interface than the
+      basic shell, allowing such things as file-name and command completion
+      with the tab key and history traversal with the arrow keys.
+    <p>
+      The <code>-batch</code> flag runs Lens in a permanently non-graphical
+      mode which does not require an accessible display.  This is useful when
+      running batch jobs which must persist even when the current X window
+      session is terminated.  This cannot be used in conjunction with the
+      other flags.
+    <p>
+      Under Windows, Lens must use a console if it is not in batch
+      mode, so the <code>-c</code> flag has no effect.  You may
+      encounter problems running Lens in batch mode under Windows, so
+      you may prefer using <code>-nogui</code> instead.
+    <p>
+      If Lens is given additional arguments, they will be interpreted either
+      as <a href="scriptFiles.html">script files</a> or as <a
+      href="Commands/topical.html">commands</a>.  If the argument is the name
+      of a readable file, it will be sourced.  Otherwise, the argument will be
+      executed as a command.  If arguments are supplied for the command, the
+      command and its arguments should be enclosed in a set of quotes to group
+      them together.  Lens will use
+      the <a href="shell.html">.tclIndex</a> file to locate and auto-load the
+      initial (and all subsequent) commands.  Therefore, it may not be
+      necessary to source a script file before running a command.
+
+    <h4>Examples</h4>
+    <p>
+      This starts with a console but no graphical window, sources the file
+      "buildNet.in", and then runs the command "train 1000 -r 100":
+    <pre>
+    % lens -n -c buildNet.in "train 1000 -r 100"</pre>
+    <p>
+      This runs the command "doItAllBaby" assuming this command is found in
+      the <a href="shell.html">.tclIndex</a> somewhere in the auto_path:
+    <pre>
+    % lens doItAllBaby</pre> 
+    <p>
+      This runs in batch mode and sources the file "buildNet.in" even if 
+      buildNet.in happens to be a valid command:
+    <pre>
+    % lens -b buildNet.in</pre>
+    This executes the command "buildNet.in" <i>even if</i> that is also the
+    name of a file:
+    <pre>
+    % lens "eval buildNet.in"</pre>
+    <p>
+      If a script file named <a href="customization.html"><b>.lensrc</b></a>
+      exists in your home directory, <code>~/</code>, it will be executed
+      during the boot process.  This can be used for customizing the
+      appearance of the graphical displays, setting the command auto-load
+      path, setting command aliases or defining new procedures.
+      
+    <h3>Lens Mailing List</h3>
+    To keep abreast of changes to the latest version of Lens (which happen
+    every few months), you will want to be on the mailing list.  I try to keep
+    the message rate on this list pretty low.  To
+    join, send mail (from the account where you want to receive the mail) to
+    <a href="mailto:listar@tedlab.mit.edu?subject=subscribe lens-users"><b>listar@tedlab.mit.edu</b></a> with this in the subject:
+    <pre>
+    subscribe lens-users</pre>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 13:57:22 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

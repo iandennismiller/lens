@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: resetUnitValues</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>resetUnitValues</font> - resets inputs, outputs, or other
+      fields for a group
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    resetUnitValues &lt;group-list> [-&lt;field> [&lt;value>]]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This resets the values for all units in the groups listed to some
+      constant.  <i>field</i> can be one of -inputs, -outputs, -targets,
+      -inputDerivs, -outputDerivs, or -externalInputs.  The first three may be
+      shortened to a single character.  The default field is the outputs.
+    <p>
+      If <i>value</i> is specified, the values will be set to that.
+      Otherwise, if the inputs are being set, the default is the group's
+      <i>initInput</i>.  If outputs, the default is the <i>initOutput</i>.
+      The default for targets is NaN.  The default for other fields is 0.0.
+      Values can be set to NaN by using a <code>-</code> for the value.
+      
+    <h3>EXAMPLES</h3>
+    <p>
+      To reset outputs of the units in group <code>hidden</code> to the
+      group's or network's (if the group's is NaN) <i>initOutput</i>:
+    <pre>
+    lens> resetUnitValues hidden</pre>
+    <p>
+      To reset the targets of three groups to NaN:
+    <pre>
+    lens> resetUnitValues {out1 out2 out3} -t</pre>
+    <p>
+      To reset the inputs of all groups to 0.5:
+    <pre>
+    lens> resetUnitValues * -i 0.5</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="copyUnitValues.html">copyUnitValues</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Feb 25 19:27:46 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

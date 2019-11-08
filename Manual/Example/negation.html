@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: negation.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: negation.in</h1>
+    <hr>
+    <p>
+      This is the "negation" problem introduced on page 346 of Parallel
+      Distributed Processing, Explorations in the Microstructure of Cognition,
+      Vol. 1, edited by David Rumelhart and James McClelland.
+    <p>
+      If the first bit of the input is off, the output should be the same as
+      the last three bits of the input.  But if the first bit is on, the
+      output should be the complement of the first three bits.
+    <p>
+      Two networks are provided, negation and negation2.  The first network
+      has full connectivity between the inputs and the hidden and output
+      layers.  Try training it on the set "all", which has all 16 patterns.
+      It should master the set pretty easily.
+    <p>
+      Now open the Link Viewer and examine the link structure.  If you have a
+      copy of the PDP book, read the description of how their network solved
+      the problem.  Did yours solve it in a similar way?  Probably not.
+      You might try using weight decay to keep the weights reasonable.
+    <p>
+      Now let's try something harder.  Switch to the "train" training set.
+      This has only 14 of the 16 patterns.  Train on that and then check the
+      performance on the two witheld patterns in the testing set.  I'll
+      venture to guess that it didn't learn them.  As with the XOR problem,
+      holding something out here changes the problem enough that the network
+      can't generalize.
+    <p>
+      So now lets tip the scales back in the network's favor.  Change to the 
+      "negation2" network.  Examine the link structure in the Link Viewer.
+      This network has fewer connections.   Specifically, it has just the
+      links it needs to solve the problem.  Now train again on the "train" set
+      and check the performance on the testing set.  It should generalize
+      well.
+    <p>
+      Is this cheating?  Probably.  Can you figure out how to get a network to
+      generalize from 14/16 of the examples without a gerrymandered
+      architecture?
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 00:04:46 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

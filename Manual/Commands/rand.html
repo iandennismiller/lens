@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: rand</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>rand</font> - returns a random real number in a given range
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    rand [[&lt;min>] &lt;max>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This returns a random floating-point number.  With no arguments, the
+      number will be uniformly distributed in the range [0.0,1.0).  With one
+      argument, the number will be in the range [0.0, <i>max</i>).  With two
+      arguments, the number will be in the range [<i>min</i>, <i>max</i>).
+    <p>
+      This uses the same generator that Lens uses for its internal random real
+      numbers.  Therefore, calling this will affect the next value used during
+      weight randomization, building sparse projections, or in other randomized
+      procedures.
+
+    <h3>SEE ALSO</h3>
+    <a href="randInt.html">randInt</a>,
+    <a href="seed.html">seed</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Jun 30 20:30:04 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

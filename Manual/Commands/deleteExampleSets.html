@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: deleteExampleSets</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>deleteExampleSets</font> - deletes a list of example sets
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    deleteExampleSets &lt;example-set-list></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This deletes the listed example sets.  If a set is reading from a pipe,
+      the pipe will be closed.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To delete all sets:
+    <pre>
+    lens> deleteExampleSets *</pre>
+    <p>
+      To delete just the training and testing sets:
+    <pre>
+    lens> deleteExampleSets "[getObj trainingSet.name] [getObj testingSet.name]"</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="loadExamples.html">loadExamples</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 12:28:02 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

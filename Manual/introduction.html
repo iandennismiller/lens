@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Introduction</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Getting Started: Introduction</h1>
+    <hr>
+    <p>
+      Lens is an efficient, yet flexible, neural network simulator that runs
+      on a variety of platforms, is able to handle large, complex simulations,
+      but is also reasonably easy for novices to operate.  Lens has three 
+      main design objectives:
+    <ul>
+      <li><b>Speed:</b> This is achieved by using tight inner loops and
+	compact representations that lead to efficient memory and cache
+	performance.  Also, simple commands can be used to quickly create many
+	common network designs, so small simulations can be running in no time.
+      <li><b>Flexibility:</b> Access to hundreds of functions and variables
+	from the script interface and the ability to compose group types from
+	components allows many different networks to be simulated and
+	many different experiments to be performed without altering the source
+	code.
+      <li><b>Customizability:</b> No application ever satisfies all users
+	right out of the box, so Lens was designed with the understanding that
+	advanced users will eventually need to get in and modify the code.
+	The code is therefore structured to allow most modifications to be
+	placed in extension modules, which makes upgrading to a new release of
+	the source code painless.
+    </ul>
+    <p>
+      Lens is written primarily in C.  The graphical interfaces and script
+      interpreter were implemented using the <a
+      href="http://www.scriptics.com">Tcl/Tk toolkit</a> version 8.3,
+      involving a combination of Tcl scripts and direct C library commands.
+      Lens runs on most Unix and Windows machines.  There are not, at present,
+      plans to port Lens to the Mac because of its various deficiencies.
+    <p>
+      The simulator currently provides five learning algorithms: steepest
+      descent, momentum descent, "Doug's momentum descent", delta-bar-delta,
+      and quick-prop, as well as a variety of unit and group input-combining
+      and transfer functions.  Flexible group types provide a wide array of
+      unit behaviors.  New functions can be easily added to extend the
+      standard functions.  Because delta-bar-delta and quick-prop require an 
+      extra field in the link
+      structure, which can result in a noticeable performance degradation when
+      those fields are unnecessary, special compile flags are used to produce
+      version of Lens that support those algorithms.
+    <p>
+      Lens supports feed-forward, simple recurrent, recurrent backprop through
+      time, and continuous RBPTT networks as well as deterministic Boltzmann
+      machines and Kohonen networks.  A variety of other backprop and
+      non-backprop network types could be added with little trouble.
+    <p>
+      The Lens shell allows commands to be typed directly to a standard
+      terminal or to a built-in graphical shell window and will interpret
+      scripts written in the Tcl language, which offers more flexibility than
+      most shells, including a variety of control structures and the ability
+      to define new functions and new control structures.  In addition to
+      Tcl/Tk procedures, Lens provides over 100 commands for building,
+      training, and analyzing networks.
+    <p>
+      Graphical <a href="mainWindow.html">interfaces</a> provide convenient
+      shortcuts to the most frequent tasks as well as access to the fields of
+      the network <a href="objectViewer.html">data structures</a>.  These
+      values of these fields can also be set and retrieved on the command-line
+      or in scripts.  The <a href="unitViewer.html"><i>Unit Viewer</i></a>
+      displays the current training or testing set along with values
+      associated with each unit, such as its activation or error derivatives.
+      The layout of these units may be customized or generated automatically.
+      The <a href="linkViewer.html"><i>Link Viewer</i></a> displays the
+      connectivity matrix of the network, showing values associated with each
+      link, such as its weight or error derivative.  Finally, any real-valued
+      variable in the network or the output of any command may be <a
+      href="graphs.html">graphed</a> over time.
+    <p>
+      Lens allows multiple networks to be loaded simultaneously.  In many
+      simulators, example sets are specific to a particular network.  If the
+      same set is to be used by multiple networks, it must be loaded multiple
+      times.  In Lens, on the other hand, example sets are independent of
+      networks.  Thus, an example set can be loaded once and used as both the 
+      the training and testing set of a network or shared by multiple
+      networks.  In addition, networks can be destroyed and rebuilt without
+      the need to reload potentially very large example files.
+    <p>
+      Along with standard uni-processor training, Lens supports batch-level <a
+      href="parallel.html">parallel training</a>.  Each processor contains its
+      own copy of the network and example files.  One processor acts as a
+      server, farming out training batches to client processes.  When a client
+      completes a batch, it returns the accumulated link error derivatives to
+      the server, which performs the weight updates and sends the client the
+      new set of weights.  This can substantially speed up training in
+      some networks.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Apr 19 18.39:58 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>

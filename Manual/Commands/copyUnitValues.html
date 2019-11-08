@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: copyUnitValues</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>copyUnitValues</font> - copies inputs, outputs, or other
+      fields between groups
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    copyUnitValues &lt;group1> -&lt;field1> (&lt;group2> | -&lt;field2> |
+        &lt;group2> -&lt;field2>)</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command copies values from the units in one group to the units in
+      another (or the same) group.  It could be used to copy the inputs of a
+      group to its outputs or the outputs of one group to the targets of
+      another.  The copy is instantaneous; this does not set up a permanent
+      connection.
+    <p>
+      <i>group1</i> is the name of the group the values are coming from.
+      Valid fields are -inputs, -outputs, -targets, -inputDerivs,
+      -outputDerivs, and -externalInputs.  Any unique prefix will do.  If the
+      third argument is another field specifier, the values will be copied
+      from one field in <i>group1</i> to the new field.
+    <p>
+      If the third argument is a group name, it will be the destination group.
+      If no second field is given, the same field will be used for both
+      groups.  Otherwise, <i>field2</i> gives the destination for the copy.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To copy the inputs of group <code>hidden1</code> to the outputs of the
+      same group:
+    <pre>
+    lens> copyUnitValues hidden1 -i -o</pre>
+    <p>
+      To copy the outputs of group <code>hidden1</code> to the outputs of group
+      <code>hidden2</code>:
+    <pre>
+    lens> copyUnitValues hidden1 -o hidden2</pre>
+    <p>
+      To copy the outputs of group <code>hidden1</code> to the outputDerivs of
+      group <code>hidden2</code>:
+    <pre>
+    lens> copyUnitValues hidden1 -o hidden2 -outputD</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="resetUnitValues.html">resetUnitValues</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Feb 23 22:35:27 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

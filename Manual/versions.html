@@ -1,0 +1,868 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Version Notes</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Miscellanea: Version Notes</h1>
+    <hr>
+    <h2>2.64</h2>
+    <ul>
+    <li> The BIAS_CLAMP output function now sets the units' output to the
+	initOutput, rather than 1.0.  The default initOutput for BIAS groups
+	is still 1.0, but this allows you to change the bias value.
+    <li> Fixed a bug that occurred when a lot of group names are used in an
+	example file (thanks to Richard Thompson).
+    <li> Added protections to prevent changing to an example set while it is
+	loading (also thanks to Richard Thompson).
+    </ul>
+
+    <h2>2.63</h2>
+    <ul>
+    <li> Added the UNLESIONED projection type to the <a
+	href="Commands/connectGroups.html">connectGroups</a> command.
+    <li> Added the -r flag to the <a href="Commands/test.html">test</a>
+	command to allow it to return the results instead of printing them
+        (added parameters to the reportError and netTestBatch commands).
+    <li> Added adaptive gains for TANH units.
+    <li> Worked around some compile bugs affecting binary files.
+    <li> Added copy*Extension() functions to extension.c and extension.h for
+	customized copying of extension structures.
+    <li> Fixed a potential divide by zero error when the history length is set
+	to 0 (thanks to Mike Squillace).
+    <li> Made the linksChanged() function part of the display module. 
+   </ul>
+
+    <h2>2.62</h2>
+    <ul>
+    <li> Fixed a bug in printLinkValues (thanks to Gautam Vallabha).
+    <li> Added the AVOID_NAN_TEST flag to allow the tests of NaN to be skipped
+	on machines that don't behave.
+    </ul>    
+
+    <h2>2.6</h2>
+    <ul>
+    <li> Lens should now compile more smoothly under Cygwin on Windows.
+    <li> The interface for the graphs has been completely rewritten to allow
+	you to create and configure graphs and traces using script commands,
+	rather than just the graphical interface.  Graphs and their traces are
+	now objects that can be accessed with the Object Viewer or <a
+	href="Commands/setObject.html">setObject</a> commands.  You can also
+	hide graphs so they update much faster if they are not needed
+	immediately.  The <a href="Commands/graph.html">graph</a>, <a
+	href="Commands/trace.html">trace</a>, and <a
+	href="Commands/exportGraph.html">exportGraph</a> commands have been
+	added and the updateGraphs command was removed.
+    <li> The active unit or active link can now be locked in the Unit and Link
+	Viewers, by clicking on it with the left mouse button, to watch the
+	value on that unit or link change without having to keep the mouse
+	over that square.
+    <li> Clicking on a square in the Unit or Link Viewer with the middle mouse
+	button opens a menu that allows you to print the value, open its
+	object in the Object Viewer, or create a graph that will track the
+	value.
+    <li> The <a href="Commands/polarity.html">polarity</a> command has been
+	added to measure the degree to which the units in a group are adopting
+	binary versus intermediate output values.
+    <li> The <a href="Commands/resetDerivs.html">resetDerivs</a> command has
+	been added to allow you to reset the link and unit error derivatives
+	without updating the weights.  This is useful for customized training
+	procedures.
+    <li> The OUT_WINNER group output type has been added.  This implements a
+	winner-take-all filter that shuts off all but the most active unit.
+    <li> A bug has been fixed in link lesioning.
+    <li> Errors in the initial script should no longer leave Lens in a strange
+	directory.
+    </ul>
+
+    <h2>2.5</h2>
+    <ul>
+    <li> Lens can now be compiled to run in Unix emulation mode under Mac OS X.
+    <li> Changed the unit initialization so its gain, when using ADAPTIVE_GAIN, 
+    is copied from the group's gain, or the network's gain if the group's is not
+    set.
+    <li> Added the ability for most of the commands that write to files to append
+    to an existing file.
+    <li> Added support for bzip2 compression.
+    </ul>
+
+    <h2>2.4</h2>
+    <ul>
+    <li> Upgraded to the latest stable release of Tcl/Tk, 8.3.4.
+
+    <li> The <a href="Commands/test.html">test</a> command used to
+    return its results as a return value.  Now it prints its results
+    to the shell.  It also saves the results in an array for easy
+    access.
+
+    <li> Most of the hard limits such as that on the number of group
+    names specified in an example file have been removed.
+
+    <li> Error for fully recurrent networks is now computed
+    differently.  It used to be scaled by the network's dt and by the
+    group's dtScale.  This was to keep the error relatively constant
+    if the number of ticksPerInterval was changed.  The problem is
+    that if the user changes the time constant of the network or a
+    group, it will affect the error, which isn't right.  The logical
+    thing to do is to scale the error by 1/ticksPerInterval, rather
+    than the dt.  Ordinarily, this will be the same, since dt defaults
+    to 1/ticksPerInterval.  But if you change dt or dtScale, it will
+    now no longer affect the error.
+
+    <li> A dtScale parameter has been created for each unit.  This
+    allows units in a single group in a fully recurrent network have
+    varying time constants.  The actual dt for a unit is the product
+    of the network's dt, the group's dtScale, and the unit's dtScale.
+
+    <li> The MAX_CRIT criterion has been changed so that it properly
+    ignores output units with no target.
+
+    <li> The <i>-append</i> flag has been added to <a
+    href="Commands/openNetOutputFile.html">openNetOutputFile</a>
+    command to allow the information to be appended to a file.
+
+    <li> Errors in loading example and weight files are now reported
+    more consistently.
+
+    <li> If a group is specified in an example event and that group
+    does not exist in the network, it no longer causes an error.
+    This allows example sets that specify input or targets only used
+    in some networks, but it also makes it more likely that errors in
+    coding the example set will go undetected.
+
+    <li> The Unit Viewer now has larger entries for reporting link and
+    unit values.  It no longer clears those values when the mouse is
+    removed from a unit.
+
+    <li> Wheel mice can now be used to activate vertical scrollbars.
+
+    <li> Problems with the graphical display colors on some systems
+    have been fixed.
+
+    <li> Error messages resulting from bad group types are now much smaller.
+
+    </ul>
+
+    <h2>2.3.3</h2>
+    <ul>
+    <li>Fixed a problem when copying with moveExamples.
+    <li>Fixed a bug that caused the link structure to occasionally be built in
+    random order, which interfered with loading old weight files.
+    <li>Fixed a bug that caused the backward direction of bidirectional
+    projections to have the same link type as the forward direction, which
+    isn't right.
+    </ul>
+    <h2>2.3.2</h2>
+    <ul>
+      <li>The network now has a writeExample() function pointer which is used
+      to writing data to the <a href="outputFiles.html">activation output
+      file</a>.  Thus, you can write your own C function (to replace
+      standardWriteExample) in order to customize the format of the output
+      files.
+      <li>I moved the test for no examples out of nextExample and into the
+      individual loading procedures to be more flexible.  Example choosing
+      modes like PIPE don't care if there are no examples loaded, but most
+      modes will care.  This only affects people who have written their own
+      example choosing mode.
+      <li>safeRealloc() has been made somewhat more robust.  It seemed to have
+      problems on Windows.
+      <li>Fixed a bug that caused bad values to be generated by the
+      randGaussian function if you frequently change the mean and range of the
+      distribution.
+      <li>A bug that prevented reading from zipped files in Windows, which
+      appeared in 2.3.1, was fixed.
+    </ul>
+    <h2>2.3.1</h2>
+    <ul>
+      <li>A bug in the use of link weight maximum bound was fixed.
+      <li>The <a
+      href="Commands/connectGroupToUnits.html">connectGroupToUnits</a> command
+      now permits a group list, rather than just a single group.
+      <li>The <a
+      href="Commands/connectUnits.html">connectUnits</a> command now permits a
+      series of unit lists, with each unit in a list connecting to each unit in
+      the next list.  It also accepts the "-bidirectional" flag.
+    </ul>
+    <h2>2.3</h2>
+    <ul>
+      <li>Lens can now be compiled as a library and embedded in other
+	programs.
+      <li>The <a href="graphs.html">new grapher</a> was added.
+      <li>An <a href="Commands/updateGraphs.html">updateGraphs</a> command has
+	been added.
+      <li>The format of the activation output files was changed and the
+	WRITE_OUTPUTS group type added to allow the activations of non-output
+	groups to be recorded.
+      <li>RESET_ON_EXAMPLE now defaults to true for all groups.  Before, it
+	was only true for continuous networks, but that was too confusing.
+      <li>The drawPlot command has been renamed <a
+	  href="Commands/drawUnits.html">drawUnits</a>.
+      <li>The randGroupWeights and randUnitWeights commands are now subsumed
+	by the <a href="Commands/randWeights.html">randWeights</a> command.
+      <li>The setBlockValues, setGroupBlockValues, and setUnitBlockValues 
+	commands have been subsumed
+	by the <a href="Commands/setLinkValues.html">setLinkValues</a>
+	command. 
+      <li>The freezeNet, freezeGroups, and freezeUnits commands have been
+	subsumed by the <a
+	  href="Commands/freezeWeights.html">freezeWeights</a> command.
+      <li>The thawNet, thawGroups, and thawUnits commands have been
+	subsumed by the <a href="Commands/thawWeights.html">thawWeights</a>
+	command.
+      <li>The netPath, groupPath, unitPath, and setPath commands have been
+	subsumed by a single <a href="Commands/path.html">path</a> command.
+      <li>A GAUSSIAN group output type has been added.  This is used for
+	radial basis units.  The <i>gain</i> is the inverse of the width of
+	the Gaussian.  A higher gain means a sharper Gaussian.  Like LOGISTIC,
+	GAUSSIAN output can be used along with ADAPTIVE_GAIN to have
+	trainable, individual gains for each unit.
+      <li>The <i>min</i> and <i>max</i> fields have been added to the block
+	structures.  These can be used to bound the weight values to a certain
+	range.  For example, you might force the bias links to be negative.
+	They should be set with the <a
+	  href="Commands/setLinkValues.html">setLinkValues</a> command.
+      <li>Parameters for the <a href="unitViewer.html">Unit</a> and 
+        <a href="linkViewer.html">Link</a> viewers are now specific to the 
+        network.
+      <li>Using the "-mode PIPE" flag in loadExamples automatically puts the
+	example set in PIPE mode now.
+      <li>Training with 0 batch size when reading from a pipe generates an
+	error.
+      <li>Boltzmann network output groups will now get an error function by
+	default.  The error is calculated at the end of training for testing
+	purposes but doesn't affect the training of the network.
+      <li>Renamed the TARG_COPY group type to TARGET_COPY.
+    </ul>
+    <h2>2.2</h2>
+    <ul>
+      <li> The Unit and Link viewers now support Hinton diagrams.  These may
+	be useful for printing or on greyscale displays.  The unit viewer also
+	now lets you view just outputs or targets, in addition to the default
+	combination of outputs and targets.
+      <li> The <i>groupCriterion</i> parameter in the network and groups has
+	been replaced by <i>trainGroupCrit</i> and <i>testGroupCrit</i>.  This
+	provides separate group criteria when training and testing, because it
+	is useful to be able to use the group criterion function only when
+	testing or only when training.
+      <li> A new group criterion function, MAX_CRIT, has been added.  This is
+	true if the output unit with the largest target is also the most
+	active output unit.  This is most useful for networks doing a 
+	one-bit-on task.
+      <li> An <b>initNetworkExtension()</b> function has been added to the
+	extension module.  You will need to add that to your extension.c.
+      <li> The <i>trainEpochProc</i> has been changed to <i>preEpochProc</i>
+	and a number of other handles have been provided so Tcl commands can
+	be executed before and after examples, events, ticks, and so on.
+      <li> The <a href="Commands/copyConnect">copyConnect</a> command and the
+	IN_COPY, OUT_COPY, and TARG_COPY group types have been added.  These
+	allow one group to set its inputs, outputs, or targets to the inputs,
+	outputs, targets, or derivatives of another group.  This lets you do
+	a lot of interesting things, like having groups that share inputs or
+	targets or having the output of one group become the target of another
+	group.
+      <li> Fixed a major bug that affected networks with <b>lesioned
+	  units</b>.  The unit outputs weren't being cached properly so
+	outputs and derivatives were attributed to the wrong units.
+      <li> control.c was using Tcl variables, such as <i>i</i>, that did not
+	start with a "." and could thus write over user variables.
+      <li> There is now a <i>sysext.h</i> file in which general customizations
+	can be placed to get Lens to compile properly on your machine.  This
+	is included by the <i>system.h</i> file, which you should avoid
+	editing directly.
+      <li> Groups now have an <i>outputCost</i> field which accumulates
+	unit costs just as the <i>error</i> field accumulates error.  By
+	giving a group a unit cost function, such as COSINE_COST, and
+	monitoring this value during testing, you can determine how binary the
+	units in a group tend to be.  If logistic units do not have values
+	close to 0 or 1, it may indicate that the group is too small.
+      <li> Fixed a bug that caused problems when "-;" appeared in an example
+	file.  The "-" is often used to signify a NaN target.
+      <li> If you set a group's <i>numColumns</i> field to a positive number,
+	the group will be plotted with that many columns when the <a
+	  href="Commands/autoPlot.html">autoPlot</a> command is run.  This
+	gives you a bit more control over how the network appears in the unit
+	viewer, short of specifying the layout by hand using <a
+	  href="Commands/plotRow.html">plotRow</a> and friends.
+      <li> In the console, you can now use the middle mouse button to paste
+	the current selection into the middle of a line.
+      <li> You can now use the arrow keys and PageUp/PageDown to scroll the
+	Object Viewer.  Pressing the spacebar in the Unit Viewer will step
+	through the examples (equivalent to the down arrow).
+      <li>You can now add fields to your extension structures that use
+	uppercase names, although I don't recommend it as the Lens code by
+	convention reserves uppercase for global variables.
+    </ul>
+
+    <h2>2.1.2</h2>
+    <ul>
+      <li>Added an <i>error</i> field to each group which keeps track of the
+	total output error due to that group.  This is useful when you have
+	multiple output groups.  Otherwise, it will be the same value as the
+	network error.  Only error due to immediate targets is counted, not
+	backpropagated error.
+      <li>The format of the output of the <a
+	  href="Commands/test.html">test</a> command has been changed.  If
+	there is more than one output group, it will now give the results for
+	individual groups as well.
+      <li>Fixed a major problem with the error derivative procedures.  They
+	now will properly ignore units with NaN targets.  Previously they were
+	using the most recent non-NaN targets.
+      <li><a href="Commands/setBlockValues.html">setBlockValues</a> has been
+	made more general.  It now works on reals, ints, flags, and masks and
+	on fields in block extensions.  <i>Note that extension.c has changed
+	  and, if you have your own version, you will need to add a final NULL
+	  argument to any calls to newObject().</i>
+      <li>Changed the default Windows fonts.
+    </ul>
+
+    <h2>2.1.1</h2>
+    <ul>
+      <li>All files and pipes are now accessed with Tcl channels rather than
+	FILE *'s.  This makes it more platform independent and solves several
+	problems, including the problem of child processes in a pipe not dying
+	when they should.
+      <li>Fixed some bugs in object.c that caused problems when registering
+	custom extension fields.
+      <li>Fixed a bug in the <a href="Commands/time.html">time</a> command.
+      <li>Fixed a bug that prevented block extensions from being created.
+      <li>Changed the Makefile a bit and added ALPHA customizations.
+    </ul>
+
+    <h2>2.1.0</h2>
+    <ul>
+      <li>The version numbering scheme has changed.  The first number is for
+	major rewrites.  The second is for significant changes, such as
+	adding new commands or network types.  The third is for
+	minor releases involving changes that won't affect most users.
+      <li>Simple recurrent backprop through time (SRBPTT) networks have been
+	added.  These use sequential unit updates but backpropagate error
+	through all ticks in the example in a single pass.
+      <li>Parallel training was rewritten (again).  It now works in Windows
+	and between Unix and Windows.
+      <li>You are now allowed to run in batch mode under Windows, but there
+	are some problems that seem to cause it to freeze now and then.  So
+	use this at your own risk.
+      <li>You can now access networks, groups, and units directly by name
+	using <a href="Commands/setObject.html">setObject</a> and <a
+	  href="Commands/getObject.html">getObject</a>.  Instead of 
+	"<code>getObject [groupPath hidden].unit(5).output</code>" you can now
+	do "<code>getObject hidden.unit(5).output</code>" or just
+	"<code>getObject hidden:5.output</code>"
+      <li>The <i>resetOnExample</i> group parameter was replaced with the 
+	RESET_ON_EXAMPLE group type flag.  This defaults to FALSE for 
+	non-continuous networks and TRUE for continuous.
+      <li>The syntax for specifying group types has changed.  Now, +TYPE adds
+	the group type, -TYPE removes it, and just TYPE toggles it.  To create
+	a group with no bias inputs, -BIASED should be used instead of
+	UNBIASED.
+      <li>The <a href="Commands/updateWeights.html">updateWeights</a>
+	command was added to permit customized training without using the <a
+	  href="Commands/train.html">train</a> command.
+      <li>A "Wait" button was added to the Main Window.  This executes the <a
+	  href="Commands/wait.html">wait</a> command which causes Lens to go
+	idle until another command is invoked or the wait is terminated.  This
+	is useful for pausing training.
+      <li>A task depth counter was also added to the Main Window.  This
+	indicates the number of tasks (such as training, loading examples,
+	and waiting) currently on the stack.
+      <li>Calling <a href="Commands/test.html">test</a> on an example-set in
+	PIPE mode with no maximum number of examples specified will run until
+	the pipe gives out.  You don't want to do this with <i>pipeLoop</i> on
+	or with an infinite example generator.
+      <li>The COSINE cost function was added.  This computes 1.0 minus the
+	cosine of the angle between the output and target vectors.  This is
+	most useful for evaluation but can also be used for training as well
+	as evaluation.  However, training can be 
+	tricky because there is only pressure for the angle of the output
+	vector to be correct, not the absolute values of the outputs.  You
+	could use SOFT_MAX outputs or a unit cost function (such as
+	LOGISTIC_COST) on the output units to encourage them to be binary if
+	that is desired.
+      <li>The <a href="Commands/verbosity.html">verbosity</a> command was
+	added.  This adjusts the amount of stuff that gets printed out.
+      <li>Added the <i>alarm</i> command, which makes a few beeps.  You might
+	use this in a script to tell you when training is done..
+    <br><b>Programmers:</b><br>
+      <li>The <i>incoming</i> array for each unit has been split
+	into <i>incoming</i> and <i>incoming2</i>.  This speeds it up because
+	more of the critical link values can fit in the cache.
+      <li>The sigmoid was replaced with a fast table lookup with
+	linear interpolation.  It is accurate to within 2e-7 for all inputs.
+      <li>There is now a version of the inner FOR_EACH_LINK loops,
+	FOR_EACH_LINK_FAST, which allows for hand unrolling of the loops,
+	which is about 20% faster.  Currently it is only used for dot product
+	inputs.
+      <li>The FOR_EACH_UNIT macro no longer provides the unit index variable,
+	<i>u</i>, but FOR_EACH_UNIT2 does.  This speeds up the more common 
+	FOR_EACH_UNIT.
+    </ul>
+
+    <h2>2.01</h2>
+    <ul>
+      <li><b>Lens now runs under Windows!</b>  Just about everything works
+	except parallel training, which currently uses UNIX file-descriptors.
+      <li>It has also been upgraded to Tcl/Tk 8.3.1.  This uses shared
+	libraries and the distribution nows looks a bit different.
+      <li>You can now put an extension on the version number by putting
+	something like this:<br>
+	<code>char *VersionExt = "dr";</code>
+	in your extension.c file.  It will probably not compile if you don't.
+      <li>The -DARRAY_TRAVERSAL compile flag can now be used to cause the
+	inner loops to use array index traversal instead of pointer-stepping.
+	This may be faster with some compilers but tends to be slower with gcc.
+      <li>You can now encode inputs and targets that share the same values
+	with a single command in the example file.  Instead of "I:" or "T:"
+	you use "B:".
+      <li>The <i>assumeIntegrate</i> flag was added to the network structure.
+        If this is true, which is the default for CONTINUOUS networks, when a
+	group's type is set and no integration function is specified,
+	OUT_INTEGR will be assumed.  Otherwise, no integrator will be assumed
+	unless specified.
+      <li>You can now write your own procedures to select the order of
+	examples during training or testing.  Set the <a
+	  href="Commands/exampleSetMode.html">example set mode</a> to
+	CUSTOM and then set the example set's <i>chooseExample</i> field to
+	a procedure that returns the index of the next example.
+      <li>More information was added to the <a href="unitViewer.html">Unit</a>
+	and <a href="linkViewer.html">Link</a> viewers.
+      <li>The <a href="Commands/viewConsole.html">viewConsole</a> command was
+	added to allow the console window to be recovered after it has been
+	closed.
+      <li>The prompts are now settable in the lensrc.default file.  The
+	default secondary prompt is now nothing to allow multi-line commands
+	to be cut and pasted more easily.
+      <li>Fixed some problems with the console.  You can now use \ to break a
+	line.
+      <li>Fixed a bug in parsing long example set lines.
+      <li>Fixed some bugs in <a
+	  href="Commands/lesionLinks.html">lesionLinks</a> and added the
+	<code>-discard</code> flag.
+      <li>Lens is now much faster at building networks and loading example
+	files.
+      <li>Changed a million other things.
+    </ul>
+
+    <h2>2.00</h2>
+    <ul>
+      <li>Fixed a bug that caused error derivatives to build up in source
+	groups in SRNs.
+      <li>Fixed a bug parsing certain NaN dashes in example files.
+    </ul>
+
+    <h2>2.0b4</h2>
+    <ul>
+      <li>You can now run multiple commands and load multiple scripts on the
+	command-line.
+      <li>If a group is given the ADAPTIVE_GAIN type along with the LOGISTIC
+	output function, it will train the units' gain parameters along with
+	the weights.  Gain is updated using steepest descent with the learning
+	rate given by the network's <i>adaptiveGainRate</i> parameter.
+      <li>Example loading is now faster because .initExample and .initEvent
+	are only called if they exist.
+      <li>Files and pipes are now closed in a safer manner, eliminating some
+	potential errors.
+      <li>It no longer causes an error if example loading is terminated
+	part-way through or if you choosing not to replace an existing group
+	if a new group is added with the same name.
+    </ul>
+    <h2>2.0b3</h2>
+    <ul>
+      <li>Upgraded probabilistic example selection to use binary search.
+      <li>Weights can now be loaded to and from frozen links, thawed links, or
+	all links.
+      <li>Fixed a bug in standardTrainExample.
+    </ul>
+    <h2>2.0b1</h2>
+    <ul>
+      <li> Added the ability to register network types, group types,
+	projection types, and example selection types to make customization
+	easier.
+      <li> Created row and column functions for describing objects to replace
+	the old offsets.
+      <li> Made type.h a customizable function.
+      <li> Moved the autoNet command to the 
+	<a href="Commands/addNet.html">addNet</a> command.
+    </ul>
+    
+    <h2>2.0b0</h2>
+    <ul>
+      <li> The biggest change in this release is that the group types have
+	been completely re-done and act.c was almost entirely re-written.
+	Now, the input and output functions of each group are actually a
+	pipeline of small procedures.  For example, the time-integration
+	procedure is now separate from the basic input or output computing
+	procedures so you could integrate anything.
+      <li> The command usages have been completely revised to allow them to be
+	more consistent and flexible.  Now they tend to use options, such as
+	"-foo 5".  Procedures operating on networks, groups, and units can now
+	take a list of objects or * to indicate all objects.  For example,
+	this allows <a href="Commands/connectGroups.html">connectGroups</a> to
+	build complex sets of projections with a single command.  The change
+	in usage may require you to revise many of you scripts.  Commands that
+	may be problematic in particular are 
+	<a href="Commands/addNet.html">addNet</a>,
+	<a href="Commands/addGroup.html">addGroup</a>,
+	and <a href="Commands/loadExamples.html">loadExamples</a>.
+      <li> Several commands have been eliminated because they are no longer
+	needed.  These include addSoftClampGroup, elmanReset, deleteAllNets,
+	listExampleSets, and setHistoryLength.
+      <li> Holding and releasing of groups has been eliminated for the
+	time-being because it was more trouble than it was worth.
+      <li> The example file format has been extended to allow a more flexible
+	use of dense and sparse encodings.  Now the number of input and output
+	units need not be specified in the set header (which can be eliminated
+	entirely) and units can be specified relative to a named group or
+	across the whole network.
+      <li> Lens is now much less susceptible to faults due to multiple tasks
+	running simultaneously.  Extended tasks, such as training or loading
+	example files are recorded in a stack and can be selectively canceled.
+	New commands will not be invoked if they could potentially cause
+	problems.
+      <li> The user interface is now much more responsive while Lens is busy
+	with ongoing tasks.  The displays are updated every 100 msec to
+	eliminate any noticeable lag.
+      <li> The <a href="Commands/trainParallel.html">trainParallel</a> command
+	now returns only when training is done.  This eliminates the need to
+	call <a href="Commands/wait.html">wait</a> after starting to train.
+      <li> Lens now uses HOSTTYPE sub-directories in the Obj, Bin, and TclTk
+	directories.  This allows it to be compiled on multiple architectures
+	without duplicating the directories.
+    </ul>
+
+    <h2>1.15</h2>
+    <ul>
+      <li> Added the <i>clamped</i> flag to units and altered the meanings of
+	NaN inputs to be "not clamped" rather than "remain clamped to the same
+	value".
+      <li> INPUT groups can now also have HIDDEN or OUTPUT type.  If so, they
+	will receive bias inputs and a unit combin function can be used for
+	unclamped units.  A transfer function can be specified for any INPUT
+	group, which will override the standard transfer function that is
+	similar to LINEAR.
+      <li> Continuous networks now operate a little differently.  On the first
+	tick of an event, the new inputs will only reach the outputs of the
+	INPUT groups, not to the outputs of the next groups, as it was before.
+      <li> INTEGR_INPUT and INTEGR_OUTPUT were turned into combin and transfer
+	functions.  They can be used with arbitrary transfer or combin
+	functions, respectively.  Or they could be used together.  Some
+	problems with their implementation were fixed.
+      <li> A LOG_DOT_PRODUCT combin function has been added.  This combines a
+	dot product combin with a logistic transfer.  It is intended to be
+	used for the unclamped units in INPUT groups when clamped units are in
+	the range [0,1].
+      <li> A LIN_INTEGR_OUTPUT transfer function was created which is a linear
+	transfer that integrates the values.  The standard INTEGR_OUTPUT uses
+	a logistic transfer.  LIN_INTEGR_OUTPUT is functionally equivalent to
+	an INPUT_INTEGR with a linear transfer, but it can be used with INPUT
+	groups which have hard-clamped inputs.
+      <li> SMOOTH_CLAMP has been supplanted by using an INPUT group with a
+	LOG_DOT_PRODUCT combin (if units may be unclamped) and a
+	LIN_INTEGR_OUTPUT transfer function.
+      <li> The format for the weight files has changed to include the
+	<i>totalUpdates</i> field from the network.  When a weight file is
+	loaded into the entire network, the network's <i>totalUpdates</i> is
+	set to that value.  If the weight file is loaded into only the
+	non-frozen links, this value will not be set.
+      <li> Fixed some problems with the !! and ^ history recall commands in
+	the console.
+      <li> Fixed a bug with deleting INPUT or OUTPUT groups.
+      <li> Fixed some minor problems with the console.
+      <li> Fixed a precision problem with the measurement of elapsed time.
+    </ul>
+
+    <h2>1.14</h2>
+    <ul>
+      <li> Added the console, which is a TclTk-based shell.  This has nicer
+	command-line editing and history recall than the standard shell and
+	also provides command and file-name completion (with the Tab key).
+	It must be used when running under NT.  This can be activated with the
+	<code>-console</code> or <code>-c</code> command-line argument.
+      <li> Weights can now be saved or loaded selectively to or from non-frozen
+	links.  This can be used to save and load sub-networks.  Load weights
+	no longer resets the network.  Also, to <a
+	  href="Commands/saveWeights.html">save weights</a> in text format 
+	you must use the "<code>-text</code>" flag rather than "0".
+      <li> The Link Viewer now draws frozen links with a yellow border.
+      <li> <i>sigUSR1Proc</i> and <i>sigUSR2Proc</i> are network procedures
+	that will be executed whenever Lens receives a USR1 or USR2 signal.
+	The signals can be sent using "<code>kill -USR1
+	  &lt;process-id></code>".  These can 
+	be used to do emergency things while Lens is still running, even if it
+	is in batch mode and is non-responsive.  The default procedures will
+	save the weights and save the parameters, respectively, in preset
+	files.  You can change the default procedures by editing the .lensrc
+	file or you can change them on the fly with <a
+	  href="Commands/setObject.html">setObject</a>.
+      <li> Added the <i>backpropTicks</i> parameter which can be used with
+	simple recurrent networks to extend the backpropagation backward in
+	time and potentially across examples.
+      <li> Added the SMOOTH_CLAMP transfer type, which can be given to an
+	INPUT group in a continuous network to have the activation of that
+	group gradually ramp up to the input value.
+      <li> Added the <a href="Commands/repeat.html">repeat</a> command which
+	makes writing loops a little easier.
+      <li> Added the <i>groupCritRequired</i> parameter, which determines
+	whether the group criterion must be met at the end of an event to go
+	on to the next event.
+      <li> Some of the error measures were changed so they are less likely to
+	result in infinite or NaN values.  Now the error is bounded to 1e8.
+      <li> DELTA was replaced by SMALL_VALUE and its value was decreased to
+	1e-8.
+      <li> Added some more information to the training reports.
+      <li> Changed the way the <i>SET_HISTORY</i> and <i>GET_HISTORY</i>
+	macros are used, which may interest programmers.
+      <li> <a href="Commands/train.html">train</a> and 
+	<a href="Commands/test.html">test</a> now return an error code if
+	interrupted with a signal so that scripts that train or test in a loop
+	repeatedly will stop once interrupted.
+    </ul>
+
+    <h2>1.13</h2>
+    <ul>
+      <li> Improved performance for all but the smallest networks by creating
+	arrays to cache copies of unit <i>output</i>s and <i>outputDeriv</i>s.
+      <li> It is now possible to save weight deltas and link learning rates
+	(<i>lastValue</i>s) in the weight files.
+      <li> The <a href="Commands/saveParameters.html">saveParameters</a>
+	command now allows you to save parameters from the network into a
+	script file.  Sourcing the script file will reset the parameter
+	values.
+      <li> The <a href="Commands/source.html">source</a> command is now
+	able to read from pipes, Tcl channels, and compressed files, allowing
+	you to compress parameter files.
+      <li> Lens can now be compiled to use double-precision floating point.
+	This is faster on Alphas but slower on most other machines.  Binary
+	input and output still uses 4-byte floats for compatibility with
+	single-precision versions.  The -DDOUBLE_REAL compile flag will enable
+	double precision.  If you ever decide to switch from floats to
+	doubles, be sure to "make clean" first so everything recompiles.
+      <li> Added the <a
+	  href="Commands/changeGroupType.html">changeGroupType</a> command
+	which allows you to selectively turn on and off group types.
+      <li> Added the <i>minCritBatches</i> parameter to the network, which
+	sets the number of consecutive batches on which the network must
+	achieve the error or group criteria before training will stop, even
+	for Hebbian-type networks that have no targets or error.
+      <li> Criteria are now considered to be met only if the performance is
+	better than and not equal to the criterion.  Therefore, if
+	<i>criterion</i> is set to 0.0, it will never cause training to stop.
+      <li> Fixed some integer and pointer casting ambiguities that cause
+	warnings on the Alpha.
+      <li> Fixed some bugs with softClamp groups.
+      <li> Removed a number of tests that prevent things being done to 
+	lesioned units but waste time for normal networks.  Any simulations
+	that use lesioned units should be checked to make sure they are
+	working	properly.
+      <li> Restructured <a href="Src/system.h">system.h</a>.
+    </ul>
+
+    <h2>1.12</h2>
+    <ul>
+      <li> Added Kohonen networks (actually just a special transfer function).
+      <li> <i>unitCriterion</i> has been changed to <i>groupCriterion</i>.
+      <li> Added the ability to write different group criterion functions or
+	to have none at all, which is now the default for all but continuous
+	networks.
+      <li> Added the <i>trainEpochProc</i> handle that lets you specify a
+	script command to be run before every batch is processed when
+	training.  This makes it easier to change parameters or safe the
+	network on the fly.
+      <li> MACHINE_VIM has been replaced with MACHINE_LINUX in the Makefile
+	and system.h.
+      <li> Fixed a bunch of small bugs and starting making things Windows
+	compatible.
+    </ul>
+
+    <h2>1.11</h2>
+    <ul>
+      <li> Temporarily removed quickProp and added <i>"Doug's Momentum"</i>.
+	This is similar to standard momentum descent except that the magnitude
+	of the weight change vector (prior to the addition of the momentum
+	term) is normalized so it will not be greater than the learning rate.
+	This prevents overly large weight steps when the error surface is
+	steep and allows higher learning rates.
+      <li> Added <i>ternary</i> units, which are similar to logistic units but
+	with three stable states at -1, 0, and 1.
+      <li> Fixed a bug with loading binary example files in PIPE mode.
+      <li> Fixed a bug that prevented mean and range from being set with
+	<a href="Commands/connectGroups.html">connectGroups</a>.
+      <li> Fixed the handling of command line arguments a bit.
+      <li> Fixed a bug when clearing graphs that have fixed max or min.
+    </ul>
+
+    <h2>1.10</h2>
+    <ul>
+      <li> Continuous networks now operate for an extra time tick.  The first
+	tick occurs before the first event begins and just sets the unit
+	outputs to their initial value.  These networks were not working quite
+	right before.
+      <li> The group type is now stored in two 32-bit masks instead of one to
+	allow more group types.  The change may have introduced bugs.
+      <li> Unit cost functions have been added, which can be used to encourage
+	hidden representations to the binary.
+      <li> The group types DOTPROD, SOFTMAX, CROSSENTROPY, and SUMSQUARE have
+	been changed to DOT_PROD, SOFT_MAX, CROSS_ENTROPY, and SUM_SQUARE to be
+	consistent with other type names.
+      <li> The learning rate scale in delta-bar-delta is now correctly being
+	set to 1.0 when the network is initialized.
+      <li> Added <i>unitCostStrength</i> and <i>gain</i> to the Main Window.
+    </ul>
+
+    <h2>1.09</h2>
+    <ul>
+      <li> Fixed a bug by which unit output derivatives were not being reset
+	for input-integrating hidden units, causing problems in some
+	continuous networks.
+      <li> Put bounds on derivatives when using cross entropy or divergence
+	error functions or tanh transfer functions.  This should reduce the
+	appearance of NaNs, although any training parameters that cause the
+	network to test these bounds may be too aggressive.
+      <li> Changed the name of the resetOnWrap parameter to resetOnExample and
+	changed the default value to TRUE.
+      <li> Made softClamp groups use the second group's <i>gain</i> when
+	computing the inverse sigmoid.
+      <li> Fixed a bug reading piped example files.
+      <li> Fixed the way command-line arguments are processed so errors are
+	reported correctly.
+      <li> The link viewer no longer incorrectly reports the weight rather
+	than the delta when a link was clicked in "Link Deltas" mode.
+    </ul>
+
+    <h2>1.08</h2>
+    <ul>
+      <li> Fixed several bugs with Boltzmann machines, including one that
+	prevented the bias weights from updating correctly and some problems
+	with mixed INPUT and OUTPUT groups.
+      <li> Added the <i>lastInput</i> field to the unit and made it so that NaN
+	inputs in either the dense or sparse representation will cause the
+	input to remain what it was.
+      <li> The number of lines argument to 
+	<a href="Commands/plotRow.html">plotRow</a> is now optional, with a
+	default of 1.
+      <li> Creating a ONE_TO_ONE projection between groups that are not the
+	same size no longer causes an error, it just connects as many units as
+	it can.
+    </ul>
+
+    <h2>1.07</h2>
+    <ul>
+      <li> Rewrote the example file format to allow more compact and flexible
+	files.  It is not backward compatible with the old format.
+      <li> Allowed looping piped example files.
+      <li> Changed the Unit Viewer to count events starting with 0.
+      <li> Added the default.h file which stores the default values for
+	various network and example set parameters.
+      <li> Improved the way it guesses default example file names and 
+	the directory and file name when saving or loading weights, example
+	sets, or output files.
+      <li> Removed the <i>silent</i> argument to the checkCompatibility
+	function for example sets.
+    </ul>
+
+    <h2>1.06</h2>
+    <ul>
+      <li> Renamed the <i>ordered</i> array in each example set to
+	<i>example</i>.
+      <li> Renamed <i>inverseTemp</i> to <i>gain</i>.
+      <li> Fixed a number of undesirable "features" in deterministic Boltzmann
+	machines.
+      <li> Added procedures such as .initNetwork to the <a
+	  href="customization.html">lensrc.default</a> file to allow users
+	to set their own default values for fields in any major structure.
+      <li> Added the -BI projection type flag to <a
+	  href="Commands/connectGroups.html">connectGroups</a> to allow the
+	creation of both forward and backward projections at once.
+      <li> Fixed a tiny bug in the Unit Viewer.
+    </ul>
+
+    <h2>1.05</h2>
+    <ul>
+      <li> Implemented Deterministic Boltzmann Machines.
+      <li> Changed the way the <a href="unitViewer.html">Unit Viewer</a>
+	traverses time and added automatic playback of an example.
+      <li> Changed the network's example training, testing, and running 
+	function pointers somewhat.
+      <li> Made it possible to perform either the training or testing
+	procedures when selecting an example in the Unit Viewer or when
+	calling <a href="Commands/doExample.html">doExample</a>.
+      <li> Made the history length, which determines the size of the arrays
+	stored in each unit, adjustable.  The 
+	<a href="Commands/setTime.html">setTime</a> command was modified and 
+	the setHistoryLength command was added to allow this.
+      <li> Added a temperature to each logistic function.  This is adjusted by
+	setting the inverseTemp field in the network or group objects.
+      <li> Changed Delta-Bar-Delta so the link's learning rates scale the
+	default learning rate rather than replace it.
+      <li> Added <a href="Commands/rand.html">rand</a> and <a
+	  href="Commands/randInt.html">randInt</a> commands.
+      <li> Fixed the Object Viewer geometry.
+      <li> Fixed a potential bug with the history command.
+    </ul>
+
+    <h2>1.04</h2>
+    <ul>
+      <li> Fixed a bug with target Elman layers.
+      <li> Changed type.h slightly.
+      <li> Changed cleanupGroupTypes().
+    </ul>
+
+    <h2>1.03</h2>
+    <ul>
+      <li> Added the Bin directory to hold different versions and made lens and
+	alens symbolic links to the latest version.
+      <li> Fixed a few minor bugs with addNet and the Unit Viewer.
+      <li> Changed the Network's fields from "inputs" and "outputs" to "input"
+	and "output".
+    </ul>
+    
+    <h2>1.02</h2>
+    <ul>
+      <li> Replaced linked lists of networks and example sets with arrays and
+	created the Root structure to holds the arrays. 
+      <li> Parameters on the main display are now registered, rather than
+	hard-coded, allowing the user to customize them. 
+      <li> Added a block extension record.
+      <li> Fixed how command-line arguments are processed.
+      <li> Restored missing help files.
+      <li> Added spaces to the Object Viewer and rearranged the object fields.
+    </ul>
+
+    <h2>1.01</h2>
+    <ul>
+      <li> Replaced the setRandValues, setGroupRandValues, and
+      setUnitRandValues commands with <a
+      href="Commands/setBlockValues.html">setBlockValues</a>, <a
+      href="Commands/setGroupBlockValues.html">setGroupBlockValues</a>, and <a
+      href="Commands/setUnitBlockValues.html">setUnitBlockValues</a>.
+      <li> Put learningRate, momentum, weightDecay, randMean, and randRange
+	parameters in the group and block structures to allow the network
+	defaults to be overridden.
+      <li> Created <i>targetRadius</i> and changed the definition of
+	<i>zeroErrorRadius</i>.  Put copies in the group structure to allow
+	the network defaults to be overridden.
+      <li> Added <i>targetRadius</i> and <i>unitCriterion</i> to the Main
+	Window.
+      <li> The <i>event</i> array in the example structure was changed from an
+	array of pointers to an array of structures.
+      <li> <i>eventMaxTime</i>, <i>eventMinTime</i>, and <i>eventGraceTime</i>
+	were moved from the network to the example set and renamed.  These can
+	now be specified in the example file and have become part of the binary
+	example file, making old binary example files incompatible.
+    </ul>
+
+    <h2>1.00</h2>
+    <ul>
+	<li> The first official release appeared on June 9, 1998.
+    </ul>
+
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Dec 11 12:04:24 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: resetNet</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>resetNet</font> - randomizes all weights and clears 
+      direction information</b>
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    resetNet</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This randomizes all non-frozen weights in the network, clears weight
+      update direction information, resets unit outputs and other values, and
+      sets the network's <i>totalUpdates</i>, <i>error</i>, and several other
+      values to zero.  This is typically used to begin training the network
+      from scratch.
+    <p>
+      Weight randomization is based on the <i>randMean</i> and
+      <i>randRange</i> of the link's block.  If one of these is NaN, it
+      defaults to the parameters of the receiving group and then the network.
+    
+    <h3>SEE ALSO</h3>
+    <a href="randWeights.html">randWeights</a>,
+    <a href="train.html">train</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:10:34 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

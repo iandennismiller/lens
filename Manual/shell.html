@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Commands and the Shell</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Getting Started: Commands and the Shell</h1>
+    <hr>
+    <p>
+      When a command that is typed to the shell or invoked in a script is not
+      immediately recognized, Lens makes several attempts to resolve the
+      problem.  First, it checks if the name is an alias for another command
+      (or another command plus a series of arguments) and runs that if found.
+      Aliases are established with the <a href="Commands/alias.html">alias</a>
+      command.  This is not a normal part of Tcl but was added for Lens.
+    <p>
+      If the name was not an alias, the interpreter checks if the name is a
+      valid executable.  If so, the program is automatically exec'ed with the
+      same stdin and stdout as the current process.  Therefore, there should
+      be relatively few situations in which you will actually need to use <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/exec.htm">exec</a>.
+      Simple things like using <code>more</code>, <code>cat</code>,
+      <code>rm</code>, or <code>echo</code> can all be done almost as if you
+      were in your normal shell, except for file name globbing, for which you
+      need to use the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/glob.htm">glob</a>
+      command. <code>exec</code> will be needed when an executable has the
+      same name as a Lens command or when you want to set up some fancier
+      piping or redirection, particularly if you want to store the output of
+      the command in a variable rather than have it print to stdout.  The
+      manual page on <code>exec</code> explains how to use pipes and
+      redirection.
+    <p>
+      If the unknown command is not an executable, Lens will check if it is a
+      special history command.  As in most shells, <b><code>!!</code></b> will
+      repeat the most recent command.  However, <code>!!</code> must be at the
+      beginning of the command.  It cannot appear just anywhere in the command
+      as it can in some shells.  <b><code>!&lt;pat></code></b> will repeat the
+      last command that begins with the string <code>&lt;pat></code>.  Finally
+      <b><code>^&lt;pat>^&lt;sub></code></b> will replace the first occurrence
+      of <code>&lt;pat></code> in the previous command with
+      <code>&lt;sub></code> and execute the new command.
+      <code>&lt;pat></code> and <code>&lt;sub></code> must be simple strings,
+      not regular expressions.
+    <p>
+      Next, Lens will check if the command name is a unique substring of a
+      known command.  If so, the command name will be completed.  If the name
+      is a substring of several commands, those commands will be listed.  Lens
+      should treat commands in scripts the same way it treats commands typed
+      directly to the shell.  This is not true of Tcl in general.
+    <p>
+      Invoking any command, other than built-in Tcl commands, with a single
+      "<code>-h</code>" argument will list the 
+      <a href="Commands/help.html">help</a> page for that command.  
+      "<code>help &lt;command></code>" will give the same information.
+    <p>
+      A script file containing a procedure definition need not be explicitly
+      sourced to run the procedure.  The procedure will be automatically
+      loaded provided the directory containing the script is on the <a
+	href="customization.html">auto_path</a> and there is a .tclIndex file
+      in the directory storing the location of the procedure.  The .tclIndex
+      is built with the <a href="Commands/index.html">index</a> command.  More
+      is said on this topic in the section on 
+      <a href="scriptFiles.html">Script Files</a>.
+    <p>
+      Typing <code>Ctrl-C</code> in the shell during an ongoing process, such
+      as training, testing, loading example files, or opening the <a
+      href="linkViewer.html">Link Viewer</a> will halt that process.  If 
+      <code>Ctrl-C</code> is typed when there is no ongoing process, Lens will
+      ask you if you want to exit.
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 23:56:18 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Unit Viewer</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Graphical Displays: Unit Viewer</h1>
+    <hr>
+    <p>
+      The Unit Viewer shows a list of the examples in the current training or
+      testing set and a representation of the units in the network.  The
+      network layout is defined using either the <a
+      href="Commands/autoPlot.html">autoPlot</a> command or the <a
+      href="Commands/resetPlot.html">resetPlot</a>, <a
+      href="Commands/plotRow.html">plotRow</a>, <a
+      href="Commands/plotAll.html">plotAll</a>, and <a
+      href="Commands/drawUnits.html">drawUnits</a> commands.  By default, the
+      network will be auto-plotted.  If you would like to design your own
+      layout, you should read the manual pages for the other commands.
+<h3>Examples</h3>
+
+      The listbox on the left shows the examples in either the training or
+      testing set.  Clicking on an example label will call <a
+      href="Commands/doExample.html">doExample</a>, running the network on
+      that example.  Whether doExample will train the network on the example
+      (perform a forward and backward pass) or just test on the example
+      (perform only a forward pass) depends on the network's
+      <i>netRunExample</i> and <i>netRunTick</i> functions.  These can be
+      changed either by calling <a
+      href="Commands/doExample.html">doExample</a> with the
+      <code>-train</code> or <code>-test</code> flags or by using the
+      <b>Procedure</b> pulldown menu.
+    <p>
+      The <code>Up</code> and <code>Down</code> arrows on the keyboard will
+      step through the examples, running the network on each one.  You can
+      step up from the first example to the last one or down from the last to
+      the first. <code>PageUp</code> and <code>PageDown</code> will jump one
+      page-worth.  <code>Ctrl-Home</code> or <code>Ctrl-PageUp</code> will
+      jump to the first example and <code>Ctrl-End</code> or
+      <code>Ctrl-PageDown</code> will jump to the last.  The <b>Example
+      Set</b> menu can be used to switch between training and testing sets.
+
+<h3>Time: Events and Ticks</h3>
+      The network view on the right shows the state of the network after a
+      single <a href="time.html">time tick</a>.  The <b>Event</b> entries show
+      the example <a href="time.html">event</a> that was taking place during
+      the currently displayed tick and the total number of events in the
+      current example.  Event numbers start counting with 0 and end with one
+      less than the total number of events.  In continuous networks, the first
+      tick is used to set the initial unit outputs and thus has no event
+      associated with it.  In this case, the event field will be blank.
+    <p>  
+      The upper panel is mainly used for moving through examples that involve
+      more than one <i>tick</i> of time.  This is mainly relevant for
+      recurrent networks.  Normally, feed-forward networks use
+      examples that only have one tick.  That is, there is a single
+      presentation of inputs and forward pass through the network.  In this
+      case, most of this panel can be ignored.
+    <p>
+      <b>Example Time</b> shows the time of the current tick and the total
+      time spent on the current example.  The time is of the form
+      <i>interval</i>:<i>tick</i> where interval is the <i>interval</i> of
+      "real" time and <i>tick</i> is the tick within that interval.  For
+      instance, if the example lasted for two intervals and there are three
+      ticks per interval (a <code>dt</code> of 0.333), the ticks would be
+      numbered 0:1, 0:2, 1:0, 1:1, 1:2, 2:0 (<i>not</i> 0.333333, 0.666666,
+      1.0).  A colon is used rather than a decimal point to remind you that
+      there are not necessarily ten ticks per interval.  <b>Event
+      Time</b> shows the timing of the current tick relative to the start
+      of the example.
+    <p>
+      The currently displayed tick can be changed by entering a new value into
+      one of the three entries preceding the <b>/</b> and pressing
+      <code>Enter</code>.  If an event is entered, the display will jump to
+      the start of that event.  A negative or blank event number will cause it
+      to jump to the first tick of the example.  The displayed tick can also
+      be changed with the six arrows, which have the following behaviors:
+    <dl>
+      <dt><img src="Src/Images/left3.xbm">
+      <dd>Jumps to the first tick (of the first event) in the example.
+	
+      <dt><img src="Src/Images/left2.xbm">
+      <dd>If the current tick is not at the beginning of the current event,
+	this jumps to the beginning of the current event.  Otherwise, it
+	jumps to the beginning of the previous event.
+	
+      <dt><img src="Src/Images/left.xbm">
+      <dd>Steps to the previous tick and will step across event 
+	boundaries.
+
+      <dt><img src="Src/Images/right.xbm">
+      <dd>Steps to the next tick and will step across event 
+	boundaries.
+
+      <dt><img src="Src/Images/right2.xbm">
+      <dd>If the current tick is not at the end of the current event, this
+	jumps to the end of the current event.  Otherwise, it jumps to the
+	end of the next event.
+
+      <dt><img src="Src/Images/right3.xbm" bg="red">
+      <dd>Jumps to the last tick (of the last event) in the example.
+
+      <dt><img src="Src/Images/right2b.xbm" bg="red">
+      <dd>This automatically steps until the end of the current event or until
+	the end of the next event if already at the end of an event.  The rate
+	of stepping is controlled by the slider to the left.
+	
+      <dt><img src="Src/Images/right3b.xbm" bg="red">
+      <dd>This automatically steps until the end of example.  The rate
+	of stepping is controlled by the slider to the left.
+    </dl>
+
+<h3>Variables and Values</h3>
+    <p>
+      The upper box in the middle of the information bar displays the name of
+      the active unit and the lower box displays its value.  If the value
+      begins with <b>O:</b> it indicates the unit's output and if the value
+      begins with <b>T:</b> it indicates the target.  Ordinarily, the active
+      unit is the one underneath the mouse pointer.  However, you can lock the
+      active unit by clicking on it with the left mouse button.  The locked
+      unit will have a magenta border.  By locking the active unit, you can go
+      click on different examples or train the network and continue to see the
+      value of that unit in the information bar.  The locked unit can be
+      released by left clicking on it again.
+    <p>
+      The <b>Value</b> menu is used to change the value that is displayed for
+      the units.  The default is "Outputs and Targets".  For a unit without
+      targets, this just shows the output, but a unit with targets will have
+      an inner square showing the output and an outer ring showing the target.
+      When these regions are the same color, the unit is producing an output
+      that is close to the target.
+    <p>
+      The variables <i>output</i>, <i>target</i>,
+      <i>input</i>, and <i>outputDeriv</i> have <i>history arrays</i> that
+      record the value of the variable on each tick.  You can thus view the
+      values as they were recorded throughout the example.  The length of
+      the history arrays is stored in the network's <i>historyLength</i> field
+      and can be set with the <a href="Commands/setTime.html">setTime</a>
+      command.
+    <p>   
+      If the history does not extend back far enough to reach the beginning of
+      the example, then the values will be missing for the early ticks.
+      Variables without history arrays associated with them, such
+      as <i>externalInput</i> or <i>inputDeriv</i> will only be displayed on
+      the last tick on the example, as only that most recent value is known.
+      If the example has only a single tick, the history arrays will not be
+      used.  Instead, the values will be taken from the current <i>output</i>,
+      <i>target</i>, etc.
+    <p>
+      Note that there is a distinction between the <i>outputDeriv</i> and the
+      values stored in the <i>outputDerivHistory</i>, if it exists.  The
+      <i>outputDerivHistory</i> actually stores the instantaneous output
+      derivatives, which result from the group's own error or output cost
+      functions.  The <i>outputDeriv</i> includes this as well as any
+      backpropagated derivatives.  If an example involves multiple ticks, it
+      may not be possible to view the true output derivs (including
+      backpropagated values) on all but the last tick because they are not
+      stored.
+    <p>
+      The Unit Viewer can also be used to observe parts of the link structure
+      of the network. The Link Weights, Link Derivs, and Link Deltas values
+      are not actually associated with the units themselves but with the
+      incoming and outgoing weights of a particular unit, known as the "hub
+      unit".  The hub unit is selected by clicking on it with the right mouse
+      button.  It will then be highlighted with a yellow border.  If unit B
+      sends a link to the hub unit, its square will display the weight,
+      derivative, or delta of that outgoing link (depending on which value has
+      been selected).  If unit B receives a link from the hub unit, its square
+      will display the value of that incoming link.  If unit B has multiple
+      connections with the hub unit, only one of them will be displayed.  You
+      will need to use the <a href="linkViewer.html">Link Viewer</a> to see
+      all of them.
+    <p>
+      When you are observing link values, the upper box on the information bar
+      will show the name of the active unit with an arrow indicating whether
+      there is a link from the hub to the active unit or from the active unit
+      to the hub.
+    <p>
+      If you have selected a "Unit" value, such as Outputs or Inputs, and you
+      choose a hub unit by right-clicking on it, the value displayed will
+      change to Link Weights.
+    <p>
+      By clicking on a unit with the middle mouse button, you will pop up a
+      menu with more options for operating on that unit.  "Print this value"
+      will print the value with some associated information to standard
+      output.  "Graph this value" opens a new graph with a trace of that value
+      which will update on every TICK, by default.  "View this unit" opens the
+      <a href="objectViewer.html">Object Viewer</a> on that unit.
+
+<h3>Color Palettes</h3> 
+    <p>
+      In determining the colors used to draw values, the values are
+      essentially put through a sigmoid function, with a value of 0 mapping to
+      the middle color in the palette and infinitely negative and positive
+      values mapping to the extremes.  Actually, values which come from
+      bounded ranges, such as [0,1], are first mapped to an infinite range and
+      then put through the sigmoid.  If the range is bounded on both ends,
+      they will be mapped to the infinite range with an inverse sigmoid.  If
+      the range is only bounded on one end, then a log function will be used.
+    <p>
+      The vertical slider at the far right controls the temperature of the
+      color sigmoid.  When the slider is at the bottom, the temperature is
+      high, so the sigmoid is flat and colors are not very intense.  When the
+      slider is at the top, the sigmoid will be sharp and the colors will tend
+      to the extremes.  The color palettes use 101 different colors.
+    <p>
+      When you are testing a network and you would just like to visually
+      confirm that all outputs are on the correct side of 0.5, you can just
+      increase the temperature and any incorrect outputs will be very obvious.
+    <p>
+      The <b>Palette</b> menu is used to change the color palette.  The
+      default is Blue-Black-Red.  This makes it very apparent which
+      values are negative and which are positive.  However, this is not good
+      for gray-scale monitors or printouts, as it will become Gray-Black-Gray.
+      Therefore, there is a Black-Grey-White palette, which has the
+      drawback that it is not clear which grays mean small positives and which
+      mean small negatives.
+    <p>
+      For traditionalists there is a Hinton diagram palette.  This ranges from
+      a small white square to a big white square for values from 0.5 to 1 and
+      from a small black square to a large black square for values from 0.5 to
+      0.
+    <p>
+      There is also a Blue-Red-Yellow palette
+      for the wild-at-heart.  This can actually be useful when looking at
+      softmax groups that are producing probability distributions as it
+      accentuates small differences in activation.
+<h3>Other Stuff</h3>
+      <b>Viewer/Update After</b> sets the intervals for automatic updates
+      of the display.  The default is to update after each progress report,
+      which is generally rather infrequent.  Updates can be expensive, so
+      avoid them if you don't need them.  The update frequency can also be set
+      if the window is displayed using the <a
+      href="Commands/viewUnits.html">viewUnits</a> command rather than the
+      button on the Main Window.
+    <p>
+      <b>Viewer/Cell Size</b> and <b>Viewer/Cell Spacing</b> allow you
+      to quickly change the size and spacing of the rectangles used in the
+      display.  These parameters can also be changed by setting the network's
+      <i>unitCellSize</i> or <i>unitCellSpacing</i> fields and then invoking
+      <b>Viewer/Refresh</b> or by calling <a
+      href="Commands/viewUnits.html">viewUnits</a> and passing it some
+      arguments.
+    <p>
+      <b>Viewer/Update</b> will force an immediate update, which just updates
+      the colors in the unit cells.  <b>Viewer/Refresh</b> will actually
+      rebuild the network picture by calling <a
+      href="Commands/drawUnits.html">drawUnits</a>.  It will also resize the
+      window to the size of the network.
+    <p>
+      <b>Viewer/Print</b> opens a print controller that allows you to print
+      what is visible in the network viewer part of the window to a printer or
+      an encapsulated postscript file.  If color mode is used, the network
+      will be printed as it appears.  Grayscale will convert the colors to
+      their intensity values.  If you wish to print in grayscale, you will
+      probably want to first change to the Black-Gray-White or Hinton Diagram
+       palette to avoid ambiguity in the grays.
+       <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 13:57:52 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

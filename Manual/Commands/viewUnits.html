@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: viewUnits</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>viewUnits</font> - opens the unit viewer
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    viewUnits [-size &lt;unitCellSize> | -gap &lt;unitCellSpacing> | -updates &lt;updateRate>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This opens the unit viewer if it is closed or deiconifies it
+      and brings it to the front if it is open.
+    <p>
+      If <i>unitCellSize</i> is given, it sets the network's
+      <i>unitCellSize</i> field, which determines the size of the unit
+      rectangles in the display.  The initial default is 14.
+    <p>
+      If <i>unitCellSpacing</i> is given, it sets the network's
+      <i>unitCellSpacing</i> field, which determines the gap between 
+      rectangles in the display.  The initial default is 2.
+    <p>
+      If <i>updateRate</i> is given, it sets the frequency with which the Unit
+      Viewer is updated.  A value of 0 means never, 3 is after each example, 4
+      is after weight updates, 5 is after progress reports, and 6 is after
+      training or testing.  The default is 5, after progress reports.
+
+    <h3>SEE ALSO</h3>
+    <a href="drawUnits.html">drawUnits</a>,
+    <a href="view.html">view</a>,
+    <a href="viewLinks.html">viewLinks</a>,
+    <a href="viewObject.html">viewObject</a>,
+    <a href="graphObject.html">graphObject</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:17:07 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: groupType</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>groupType</font> - sets or displays the types of a group
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    groupType [(&lt;group> | &lt;group-list> ([+|-]&lt;group-type>)*)]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With no arguments, this lists the valid group types.  Given the name of
+      a group, it lists the types of the group.  Given a group-list and a list
+      of types, it sets the type of all groups in the list and then lists the
+      groups' new types.
+    <p>
+      When setting the group types with this command, you are starting from
+      scratch, just as you would be when creating the group with <a
+	href="addGroup.html">addGroup</a> and you must 
+      specify all of the types (other than defaults you don't wish to
+      override).  If you just want to change some types, use <a
+      href="changeGroupType.html">changeGroupType</a>.
+    <p>
+      Type names are normally listed with no <code>-</code> or <code>+</code>
+      preceding them.  Using a <code>+</code> before the name is essentially
+      equivalent to using nothing.  Using a <code>-</code>, on the other hand,
+      causes the type to be removed if it would otherwise have been created by
+      default.  For example, to create a HIDDEN group with no incoming bias
+      links, use the <code>-BIASED</code> type.  You should think of the
+      <code>-</code> as a minus, not as a dash.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To list all the group types:
+      <pre>
+    lens> groupType
+    Base Types
+      BIAS
+      ELMAN
+      INPUT
+      OUTPUT
+    Input Types
+      DISTANCE
+      DOT_PRODUCT
+    ...</pre>
+    <p>
+      To see the type of a group:
+    <pre>
+    lens> groupType output
+    Base Type
+      OUTPUT
+    Input Type
+      DOT_PRODUCT
+      IN_NOISE
+    Output Type
+      EXPONENTIAL
+      OUT_INTEGR
+    Cost Type
+      SUM_SQUARED
+    Group Criterion Type
+      STANDARD_CRIT
+    Other Types
+      BIASED
+      RESET_ON_EXAMPLE</pre>
+
+    To change the type of the hidden and hidden2 groups:
+    <pre>
+    lens> groupType {hidden hidden2} DISTANCE LINEAR -BIASED
+    Input Type
+      DISTANCE
+    Output Type
+      LINEAR</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>, 
+    <a href="changeGroupType.html">changeGroupType</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:27:30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

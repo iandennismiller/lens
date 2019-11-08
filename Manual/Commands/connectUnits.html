@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: connectUnits</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>connectUnits</font> - creates a link from one unit to 
+      another
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    connectUnits &lt;unit-list1> (&lt;unit-list>)* [-mean &lt;mean>
+        | -range &lt;range> | -type &lt;link-type> | -bidirectional]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      Creates a link between each unit in the first list and each unit in the
+      second list.  If a third unit list is specified, then all units in the
+      second list will be connected to all units in the third list, and so on.
+    <p>
+      This can be used to create a special pattern of connectivity using a
+      script, rather than by altering the source code.  By default the
+      new connection will have a type with the same name as the sending unit's
+      group, but this can be overridden.
+    <p>
+      If <i>mean</i> and/or <i>range</i> are given, they will determine the
+      values used for randomizing the link's weight.  If left unspecified, the
+      network defaults will be used for these links.
+    <p>
+      If the receiving unit already has an input with the same type from a
+      neighbor of the sending unit, the links will become part of the same
+      link block.  In that case, the <i>mean</i> and <i>range</i> specified
+      here will override the previous values for the block.
+    <p>
+      The <i>bidirectional</i> flag causes links to created in both directions
+      between each pair of units.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To connect the first two units of group "input" to the third unit of
+      group "hidden" with a connection of type "my type" and default
+      randomization values:
+    <pre>
+    lens> connectUnits "input:0 input:1" hidden:2 -type "my type"</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>,
+    <a href="connectGroups.html">connectGroups</a>,
+    <a href="connectGroupToUnits.html">connectGroupToUnits</a>,
+    <a href="elmanConnect.html">elmanConnect</a>,
+    <a href="addLinkType.html">addLinkType</a>,
+    <a href="disconnectUnits.html">disconnectUnits</a>,
+    <a href="setUnitBlockValues.html">setUnitBlockValues</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Feb 28 21:03:26 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

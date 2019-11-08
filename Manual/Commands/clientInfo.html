@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: clientInfo</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>clientInfo</font> - returns information about one or all clients
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    clientInfo [&lt;client>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command can only be run in the server.  It returns information
+      about the clients.  With no client number specified it will report the
+      number of clients connected and how many are currently training,
+      testing, halted, or idle.  It will then print information about each
+      client.
+    <p>
+      If a client number is given, just information about that client will be
+      returned.  The client information consists of its number, the IP address
+      of the client, the name of the Tcl channel used to communicate with the
+      client, the file descriptor of the connection, the port used for the
+      connection, and the state of the client.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To get the overall client information:
+    <pre>
+    lens> clientInfo
+    2 clients  1 training  1 testing  0 halted  0 idle
+    1  128.2.181.181 sock6 6 1687 testing
+    2  128.2.181.181 sock7 7 1691 training</pre>
+    <p>
+      To find out about just one client:
+    <pre>
+    lens> clientInfo 2
+    2  128.2.181.181 sock7 7 1691 training</pre>
+    <h3>SEE ALSO</h3>
+    <a href="startServer.html">startServer</a>,
+    <a href="startClient.html">startClient</a>,
+    <a href="trainParallel.html">trainParallel</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:25:33 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

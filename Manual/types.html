@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Group Types</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Group Types</h1>
+    <hr>
+    <p>
+      Group types are divided into four classes.  There are the 
+      <a href="basicTypes.html">basic types</a>,
+      <a href="inputTypes.html">input types</a>,
+      <a href="outputTypes.html">output types</a>, and 
+      <a href="costTypes.html">cost types</a>.  The basic types are simply a
+      set of flags that include the fixed types, such as INPUT, OUTPUT, BIAS,
+      and ELMAN, and any other types that don't happen to fit the other
+      categories.
+    <p>
+      The input, output, and cost types, on the other hand, actually reflect
+      particular functions.  These functions will be executed in the order in
+      which the types were specified.
+    <p>
+      The input functions, for example, are a series of procedures that
+      compute the <i>input</i> to each unit in the group.  Typically this will
+      involve a primary input function, such as DOT_PRODUCT, that incorporates
+      the activations of incoming links to the unit.  This might be followed
+      by an integration function, IN_INTEGR, to time-average the input and
+      then by a noise function, IN_NOISE, to add noise the input.
+    <p>
+      The order in which the input types are specified determines the order in
+      which they will be executed in the forward pass.  In the backward pass,
+      during which error derivatives are propagated, the counterparts to each
+      forward function are executed in the reverse order.
+    <p>
+      Similarly, the output functions compute the <i>output</i> to each unit
+      given the <i>input</i> and possibly the <i>externalInput</i>.
+    <p>
+      The cost functions involve both error procedures, which compute error
+      based on the outputs and targets, and unit output cost procedures, which
+      usually ascribe error to non-binary units.  These too are organized in a
+      list, but they don't normally interract so you can just think of them as
+      an unordered set of functions.
+    <p>
+      Based on the input and output types of the group, Lens will estimate
+      reasonable values for the <i>minOutput</i>, <i>maxOutput</i>, and
+      <i>initOutput</i> of the group.  However, these may be changed by the
+      user.  Whenever the group type is changed, they will be re-estimated.
+      The min and max outputs are used when coloring the units in the Unit
+      Viewer and in the OUT_CROPPED function.  The <i>initOutput</i> is used
+      when resetting the unit outputs at the start of an example and by the 
+      SOFT_CLAMP function.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 20:19:57 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

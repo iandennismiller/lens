@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+ <head>
+    <title>LENS Manual: printLinkValues</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>printLinkValues</font> - prints values for specified links to a file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    printLinkValues &lt;file> &lt;printProc> &lt;group-list1> &lt;group-list2>
+        [-type &lt;link-type> | -append]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command is used to print information about links to a file.  The
+      first list of groups is the "senders" and the second list is the
+      "receivers".  The <i>printProc</i> Tcl procedure will be called once for
+      each link from a sender to a receiver.  If a link type is given, only
+      links of that type will be printed.
+    <p>
+      The <i>printProc</i> procedure should take six arguments.  These are:
+      the sending group path, the sending unit path, the receiving group path,
+      the receiving unit path, the number of the link's block, and the number
+      of the link in the receiving unit's <i>incoming</i> array.
+    <p>
+      The string returned by each call to the procedure will be written to the
+      file.  The user, thus, determines the format of the output.  The <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/format.htm">format</a> Tcl command may come in very handy here.
+    <p>
+      The file can be specified using any of the standard Lens <a href="../files.html">file
+	types</a>, including ordinary files, compressed files, pipelines, Tcl
+      file handles, and a "-" for standard output.  If you would like to
+      periodically write values to a file, after each example for instance, you
+      could <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/open.htm">open</a> a Tcl file, call <code>printLinkValues</code> after each
+      example (maybe using the network's <i>postExampleProc</i>) and then
+      <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/close.htm">close</a>
+      the Tcl file, or simply use the <i>-append</i> flag, which causes the output to be appended to the file. 
+    <p>
+      Links to lesioned units are ignored when the values are printed.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      In this example, the sending unit name, receiving unit name, and link
+      weight are printed for every link of type "special" leaving the groups
+      "input" and "hidden".  The output is sent to standard output.
+    <pre>
+    lens> proc printStuff {g1 u1 g2 u2 b l} {
+            format "%s->%s %.3f\n" [getObj $u1.name] [getObj $u2.name] \
+              [getObj $u2.incoming($l).weight]
+          }
+    lens> printLinkValues - printStuff {input hidden} * -t special</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="printUnitValues.html">printUnitValues</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:59:51 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

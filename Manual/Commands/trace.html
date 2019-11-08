@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: trace</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>trace</font> - creates, deletes, or manipulates traces
+    within a graph
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    trace create &lt;graph> [&lt;object>] | list &lt;graph> | [delete | store |
+        clear] &lt;graph> &lt;trace-list></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      A trace is essentially a single series, or chain of points, within a
+      graph.  This command performs several different operations on the traces
+      within a single graph.  They are as follows:
+    <p>
+      "<code>trace create &lt;graph> [&lt;object>]</code>" creates a new trace
+      and returns its name, which is an integer index into the graph's
+      <i>trace()</i> array.  <i>graph</i> is the integer name of the graph
+      that was returned when the graph was created and is displayed in the
+      graph's title bar.  If no object is specified, the new trace will not
+      have one.  If an object is specified, it can be either the path to a
+      real-valued object to be graphed, such as
+      <i>output(3).unit(2).output</i>, or it can be a Tcl function that
+      returns a real value.
+    <p>
+      "<code>trace list &lt;graph></code>" returns a list of the numbers of
+      all of the traces within the graph.
+    <p>
+      "<code>trace delete &lt;graph> &lt;trace-list></code>" destroys all of
+      the traces within the graph whose numbers are listed.  <code>*</code>
+      refers to all of the traces in the graph.
+    <p>
+      "<code>trace store &lt;graph> &lt;trace-list></code>" stores the given
+      traces.  When a trace is stored, an inactive, transient copy of it is
+      created (in a new color) and the original trace is cleared.
+    <p>
+      "<code>trace clear &lt;graph> &lt;trace-list></code>" clears the given
+      traces.  When a trace is cleared, all of the points are removed from the
+      trace.  But, otherwise, the trace remains the same.
+    <p>
+      You can read more about graphs and traces in the <a
+	href="../graphs.html">Graphs section</a> of the main manual.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To create a graph, add a trace to it, and change the trace's color to
+    red, do: 
+    <pre>
+    lens> set g [graph create]
+    lens> set t [trace create $g error]
+    lens> setObject graph($g).trace($t).color red
+    lens> graph refresh $g</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="graphObject.html">graphObject</a>,
+    <a href="graph.html">graph</a>,
+    <a href="exportGraph.html">exportGraph</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 10:52:38 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

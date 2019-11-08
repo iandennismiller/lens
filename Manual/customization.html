@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Customization</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: Customization</h1>
+    <hr>
+    <p>
+      It is possible to customize many aspects of the Lens graphical displays
+      by placing a <b>.lensrc</b> file in your home directory or changing the
+      "<a href="Src/lensrc.tcl">Src/lensrc.tcl</a>" file if you have a
+      personal version of Lens.  Parameters that can be changed affect
+      standard fonts, colors, which panels appear in the Main Window, how the
+      Main Window is redrawn when a panel is popped in or out, which
+      parameters appear in the Main Window, the default filters and
+      directories for the file viewers, whether the manual is always spawned
+      in a new browser window, your <code>auto_load</code> path to commonly
+      used procedures, and any aliases or other commands that you may want to
+      define.
+    <p>
+      When Lens boots up, it will source the standard configuration file, "<a
+      href="Src/lensrc.tcl">Src/lensrc.tcl</a>".  It will then source
+      the .lensrc file in your home directory.  The .lensrc file is simply a
+      Tcl script file.  You may use the .lensrc file to override most
+      definitions in the standard file.  Therefore, you may place any
+      procedures or aliases you would like in the file, or use the .lensrc to
+      source other files containing these definitions.  If you wish to make
+      major changes, you may wish to edit a private copy of the lensrc.tcl
+      but that should not be necessary.
+    <p>
+      To customize your version, you could either copy the lensrc.tcl to
+      your .lensrc and then edit it or just copy those parts you wish to
+      change.  The effect will be the same.  As with any Tcl script, lines
+      beginning with a hash mark in the .lensrc are comments.  The following
+      are some things you may want to customize.
+    <p>
+      The standard fonts are designed to look pretty good on both high and low
+      resolution displays, but they may be a bit big in low resolution.
+    <p>
+      The <code>.mainColor</code> sets the application-wide color "scheme".
+      It will affect many different things.  If you aren't into light gray,
+      change this first and then, if you like, go mucking with all the other
+      finer controls.
+    <p>
+      Or, if you'd just like a hint of color, change the
+      <code>.borderColor</code>.  May I recommend a sunny pastel?  "light
+      blue" or pink are charming, but are not to be used after Labor Day.
+    <p>
+      <code>.registerParameter</code> is used to specify which parameters will
+      be accessible on the Main Window.  If the first argument is "Algorithm",
+      the parameter will appear on the Algorithm Panel.  If it is "Training",
+      the parameter will appear on the Training Panel.  The second argument is
+      the object path of the parameter and the third is its name.  The fourth
+      is a procedure used to prevent the user from entering bad values for the
+      parameter.  These procedures, which all begin with <code>.enforce</code>
+      are defined in interface.tcl.  The last two values will be the
+      <i>limit</i> and <i>int</i> arguments to the enforcing procedure.
+    <p>
+      The next set of commands determine which panels will appear by default
+      on the Main Window.
+    <p>
+      Try popping some panels out of the Main Window using the checkbuttons in
+      the <code>Window/Panels...</code> pulldown menu.  If it doesn't shrink
+      properly, uncomment the two lines in the <code>.redrawWindow</code>
+      procedure.  Either that or get a better window manager.
+    <p>
+      If you don't use standard file extensions, you will want to change the
+      filters used in the file browsers.  A filter is a series of glob-style
+      patterns.  If any of the patterns match, the file name will be
+      displayed.
+    <p>
+      <code>.spawnNewManualWindow</code> determines whether a new browser
+      window will always be created when you run <a
+      href="Commands/manual.html">manual</a> or whether an existing window
+      will be taken over, which is the default.  This only affects Netscape.
+    <p>
+      The <code>auto_path</code> is the directory path that Lens uses to find
+      procedures during autoloading.  You may wish to create a directory with
+      a set of common procedures and put this on your auto path.  There is no
+      need to source the scripts in this directory as they will be sourced on
+      demand, assuming <a href="Commands/index.html">index</a> has been called
+      properly.
+    <p>
+      <code>tcl_precision</code> is the decimal precision Tcl uses
+      when converting from a float (which is always a double for Tcl) to a
+      string.  This will only affect calculations performed in the shell with
+      <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/expr.htm">expr</a>,
+      not the internal Lens calculations.
+    <p>
+      The <code>defaultSigUSR1Proc</code> and <code>defaultSigUSR2Proc</code>
+      are run when Lens receives a USR1 or USR2 signal, respectively.  These
+      signals can be sent using the <code>kill</code> program.  These can be
+      used to force a network running in batch mode to perform a certain
+      action while it is busy, like saving the current set of weights.
+    <p>
+      Finally, a number of procedures such as .initNetwork and .initGroup are
+      defined in the lensrc.tcl file.  These will be called whenever a
+      structure of the corresponding type is created (and after the extensions
+      are added to that structure), allowing you to set your own default
+      values for fields in that structure, or to do whatever else you can
+      think of.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 13:54:52 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Fully Recurrent and Continuous Networks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Fully Recurrent and Continuous Networks</h1>
+    <hr>
+    <p>
+      Fully recurrent networks differ from simple recurrent networks in that
+      fully recurrent networks use concurrent updates and propagate error
+      derivatives backwards through time.  A feed-forward or simple recurrent
+      network will transfer activity from the input layer to the output layer
+      in a single tick: each group in order updates its inputs and immediately
+      updates its outputs.  In a fully recurrent network, on the other hand,
+      all groups first update their inputs and then all groups update their
+      outputs.  Therefore, information can propagate across just one set of
+      connections per tick.
+    <p>
+      What are typically called recurrent-backprop-through-time (RBPTT)
+      networks use a single tick per time interval.  Therefore, the unit
+      activations will change completely on each tick. <i>Continuous</i>
+      networks are a more general version of fully recurrent networks which
+      use more than one tick per interval and integrate the unit inputs or
+      outputs, causing them to change gradually.  Because these are really
+      part of a continuum, it's not always meaningful to draw a distinction
+      between RBPTTs and continuous networks and they will collectively be
+      called "fully recurrent" to distinguish them from simple recurrent
+      networks.
+    <p>
+      Example <a href="time.html">events</a> are the same in continuous, fully
+      recurrent, and standard networks, each having an optional
+      <i>minTime</i>, <i>maxTime</i>, and <i>graceTime</i>, with the example
+      set defaults used when a value is not specified.  These are specified in
+      terms of time intervals, not in ticks, so the scale at which a
+      continuous network is simulated can be changed without altering the
+      example files.  In the case of continuous networks, it becomes useful to
+      have event time values that are not integers.
+    <p>
+      With continuous networks, the first tick of each example is used to set
+      the initial outputs of the units.  This tick therefore has no event
+      associated with it.  This is not necessary in standard networks because
+      updates are sequential.
+
+
+    <h3>Building Continuous Networks</h3>
+    <p>
+      A continuous network must be given the CONTINUOUS type when it is
+      created.  An existing network will <i>not</i> become continuous if the
+      <a href="Commands/setTime.html">setTime</a> command is used to set the
+      <i>ticksPerInterval</i> to something other than 1, as it would have in
+      previous versions of Lens.  There is no way to change the type of a
+      network once it is created.
+    <p>
+      Hidden and output groups in continuous networks will typically have an
+      IN_INTEGR or OUT_INTEGR function appended to the input or output
+      pipeline.  These integrate the inputs or outputs over time, forcing them
+      to change gradually.  OUT_INTEGR is the default.  If a hidden or output
+      group is created in a continuous network, OUT_INTEGR will be added
+      automatically unless IN_INTEGR is explicitly specified.  If a unit is
+      using a logistic (sigmoidal) output function, IN_INTEGR tends to allow
+      the unit to move towards the extremes (away from an output of 0.5) more
+      easily but resists movement away from the extremes, relative to
+      OUT_INTEGR. 
+    <p>
+      The following creates a continuous network with a maximum of 10 time
+      intervals per example, 5 ticks per time interval, an output-integrating
+      hidden layer, and an input-integrating output layer:
+    <pre>
+    addNet cont1 -i 10 -t 5
+    addGroup input  10 INPUT
+    addGroup hidden 20 
+    addGroup output 10 IN_INTEGR
+    connectGroups {input output} hidden output</pre>
+    Or, equivalently:
+    <pre>
+    addNet cont1 -i 10 -t 5 10 20 10 IN_INTEGR
+    connectGroups output hidden</pre>
+    <p>
+      To create a RBPTT network, which has one tick per time interval, you
+      will need to use the <code>CONTINUOUS</code> network type, as in:
+    <pre>
+    addNet myRBPTT -i 5 CONTINUOUS</pre>
+
+    <h3>Running Continuous Networks</h3>
+    <p>
+      When training continuous networks, the network is run in the forward
+      mode through all of the ticks in the example.  Then there is a single
+      backward pass through all of the ticks in the example and error
+      derivatives are injected at the appropriate time.
+    <p>
+      The <i>dt</i> parameter determines how quickly the input and output
+      integrators will respond to a change in value.  By default, <i>dt</i> is
+      equal to <i>1/ticksPerInterval</i>.  Whenever the
+      <i>ticksPerInterval</i> is changed using <a
+	href="Commands/setTime.html">setTime</a> the <i>dt</i> will be
+      recalculated, unless you explicitly prevent it using the "-dtfixed"
+      flag.
+    <p>
+      However, it is also possible to change <i>dt</i> to something other than
+      the default value.  You might view <i>dt</i> as the product of the small
+      increment of time and the network's time constant.  It could be
+      increased to reflect a shorter network-wide time constant, causing units
+      to change their states more rapidly.  Each group and unit also have
+      their own <i>dtScale</i> parameters.  These are multiplied by the
+      network's <i>dt</i> to produce the effective dt for each unit.  These
+      function as the groups' and the units' individual time constants.
+    <p>
+      When training continuous networks, the error and unit output costs
+      assessed on each tick are scaled by <i>1/ticksPerInterval</i>.
+      Therefore, if you double the <i>ticksPerInterval</i>, the error won't
+      double as well just because it is being calculated twice as often.
+    <p>
+      Often when running continuous networks, you do not want the targets to
+      come on at the same time as the inputs, but only after a delay.  The
+      event's <i>graceTime</i> parameter controls this.  The <i>graceTime</i>
+      is specified in terms of time intervals, not ticks.  In general, the
+      event's <i>minTime</i> should be longer than the <i>graceTime</i>.
+      Otherwise the event will stop at the end of the <i>graceTime</i> because
+      there is no error.
+    <p>
+      An event will stop, and the next event begin under several conditions.
+      One is if the event has already lasted for its <i>maxTime</i>.  Another
+      is if each group's criterion function is satisfied, meaning that they
+      adequately matched their targets.  OUTPUT groups in a continuous network
+      are given the STANDARD_CRIT by default.
+    <p>
+      In some networks, you do not want the example to continue unless the
+      network performs adequately on each event.  If the network's
+      <i>groupCritRequired</i> flag is true, the next event will only begin if
+      the group criterion was reached on the previous event.  This is not the
+      default behavior.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 16:18:37 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

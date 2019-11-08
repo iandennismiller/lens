@@ -1,0 +1,380 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Parallel Training</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Parallel Training</h1>
+    <hr>
+    <p>
+      Lens supports batch-level parallel training with a client-server model.
+      Each process must have its own copy of the network loaded and its own
+      training set.  In this model, the server is responsible for performing
+      all weight updates and the clients are responsible for gathering link
+      error derivatives over a batch of examples.  The two training modes,
+      <i>synchronous</i> and <i>asynchronous</i>, are described below.
+
+    <h3>The Server</h3>
+    <p>
+      The <a href="Commands/startServer.html">startServer</a> command is used
+      to make one process the server.  The command will return immediately but
+      will cause the process to begin listening for client connections on a
+      certain port.  The port may be specified or will be chosen
+      automatically.  <code>startServer</code> returns the port number that
+      was used.  The simplest option is to choose a port that you are pretty
+      sure will be available (try the 2000 to 9000 range) and hard-code this
+      number into the server and client scripts.
+    <p>
+      A more robust option is to allow an open port to be chosen automatically
+      and to then store this value somewhere that the clients will be able to
+      retrieve it, either by altering the client's script or by writing the
+      port number into a known temporary file.  A server will break the
+      connections to all clients and stop listening on the server port when
+      the <a href="Commands/stopServer.html">stopServer</a> command is
+      issued.
+    <p>
+      The <a href="Commands/clientInfo.html">clientInfo</a> command is used to
+      find out how many clients are connected, some information about each
+      one, and what each one is doing at the moment.  A client that is
+      <i>idle</i> is participating in the current training session but is
+      waiting for the server before it will continue.  A client that is
+      <i>halted</i> has stopped participating in the current training
+      session.  This may be because the client was stopped explicitly by the
+      user or because it has an incompatible network loaded or no training
+      set.  Otherwise, clients can be busy <i>training</i> or <i>testing</i>.
+
+    <h3>The Clients</h3>
+    <p>
+      A process becomes a client when the <a
+      href="Commands/startClient.html">startClient</a> command is invoked.
+      This takes as arguments the host and port of the server and an optional
+      address for the client.  This address is useful if the client has
+      multiple network connections.  If the client successfully connects to
+      the server, a new TCP stream will be opened which uses a new port on the
+      server end.  Like <code>startServer</code>, this command returns
+      immediately.  The connection to the server can be terminated with <a
+      href="Commands/stopClient.html">stopClient</a>.  A process may not be a
+      client and server at the same time or a client for multiple servers.
+    <p>
+      However, because the server process often does a lot less work, you may
+      find it advantageous to run both a server and a client on the same
+      processor.
+
+    <h3>Client/Server Communication and Synchronization</h3>
+    <p>
+      The principal means by which clients and the server can communicate is
+      the <a href="Commands/sendEval.html">sendEval</a> command.  This sends a
+      command to the server or to the clients.  The receiver will then execute
+      the command.  This can be used by the server to tell one or all clients
+      to run a particular script or to load a particular example file.  It
+      might also be used by a client to communicate information back to the
+      server.
+    <p>
+      Lens provides a shortcut, <a
+      href="Commands/sendObject.html">sendObject</a>, for setting an object
+      field on the server and on all clients to the same value.  This is used
+      like <a href="Commands/setObject.html">setObject</a> but the value will
+      be set remotely as well.  If called on a client, the value will only be
+      set on that client and on the server, not on the other clients.  If a
+      client needs to cause an object value to be set on all machines, it can
+      use <a href="Commands/sendEval.html">sendEval</a> to tell the server to
+      execute <a href="Commands/sendObject.html">sendObject</a>.
+    <p>
+      When training in parallel non-interactively, synchronization controls
+      are necessary to ensure that all participants are ready before training
+      begins.  Synchronization is provided by the <a
+      href="Commands/waitForClients.html">waitForClients</a> command.  This
+      has three modes, which are explained in the manual page for the
+      command.  In one mode, the server waits until a specified number of
+      clients have connected before <code>waitForClients</code> returns.
+      Alternately, it can arrange for a command to be executed in the server
+      once a certain number of clients have connected.  Finally,
+      <code>waitForClients</code> can be used as a simple barrier.  In this
+      mode, the command is called by each client and the server when they are
+      ready to proceed.  Once all participants are ready and waiting, they
+      will all be released.  The examples below show how this command might be
+      used.
+      
+    <h3>Synchronous Training</h3>
+    <p>
+      All parallel training is controlled with the <a
+      href="Commands/trainParallel.html">trainParallel</a> command.  Training
+      can take one of two forms, synchronous and asynchronous.  Synchronous
+      training is functionally equivalent to standard single-processor
+      training.  In this mode, the server sends the network's weights to each
+      client, the clients each process part of a batch of examples,
+      accumulating the overall error and link derivatives and testing for the
+      output unit accuracy stopping criterion, and then send this information
+      back to the server.  The server accumulates the error and derivatives
+      over all clients, does a single weight update, and then sends the new
+      weights to all clients and another batch begins.
+    <p>
+      The server's <i>batchSize</i> parameter is the effective batch size in
+      synchronous mode.  This determines the total number of examples
+      processed on all clients between weight updates.  Depending on the speed
+      of each client, Lens will adjust the number of examples the client is
+      fed to help balance the load.
+    <p>
+      The actual examples that will be processed in a batch are not chosen by
+      the server.  Each client selects its examples based on the
+      example-set-mode of its training set.  However, if ORDERED mode is being
+      used, it would not be desirable to have each client process the exact
+      same set of examples.  Therefore, in this case clients will randomize
+      the initial example on the very first batch.  They will then proceed as
+      they would in single processor training.  When running in synchronous
+      mode, you may prefer to simply give each client a different training
+      set, although this could be problematic if a fast processor dominates
+      the batch sharing and the network is over-exposed to its examples.  This
+      could also be problematic in asynchronous training for the same reason.
+    <p>
+      Just as in normal training, synchronous parallel training will stop
+      either if the server is interrupted, enough updates occur, the overall
+      network error on the last batch (summed over clients) reaches the
+      network's <i>criterion</i> or the group criterion is met for all events
+      in all examples in all clients.  Once training is done, the server and
+      the clients will print the total time elapsed and the time during which
+      they were actually working, as opposed to waiting for the server or for
+      a client.  If the server is working close to 100% of the time, there
+      will be little benefit in adding additional clients.  If the server is
+      rarely working, you might reduce the batch size or even start a client
+      on the server machine.  In future releases, Lens may also perform
+      training in the server while the clients are working.  The amount of
+      training done would be scaled so that it would not interfere with the
+      clients.  Training directly in the server has the advantage that weights
+      and derivatives need not be sent over the network.
+    <p>
+      During training, the clients will print a dot each time they perform a
+      batch.  The server will print a report, the frequency of which is given
+      by its <i>reportInterval</i> value.  The report is the same as that for
+      normal training but it adds a field for the most recent client to have
+      reported in.  Testing may be performed periodically during training by
+      specifying a test interval parameter for the <code>trainParallel</code>
+      command.  In synchronous mode, testing will be performed by the server
+      once it has sent a set of batches off to the clients.  Testing will
+      always run through the entire test set.  Therefore, the test set cannot
+      be in PIPE mode if the pipe is indefinite as the testing will never end.
+
+    <h3>Asynchronous Training</h3>
+    <p>
+      In asynchronous training, a weight update is performed each time a
+      client returns its derivatives.  The server does not wait for all
+      clients to be done, as in synchronous training.  The client is
+      immediately sent the new weights and begins the next batch.  This has
+      the advantage that it naturally performs load balancing as clients need
+      not wait for each other, in principle.  For a given batch size, there is
+      less communication required in asynchronous training.  However, it has
+      the disadvantage that each client is always working with slightly
+      out-of-date weights.  If the weights are changing too rapidly this could
+      be quite bad.  When training asynchronously, it may be best to begin
+      with a bit of standard single-processor training or synchronous parallel
+      training until the network settles down.
+    <p>
+      Training will stop if the maximum number of updates are performed or
+      the overall error or output units reach criterion.  However, overall
+      error and the unit criteria are just based on the last client to report
+      in and are not combined across all clients as in synchronous mode.
+
+    <h3>Running Interactively</h3>
+    <p>
+      If the "Stop Parallel Training" button is pressed or an interrupt signal
+      is received in the server during training, the training will stop.  It
+      is better to use the button because generating an interrupt signal
+      while the server is processing a message from a client can interfere
+      with that message.  If the server detects such a problem, it will force
+      the client to disconnect rather than risk trashing the network.  This
+      should not happen if the button is used.
+    <p>
+      If the stop button or Ctrl-C are used in a client while it is involved
+      in training, the client will halt.  This does not break the client's
+      connection to the server, it just means that the client will no longer
+      participate in the current round of training.  Again, it may be better
+      to use the button.
+    <p>
+      While a process is involved in parallel training, it is still able to
+      receive GUI events.  As long as it is not waiting, it will also interpret
+      any commands that are given to the shell interface.  Therefore, the user
+      could run some testing or change parameters in the midst of training.
+    <p>
+      If Lens was started in <a href="running.html">batch</a> mode, the
+      interpreter will not automatically check for events other than keyboard
+      input to the shell.  Therefore, clients and servers will not detect when
+      messages arrive.  The <a href="Commands/wait.html">wait</a> and <a
+      href="Commands/waitForClients.html">waitForClients</a> commands can be
+      used to remedy this problem.  The former will loop indefinitely or until
+      the parallel training ends or an interrupt occurs, repeatedly checking
+      for messages.  The latter is similar but acts as a barrier and will
+      release all of the waiters once the barrier is broken.
+
+
+    <h3>Running Non-Interactively</h3>
+    <p>
+      When running non-interactively, it is important to use synchronization
+      mechanisms to make sure the server and clients are coordinated before
+      training.  Additionally, if the processes are being run in the
+      background, you cannot let them reach the end of the main script or the
+      process may suspend itself because there is no standard input (this is
+      true if the process is run in the background with <code>&</code> or
+      <code>bg</code> but not if run remotely with <code>rsh</code>).
+      Therefore, <a href="Commands/wait.html">wait</a> and <a
+      href="Commands/waitForClients.html">waitForClients</a> should be used in
+      the clients after connecting to the server to prevent them from dying.
+      There are many ways to actually structure the interactions.  One example
+      is provided below.
+    <p>
+      You could arrange for the network's weights to be saved every hour
+      by using a command such as this:
+    <pre>
+    set allDone 0
+    proc saveIt i {
+        global allDone
+        saveWeights log$i.wt.gz
+        if {$allDone == 0} {after 3600000 "saveIt [incr i]"}
+        return
+    }
+    saveIt 0
+    trainParallel...
+    set allDone 1
+    ...</pre>
+    <p>
+      This saves the initial weights and arranges for weights to be saved
+      every hour, starts the training, and then waits for training to finish.
+      The automatic saving is cancelled once training completes.
+
+
+    <h3>Examples</h3>
+    Here are two scripts that can be run in the server and clients to control
+    non-interactive parallel training.  They are explained below.  Here is the
+    <a href="Examples/server.tcl">server script</a>:
+<hr width="80%">
+<pre>
+### Server Code
+set workingDirectory ~/Lens
+set networkScript  ~/Lens/Examples/filler.in
+set clientScript   client.tcl
+set clientMachines {sp_4 sp_6 sp_8 sp_9 sp_10 sp_11 sp_12 sp_13}
+set synchronous    1
+set batch          400
+set updates        1000
+set reportInterval 10
+set rate           0.005
+set weightFile     $workingDirectory/final.wt.gz
+
+# Start the server
+set port [startServer]
+
+# Write the customized client script
+set customClientScript $workingDirectory/client[getSeed].tcl
+regsub -all / $networkScript \\/ netScript
+sed "s/SCRIPT/$netScript/; s/SERVER/$env(HOST)/; s/PORT/$port/" \
+	$clientScript > $customClientScript
+
+# Here we define a command for launching clients using rsh
+proc launchClients {customClientScript machines} {
+    global env
+    set i 0
+    foreach client $machines {
+        puts "  launching on $client..."
+	exec /usr/bin/rsh $client -n \
+            "lens -b $customClientScript > /dev/null" &
+        incr i
+    }
+   return $i
+}
+
+# Now we use the command
+puts "Launching clients..."
+set numClients [launchClients $customClientScript $clientMachines]
+
+# Load the network and training set
+source $networkScript
+
+# Now wait for the clients to connect.
+puts "Waiting for $numClients clients..."
+waitForClients $numClients
+
+# Set some parameters.
+setObject batchSize    $batch
+setObject learningRate $rate
+
+# Start training and wait for it to finish,
+# but don't wait if it didn't start correctly.
+puts "Training..."
+puts [trainParallel $synchronous $updates $reportInterval]
+
+puts "Saving weights..."
+saveWeights $weightFile
+
+# Now break the barrier holding the clients so they can exit.
+puts "Releasing clients..."
+waitForClients
+exec rm [glob $customClientScript]
+puts "Ba-bye"
+exit</pre>
+<hr width="80%">
+    <p>
+      The basic <a href="Examples/client.tcl">client script</a> is as follows.
+      The upper case words are replaced with their values by the
+      <code>sed</code> command in the server 
+      script to created a customized client script:
+<hr width="80%">
+<pre>
+### Client Code
+
+source SCRIPT
+startClient SERVER PORT
+puts "Ready to go..."
+waitForClients
+puts "Gee, that didn't hurt a bit."
+exit</pre>
+<hr width="80%">
+    <p>
+      If you plan to do parallel training, it will be worthwhile to read
+      through these scripts and understand them fully.  The first part of the
+      server script contains the main definitions the user may want to
+      customize.  The working directory is a directory that the server has
+      write privilege to and all clients can read from.  Using a ~ in this
+      case assumes that the server and clients are using the same file system.
+      If this is not the case, there are a number of ways around this problem,
+      the easiest of which may be using symbolic links on all client machines.
+    <p>
+      The next section makes the current process a server and stores the port
+      number.  It will then write a customized client script and place it in
+      the working directory.  The customized client script has the network
+      building script and the server's name and port stored in it.  This is
+      done by using <code>sed</code> to replace the keywords in the generic
+      client script with the desired values.  Before this is done, all forward
+      slashes in the network script name are protected so the <code>sed</code>
+      command parses correctly.
+    <p>
+      Next we define a function that will launch the remote clients using
+      <code>rsh</code>.  In order to do this, the server machine must be
+      listed in either the <code>/etc/hosts.allow</code> or
+      <code>~/.rhosts</code> files on the client machines.  The output from
+      each client is discarded in this example, but it could be logged in a
+      file on the client if so desired.  This command returns the number of
+      clients launched.
+    <p>
+      Each client will source the network and training set building file,
+      connect to the server and then wait.  The client will not wake up from
+      this wait until the training is over.  Meanwhile, the server loads the
+      same network, although it need not load the training set, and then waits
+      for all clients to connect.  Once the clients connect, training begins.
+    <p>
+      At the conclusion of training, the server saves the weights and then
+      releases the clients by calling <a
+      href="Commands/waitForClients.html">waitForClients</a>.  The clients
+      exit on their own and the server removes the customized training file
+      before exiting.  The automatic weight saving code could be added to this
+      if periodic backups were desired.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 13:45:52 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

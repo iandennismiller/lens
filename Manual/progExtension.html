@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Fields in an Object or Extension</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Fields in an Object or Extension</h1>
+    <hr>
+    <p>
+      Each major Lens object, the Network, Group, Unit, Block, ExampleSet, 
+      Example, and Event, has an extension record defined in extension.h.  Most
+      additions to the Lens object structures should be made to the extension
+      record and any code that uses those extensions should be placed in
+      extension.c so that future updates to the other Lens modules can be
+      incorporated painlessly.
+    <p>
+      The default extension structures look something like this:
+    <pre>
+    typedef struct netExt {
+      char removeMe;
+    } *NetExt;</pre>
+    <p>
+      The field <i>removeMe</i> is just a dummy there to prevent warnings in
+      some compilers.  If any fields are added, the dummy should be removed.
+    <p>
+      Once you plan to make use of an extension structure, you will need to
+      fill in the initialization structure for that extension.  When an
+      instance of the main object is created, it will be passed to this
+      function so that the extension can be added.  The default initialization
+      functions look something like this:
+    <pre>
+    flag initNetworkExtension(Network N) {
+      FREE(N->ext);
+      return TCL_OK;
+    }</pre>
+    <p>
+      This just takes a network and sets the extension field to NULL (freeing
+      it if it exists).  Once some fields are added to the extension, you will
+      want to change it to something like this:
+    <pre>
+    flag initNetworkExtension(Network N) {
+      N->ext = safeCalloc(1, sizeof(struct netExt), 
+         "initNetworkExtension:N->ext");
+      return TCL_OK;
+    }</pre>
+    <p>
+      Remember to use <code>safeMalloc()</code> or <code>safeCalloc()</code>,
+      rather than <code>malloc()</code> or <code>calloc()</code>.  You can
+      then initialize extension fields as necessary.
+
+    <h3>Making Fields Accessible</h3>
+    <p>
+      Lens uses a rather complex mechanism for making the C object hierachy
+      accessible from within the Tcl shell.  Each container structure and
+      primitive data type, such as an <code>int</code>, will have an ObjInfo
+      structure defined for it.  This describes each field or member of the
+      object using MemInfo structures.  MemInfo structures contain information
+      such as the name of the field, where it is located in the object, and
+      whether it is write-protected.  ObjInfo and MemInfo are defined in
+      object.c.
+    <p>
+      To build an ObjInfo description, a pointer to one is first declared
+      globally, then allocated with newObject(), and then members are added to
+      it with addMember().  When adding to object extensions, global
+      ObjInfo structures will have already been created for you.  These are
+      defined in extension.c and are as follows:
+    <pre>
+    ObjInfo RootInfo;
+    ObjInfo NetInfo;
+    ObjInfo GroupInfo;
+    ObjInfo GroupProcInfo;
+    ObjInfo UnitInfo;
+    ObjInfo BlockInfo;
+    ObjInfo LinkInfo;
+    ObjInfo ExampleSetInfo;
+    ObjInfo ExampleInfo;
+    ObjInfo EventInfo;
+    ObjInfo RangeInfo;
+
+    ObjInfo IntInfo;             /* int */
+    ObjInfo RealInfo;            /* real */
+    ObjInfo FlagInfo;            /* flag */
+    ObjInfo MaskInfo;            /* mask */
+    ObjInfo StringInfo;          /* char * */
+    ObjInfo TclObjInfo;          /* TclObj */</pre>
+    <p>
+      Member fields should be added within the functions that have names such
+      as <code>initNetExtInfo()</code> and <code>initExSetExtInfo()</code>.
+      Here is a sample ObjInfo init function:
+    <pre>
+    int getNetExtRows(void *NX) {
+      return ((NetExt) NX)->rows;
+    }
+    int getNetExtCols(void *NX) {
+      return ((NetExt) NX)->cols;
+    }
+
+    void initNetExtInfo(void) {
+      NetExt NX;
+
+      addObj   (NetExtInfo, "name", OFFSET(NX, name), TRUE, StringInfo);
+
+      addObjP  (NetExtInfo, "theGroup", OFFSET(NX, theGroup), FALSE, 
+                GroupInfo);
+      addSpacer(NetExtInfo);
+
+      addObj   (NetExtInfo, "rows", OFFSET(NX, rows), FALSE, IntInfo);
+
+      addObj   (NetExtInfo, "cols", OFFSET(NX, cols), FALSE, IntInfo);
+
+      addObjPA (NetExtInfo, "array", OFFSET(NX, array), FALSE, getNetExtRows,
+                UnitInfo);
+      addObjAA (NetExtInfo, "array2", OFFSET(NX, array2), TRUE, getNetExtRows,
+                getNetExtCols, RealInfo);
+    }</pre>
+    <p>
+      The function must begin by declaring a pointer to the type of extension
+      you are describing, in this case "<code>NetExt NX;</code>".  The rest of
+      the function will be made up of calls to field-defining functions.  The
+      field-defining functions are as follows:
+    <dl>
+      <dt><code>void <b>addObj</b>(ObjInfo O, char *name, int offset, 
+	  flag writable, ObjInfo info)</code>
+      <dd>
+	The field is either a primary data type, such as an integer,
+	flag, mask, real, or string, or another structure embedded within this
+	one.  An example of the latter is the <i>pipeExample</i> structure
+	embedded within an ExampleSet.
+      <dt><code>void <b>addObjP</b>(ObjInfo O, char *name, int offset, 
+	  flag writable, ObjInfo info)</code>
+      <dd>
+	The field is a pointer to an object.  This is used for such
+	things as the <i>group</i> field within a unit or for a pointer to a
+	primitive type such as a real.
+      <dt><code>void <b>addObjA</b>(ObjInfo O, char *name, int offset, 
+	  flag writable, int (*rows)(void *), ObjInfo info)</code>
+      <dd>
+	The field is an array of primitive objects or an array of
+	structures.  An example is the <i>eventHistory</i> array within a
+	network or the <i>unit</i> array within a group.
+      <dt><code>void <b>addObjPA</b>(ObjInfo O, char *name, int offset, 
+	  flag writable, int (*rows)(void *), ObjInfo info)</code>
+      <dd>
+	The field is an array of pointers to objects.  An example
+	is the <i>group</i> array within a network.
+      <dt><code>void <b>addObjAA</b>(ObjInfo O, char *name, int offset, 
+	  flag writable, int (*rows)(void *), int (*cols)(void *), 
+	  ObjInfo info)</code>
+      <dd>
+	The field is a two-dimensional array of objects.
+      <dt><code>void <b>addObjPAA</b>(ObjInfo O, char *name, int offset, 
+	  flag writable, int (*rows)(void *), int (*cols)(void *), ObjInfo
+	  info)</code>
+      <dd>
+	The field is a two-dimensional array of pointers to objects.
+      <dt> <code>void <b>addSpacer</b>(ObjInfo O)</code>
+      <dd>
+	This produces a space between fields when the object is viewed with
+	the Object Viewer.
+    </dl>
+    
+    The arguments to the above functions are:
+    <dl>
+      <dt><code><b>ObjInfo O</b></code></dt>
+      <dd>This is the object info structure you are describing.  For example,
+	NetExtInfo. 
+      <dt><code><b>char *name</b></code></dt>
+      <dd>This is the name of the field as it will appear on the Object Viewer
+	and as it will be referred to in the shell.
+      <dt><code><b>int offset</b></code></dt>
+      <dd>This is the byte offset between this field and the start of the
+	object.  This OFFSET() macro is used to set that.
+      <dt><code><b>flag writable</b></code></dt>
+      <dd>This determines whether the user can change the value of this
+	field.  For arrays, this determines whether the individual elements of
+	the array are writable.
+      <dt><code><b>int (*rows)(void *)</b></code></dt>
+      <dd>This is only used for arrays.  It is a function that takes a pointer
+	to the object (cast as a void *) and returns an integer giving the
+	size of the first dimension of the array.
+      <dt><code><b>int (*cols)(void *)</b></code></dt>
+      <dd>This is only used for two-dimensional arrays.  It is a function that
+	takes a pointer to the object (cast as a void *) and returns an
+	integer giving the size of the second dimension of the array.
+      <dt><code><b>ObjInfo info</b></code></dt>
+      <dd>This is the ObjInfo structure that defines the specific type of the
+	field or elements of the array.
+    </dl>
+    <p>
+      In the <code>initNetExtInfo()</code> example above, the first member is
+      a writable string called <i>name</i>.  The second is a pointer to a
+      group.  The third and fourth are write-protected integers.  The fifth is
+      an array of unit pointers with dimension <i>rows</i>.  The last field is
+      a two-dimensional array of writable real numbers.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:07:04 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: connectGroups</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>connectGroups</font> - creates links with a specified
+    pattern between groups
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    connectGroups &lt;group-list1> (&lt;group-list>)* [-projection &lt;proj-type> |
+        -strength &lt;strength> | -mean &lt;mean> | -range &lt;range> |
+        -type &lt;link-type> | -bidirectional]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command creates sets of links between groups.  Each group in
+      <i>group-list1</i> will project to each group in the second group list.
+      Those in the second list will project to those in the third and so on.
+      By default this creates a full projection, but several patterns of sparse
+      projections may also be specified.
+    <p>
+      Possible projection types (or connectivity patterns) are FULL,
+      UNLESIONED, RANDOM,
+      FIXED_IN, FIXED_OUT, FAIR, FAN, and ONE_TO_ONE.  These may be
+      abbreviated by any unique prefix.  For sparse patterns, the
+      <i>strength</i> is a floating point number in the range [0,1] specifying
+      the density of the connectivity, as described below.  It must be
+      specified for all of the sparse patterns, but not for FULL or
+      ONE_TO_ONE.
+    <p>
+      In describing the projection types, <i>S</i> is the specified
+      connectivity strength, <i>I</i> is the number of units in the sending
+      group, <i>O</i> is the number of units in the receiving group and
+      <i>f()</i> is the floor function.
+    <p>
+      FULL creates the dense projection from each sending unit to all
+      receiving units.  This is the default.
+    <p>
+      UNLESIONED is like FULL but only creates connections between healthy,
+      unlesioned units in the two groups.  This can be used to create a
+      partial projection.
+    <p>
+      RANDOM simply connects each pair of pre- and post-synaptic cells with
+      probability <i>S</i>.
+    <p>
+      FIXED_IN ensures that each postsynaptic unit receives exactly
+      <i>f(S*I)</i> inputs.  The number of outputs from a given presynaptic
+      unit may vary.
+    <p>
+      FIXED_OUT ensures that each presynaptic unit has exactly <i>f(S*O)</i>
+      outputs.
+    <p>
+      FAIR ensures that each sending unit will have exactly <i>f(S*O)</i>
+      outputs and each receiving unit will have either floor or ceiling of 
+      <i>(I*f(S*O) / O)</i> inputs.
+    <p>
+      FAN causes each input unit to project to the <i>f(S*O)</i> outputs
+      that are closest to it.  The closeness measure wraps around the ends of
+      the arrays.
+    <p>
+      ONE_TO_ONE connects each unit in the sending group to the corresponding
+      unit in the receiving group.  The two groups need not have the same
+      number of units; one link will be formed for each unit in the smaller of
+      the two groups.  For one-to-one connections, the <i>mean</i> defaults to
+      1.0 and the <i>range</i> defaults to 0.0.  <i>The weights are frozen by
+	default</i>.
+    <p>
+      If <i>range</i> or both <i>mean</i> and <i>range</i> are given, they
+      will determine the parameters used for randomizing weights in this
+      projection.  If left unspecified, the network defaults will be used for
+      these links.
+    <p>
+      By default the links in the new projection will have a type with the
+      same name as the sending group.  This can be overridden by specifying a
+      different link type.
+    <p>
+      The -bidirectional flag will cause a projection to be formed in the
+      reverse direction whenever one is formed in the forward direction.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To create a full projection (of type "input") from group "input" to
+      group "hidden" which uses range -1.0+/-0.5 when randomizing weights in
+      this projection:
+    <pre>
+    lens> connectGroups input hidden -mean -1.0 -range 0.5</pre>
+
+    <p>
+      To create bidirectional FAIR projections between groups "in" and "hid1",
+      "in" and "hid2", "hid1" and "out", and "hid2" and "out" with
+      approximately 50% of the possible connections and with each link having
+      type "t1":
+    <pre>
+    lens> connectGroups in {hid1 hid2} out -bi -p FAIR -s 0.5 -type t1</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>,
+    <a href="connectGroupToUnits.html">connectGroupToUnits</a>,
+    <a href="connectUnits.html">connectUnits</a>,
+    <a href="elmanConnect.html">elmanConnect</a>,
+    <a href="addLinkType.html">addLinkType</a>,
+    <a href="disconnectGroups.html">disconnectGroups</a>,
+    <a href="setLinkValues.html">setLinkValues</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:12:30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: useTestingSet</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>useTestingSet</font> - makes an example set the current
+      testing set
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    useTestingSet [&lt;example-set>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With no argument, this returns a list of all example sets compatible
+      with the active network.  Given the name of an example set, this will
+      make that set the testing set for the active network.  With the null
+      string in place of an example set, this will set the network to have no
+      testing set.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To make "lots-o-data" the testing set:
+    <pre>
+    lens> useTestingSet lots-o-data</pre>
+    <p>
+      To give the network no testing set:
+    <pre>
+    lens> useTestingSet {}</pre>
+    
+    <h3>SEE ALSO</h3>
+    <a href="useTrainingSet.html">useTrainingSet</a>,
+    <a href="loadExamples.html">loadExamples</a>,
+    <a href="deleteExampleSets.html">deleteExampleSets</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 12:23:23 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

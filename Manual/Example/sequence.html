@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: sequence.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: sequence.in</h1>
+    <hr>
+    <p>
+      This is a sequence prediction task.  There are five bits in the input
+      and six in the output.  The input is a sequence of three different
+      one-bit-on patterns, repeated three times.  After the first two bits,
+      the network just has to activate the last output unit.  But once it has
+      seen all three bits, it must predict the next bit in the sequence.
+    <p>
+      This task is very hard for a simple recurrent network, because the
+      current input, or even the previous input, doesn't help the network much
+      in its prediction.  It must look back to the input before last.  You
+      will probably find that a basic SRN can't learn the task.
+    <p>
+      However, if you set the network's <i>backpropTicks</i> to 3 or more, it
+      will learn the task.  This causes the backpropagation phase to extend
+      back through time the specified number of ticks.  This helps the network
+      learn that it must keep track of all three values to formulate its
+      prediction.
+    <p>
+      Did the network generalize perfectly to the testing examples?  If not,
+      can you improve its generalization by encouraging binary hidden
+      representations?  Try giving the hidden layer an output cost type or
+      raising the gain.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 17:20:31 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

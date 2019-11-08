@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: saveExamples</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>saveExamples</font> - writes an example set to an
+      example file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    saveExamples &lt;example-set> &lt;file-name> [-binary | -append]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This writes an example file in either text or binary format.  If
+      the file name ends in .gz, .bz, .bz2, or .Z it will
+      automatically be compressed.  The <i>-binary</i> flag results in
+      the file being written in binary format.  Text is the default.
+    <p>
+      This command is useful for converting text example files to standard
+      text format or to binary format or for producing combined files after
+      multiple sets have been appended.  Only the stored examples will be
+      written to the file, so if the example set is reading from a pipe, the
+      pipe is ignored.
+    <p>
+      Binary example files will be much quicker to load with <a
+      href="loadExamples.html">loadExamples</a> because little parsing is
+      required.  They will also tend to take up less space.  However, if
+      the inputs and targets have little precision (like 0 and 1 values), a
+      compressed text example file may be smaller than a compressed binary
+      file.
+    <p>
+      It is suggested that example files be given the extension .ex and
+      binary example files the extension .bex, but this is not done
+      automatically.
+    <p>
+      If the <i>-append</i> flag is used, the examples will be
+      appended to the file.  This only works when writing text files.
+      When appending to a file, the example set header information
+      will not be written, only the examples themselves.  Appending is
+      useful for combining example sets, or perhaps for constructing
+      them one example at a time.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To save the set "my set" as the compressed binary file
+      Examples/mySet.bex.gz:
+    <pre>
+    lens> saveExamples "my set" Examples/mySet.bex.gz -b</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="loadExamples.html">loadExamples</a>,
+    <a href="moveExamples.html">moveExamples</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:13:42 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

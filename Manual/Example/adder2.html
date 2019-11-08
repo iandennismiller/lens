@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: adder2.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: adder2.in</h1>
+    <hr>
+    <p>
+      In this example, the network learns to add binary numbers.  Using an
+      SRN, we feed the two numbers in bit-by-bit, starting with the 
+      lowest-order bits.  On each step, the network must output the
+      corresponding bit of the sum.
+    <p>
+      This is actually like an extension of the XOR problem.  On the first
+      pair of bits the network must compute an XOR and possibly retain a
+      carry.  On subsequent bits, the network must add the two bits and the
+      carry and output their parity.
+    <p>
+      Because this is so related to the XOR problem, it should not be
+      surprising that the network sometimes fails to learn.  Try training
+      several times.  You should find that the network masters the task about
+      half the time.  When the network does succeed, you'll usually see that
+      learning didn't occur in a smooth progression.  It tends to reach
+      plateaus on which it slowly reorganizes its internal representations
+      before achieving a breakthrough.
+    <p>
+      Try examining the representations and link structure of a network that
+      has mastered the task.  Can you figure out how the network is solving
+      it?  Try examining the context-to-hidden projection to see how the carry
+      is represented and used.
+    <p>
+      Can you get the network to learn the task 100% of the time?  Try putting
+      the example set in PERMUTED mode using the <a
+	href="../Commands/exampleSetMode.html">exampleSetMode</a> command.
+      Now use a smaller batch size, around 10 or 20.  This can have the effect
+      of adding a little noise in the system.  Full batches aren't always the
+      best way to learn.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 15:24:40 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: thawWeights</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>thawWeights</font> - stops weight updates on specified
+    links
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    thawWeights [-group &lt;group-list> | -unit &lt;unit-list> | -type &lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This resumes weight changes on frozen links of the specified type during
+      training.  If no type is specified, all link types are affected.
+    <p>
+      If a group list or unit list is given, only links into those groups or
+      units are affected.  Otherwise, all links of the appropriate type are
+      affected.
+    <p>
+      Selective freezing or thawing can be used to load weights into
+      specific parts of the 
+      network using the <a href="loadWeights.html">loadWeights</a>
+      command.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To stop updates to bias links to the output layer:
+    <pre>
+    lens> thawWeights -g output -t bias</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="thawWeights.html">thawWeights</a>,
+    <a href="loadWeights.html">loadWeights</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 15:27:24 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

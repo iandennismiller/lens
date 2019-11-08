@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: filler.in/filler-srbptt.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: filler.in/filler-srbptt.in</h1>
+    <hr>
+    <p>
+      This is a memory test.  The network is given a sequence of five
+      patterns.  Each pattern has one in four bits on.  The network must
+      remember all of the patterns it's seen and reproduce them after each
+      step.  The output is a slot-filler representation.  The first pattern
+      goes in the top slot, the second pattern in the next slot and so on.
+      Along with just remembering the patterns, the network must keep track of
+      where it is in the sequence so the next pattern can go in the right
+      place.
+    <p>
+      A simple recurrent network is able to learn this problem without too
+      much trouble.  Because there are so many examples, it would not be
+      inefficient to do complete batch learning.  Therefore, learning is done
+      in batches of 10 examples.  This causes the error to bounce around a bit
+      and it is sometimes hard to distinguish this natural fluctuation with a
+      too-high learning rate.
+    <p>
+      You will probably find that the network learns best if you train for
+      5000 updates with a learning rate of 0.05 and then reduce the learning
+      rate to 0.02 or 0.01.  How well does the network generalize to the
+      testing examples?
+    <p>
+      <b>filler-srbptt.in</b> is a simple-recurrent backprop through time
+      network.  Although there are many tasks that an SRBPTT network can learn
+      that an SRN can't, the SRBPTT is not much better on this task.
+    <p>
+      The filler.in script illustrates how to construct a network the
+      old-fashioned way.  filler-srbptt.in illustrates how to construct a
+      similar network with a single 
+      <a href="../Commands/addNet.html">addNet</a> command.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 13:51:14 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

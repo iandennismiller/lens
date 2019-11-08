@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: General File Usage</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: General File Usage</h1>
+    <hr>
+    <p>
+      When reading a file with <a
+      href="Commands/loadWeights.html">loadWeights</a> or <a
+      href="Commands/loadExamples.html">loadExamples</a> or writing a
+      file with <a href="Commands/saveWeights.html">saveWeights</a>,
+      <a href="Commands/saveExamples.html">saveExamples</a>, or <a
+      href="Commands/openNetOutputFile.html">openNetOutputFile</a>,
+      file names with the extension .gz, .bz, .bz2, or .Z will
+      automatically be decompressed or compressed as appropriate.
+      When loading a file, if a file with the exact name does not
+      exist but a file of the same name plus .gz, .bz, .bz2, or .Z
+      does exists, the compressed file will be decompressed.
+      Therefore, the user need not know in advance if the file is
+      compressed.  If a file name does not begin with "<code>-</code>"
+      or "<code>|</code>" it will be treated as an actual file rather
+      than a pipeline or Tcl channel.
+    <p>
+      If the file name is simply a dash ("<code>-</code>"), standard input or
+      standard output will be used, as appropriate.  If the name begins with a
+      dash, the remainder of the name will be treated as the name of an
+      existing Tcl channel.  A Tcl channel is created with the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/open.htm">open</a>
+      command and closed with <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/close.htm">close</a>.
+      The channel can be a file or a command pipeline and may be opened for
+      reading, writing, or both.  The channel will still be open when the Lens
+      command using it completes.  The following example shows how to use a
+      filter, <code>chooseExample</code>, that chooses the next training
+      example given the network's output on the previous example:
+    <pre>
+    lens> set channel [open |chooseExample RDWR]
+    lens> openNetOutputFile -$channel
+    lens> loadExamples -$channel -s theSet -m PIPE
+    lens> useTrainingSet theSet
+    lens> train
+    lens> deleteExampleSet theSet
+    lens> close $channel</pre>
+    <p>
+      If the file name begins with a pipe ("<code>|</code>"), a process will
+      be started and the data read from or written to the pipeline.  This is
+      an alternate way to interact with a pipeline that avoids having to open
+      and close a Tcl channel.  This differs in that the pipeline will be
+      closed when the command completes (except when using the
+      <a href="Commands/openNetOutputFile.html">openNetOutputFile</a>
+      command).  In addition, there is no way
+      to create a two-way pipe as in the previous example without making it a
+      channel.
+    <p>
+      The description of the <a href="Example/xor.html">xor.in network</a>
+      gives an illustration of how an example-generating program can be used
+      in this way.
+    <p>
+      The following will let you preview the output of saveExamples by piping
+      it through <code>more</code>:
+    <pre>
+    lens> saveExamples "my set" |more</pre>
+    <p>
+      To write to a pipeline whose description consists of more than one word,
+      you will need to enclose the command and the initial <code>|</code> in
+      quotes:
+    <pre>
+    lens> saveExamples "my set" "| grep name | sort -r > names"</pre>
+    <p>
+      You could also read from a pipeline, which would be convenient when
+      generating example sets on the fly.  Note that the usage of the pipe
+      symbol is a bit unconventional here, since we are reading from the
+      pipeline rather than writing to it.  The first example reads from a
+      file, discarding the example tags.  The second reads from a process that
+      is presumably generating a finite number of examples.  If you have
+      trouble reading from pipes, <a href="pipe.html">read this note</a>.
+    <pre>
+    lens> loadExamples "| grep -v tag mySet.ex" -s "my set"
+    lens> loadExamples "| genex 1000" -s "my set"</pre>
+
+    Finally, you can specify example sets by hand by doing this:
+    <pre>
+    lens> loadExamples "|cat" -s toySet</pre>
+    ...and then typing in your example set and pressing Ctrl-d when you are
+    done.  This is useful if you are just experimenting and want a very small
+    example file or perhaps if you don't feel like ftping a file but you can
+    use your mouse to copy and paste a small example file.
+    <p>    
+    Automatic decompression, reading from a pipe, and reading from stdin,
+    will not work for script files run with the 
+      <a href="Commands/source.html">source</a> command or for postscript
+      files generated when a display is printed.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 20 18:38.30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

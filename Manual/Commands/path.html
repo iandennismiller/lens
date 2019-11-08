@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: path</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>path</font> - returns the full object path name of a major
+      object
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    path (-network &lt;network> | -group &lt;group> | -unit &lt;unit> |
+	-set &lt;example-set>)</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command takes the given name of a network, group, unit, or example
+      set and returns the path that can be used to more efficiently reference
+      that object.
+    <p>
+      For a network, the path will be in the form "<code>root.net(i)</code>".
+    <p>
+      For a group, which must be in the current network, the path will be of
+      the form "<code>group(i)</code>".
+    <p>
+      For a unit, which must be in the current network, the path will be of the
+      form "<code>group(i).unit(j)</code>".
+    <p>
+      For an example set, the path will be in the form
+      "<code>root.set(i)</code>".
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To get the path for the network named "my net":
+    <pre>
+    lens> path "my net"
+    root.net(3)</pre>
+    <p>
+      To get the path of unit "output:3":
+    <pre>
+    lens> path output:3
+    group(4).unit(3)</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="setObject.html">setObject</a>,
+    <a href="getObject.html">getObject</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 18:02:30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

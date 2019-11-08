@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: rhw-sequence.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: rhw-sequence.in</h1>
+    <hr>
+    <p>
+      This is the sequence task introduced on page 358 of Parallel Distributed
+      Processing, Explorations in the Microstructure of Cognition, Vol. 1,
+      edited by David Rumelhart and James McClelland.  The network used here
+      is a pretty faithful reproduction of their network, based on the
+      description provided.
+    <p>
+      This task is fairly difficult for a standard SRN.  However, it sounds
+      like Rumelhart, Hinton, and Williams were using simple recurrent
+      backprop through time, which runs a single backprop pass that extends
+      back in time from the end of the example to the beginning.  Thus, an
+      SRBPTT network was used here.
+    <p>
+      With the current settings, the network should learn the training set in
+      about 400 sweeps, although it may be a bit unstable.  Can you improve
+      the speed with which the network learns?  Hint: try Doug's Momentum with
+      a learning rate around 0.1 and a weight randRange of 1.0.
+    <p>
+      How can you get better generalization out of the network?  Should you
+      use a lot of hidden units and weight decay or a few hidden units and try
+      to encourage binary representations?
+    <p>
+      Try experimenting with the network's structure.  It currently has a
+      hidden layer that feeds back to itself and an output layer that feeds
+      back to itself.  Does the output feedback really help?  What if you have
+      the output feed back into the hidden layer like a Jordan net?
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 12:50:00 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

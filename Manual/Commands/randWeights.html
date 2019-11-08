@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: randWeights</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>randWeights</font> - randomizes all of the weights of a
+      selected type
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    randWeights [-group &lt;group-list> | -unit &lt;unit-list> | 
+        -mean &lt;mean> | -range &lt;range> | -type &lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This randomizes link weights.  If a link type is
+      specified, only links of that type will be changed.  Otherwise links
+      of all types will be changed.  If a group list is given, only links
+      into that group will be affected.  If a unit list is given, only links
+      into those units will be affected.  Otherwise, all links (of the given
+      type) in the network will be randomized.
+    <p>
+      Unlike the <a href="resetNet.html">resetNet</a> command, this will
+      randomize frozen weights.
+    <p>
+      Weights are selected from a flat distribution over
+      <i>mean</i>+/-<i>range</i>.  If <i>mean</i> or both values are not
+      specified, the values for the block containing each link will be used.
+      If the values aren't specified for the block, those for the network will
+      be used.  The <i>range</i> must be positive, but the <i>mean</i> may be
+      negative.
+    <p>
+      This command will not change the default mean and range values for
+      link blocks or for the network.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      Randomizes all links to the group or network default ranges:
+    <pre>
+    lens> randWeights</pre>
+
+    <p>
+      Randomizes only links of type "bias" into the "hidden" and "output"
+      groups.  The distribution range will be +/- 0.3.  The mean is still
+      determined by the block or network.
+    <pre>
+    lens> randWeights -g {hidden output} -r 0.3 -t bias</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="setLinkValues.html">setLinkValues</a>,
+    <a href="resetNet.html">resetNet</a>,
+    <a href="addLinkType.html">addLinkType</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 15:19:38 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

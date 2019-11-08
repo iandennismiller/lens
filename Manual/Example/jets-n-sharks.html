@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: jets-n-sharks.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: jets-n-sharks.in</h1>
+    <hr>
+    <p>
+      This is an implementation of the Jets and Sharks interactive-activation
+      model, which is discussed starting on page 25 of Parallel Distributed
+      Processing, Explorations in the Microstructure of Cognition, Vol. 1,
+      edited by David Rumelhart and James McClelland.  It originally appeared
+      in "Retrieving General and Specific Knowledge From Stored Knowledge of
+      Specifics" by J. L. McClelland, 1981, <i>Proceedings of the Third Annual
+	Conference of the Cognitive Science Society</i>, Berkeley, CA.
+    <p>
+      An interactive-activation model is generally a localist model with
+      fixed-weight connections.  Unit outputs are time averaged and tend to
+      decay towards the <i>initOutput</i> value.
+    <p>
+      In this model, there are 27 gang members, each with a name, gang
+      affiliation, age range, education level, marital status, and occupation.
+      There is a group for each of these fields which has one unit for each
+      distinct value in that field.  For example, the marital status group has
+      units for single, married, and divorced.
+    <p>
+      There is also a single instance unit for each person.  There are
+      excitatory connections between the instance unit and the property units
+      of that individual.  Within each group, there are inhibitory connections
+      between each unit and every other unit.
+    <p>
+      The point of the network is to act as a sort of content-addressable
+      memory.  If an instance unit is activated, it should in turn activate
+      all the properties of that person.  If some properties that uniquely
+      define a person are activated, we hope that the person's instance unit,
+      name, and other properties will become activated.
+    <p>
+      I'm not going to go into great detail about the various features of this
+      sort of model.  You can learn about that in the PDP books or other
+      tutorials, such as <a
+href="http://www2.psy.uq.edu.au/~brainwav/Manual/IAC.html">this one</a>.
+    <p>
+      I will just say a few things about how the model is implemented in
+      Lens.  The groups all have the type "INPUT DOT_PRODUCT INCR_CLAMP 
+      INTERACT_INTEGR".  They are INPUT groups because an external input can
+      be specified for them in an example file to clamp their values.  Each
+      unit has an ordinary DOT_PRODUCT input function.  Then there is an
+      INCR_CLAMP input function.  If an external input has been specified for
+      a unit, the external input, scaled by the <i>clampStrength</i> will be
+      added to the unit's input value.  This is used to activate selected
+      units.
+    <p>
+      The units have the INTERACT_INTEGR output function.  It computes the
+      unit outputs from the inputs as follows:
+    <pre>
+    in  = U->input;
+    out = lastOutput[u];
+    if (in > 0.0) out += dt * ((max - out) * in - (out - rest));
+    else out += dt * ((out - min) * in - (out - rest));
+    if (out > max) out = max;
+    else if (out < 0.0) out = 0.0;
+    U->output = lastOutput[u] = out;</pre>
+    <p>
+      <i>max</i>, <i>min</i>, and <i>rest</i> are taken from the group's
+      <i>maxOutput</i>, <i>minOutput</i>, and <i>initOutput</i>,
+      respectively.  In this network, <i>maxOutput</i> is set to 1.0,
+      <i>minOutput</i> to -0.2, and <i>initOutput</i> to 0.0.
+    <p>
+      This version of the interactive activation model differs a bit from the
+      original formulation.  Originally, units were allowed to have outputs
+      less than 0.  However, when using the output value to compute the input
+      to other units, outputs were bounded at 0.  Rather than having
+      non-functional outputs below 0, Lens just bounds the output values at 0.
+      This avoids the confusion of having to treat negative output values
+      specially and the illogic of even having a negative activation.
+      Also, the original formulation had a resting value of -0.1, but Lens
+      uses 0.0 since that is the minimum activation.  Otherwise, this
+      simulation is identical to the original, as far as I can tell.
+    <p>
+      There is no training in the interactive activation model.  All excitatory
+      weights are fixed at 1.0 and all inhibitory weights at -1.0.  In
+      evaluating the model, you will simply be clicking on examples in the
+      Unit Viewer to run the network on them.
+    <p>
+      Try opening the Unit Viewer and clicking on the example Lance-in.  This
+      drives the Lance instance unit.  Click the triple-right arrow to go to
+      the end of the example.  Or use the single-right to step through all 60
+      ticks in the example.
+    <p>
+      You should find that in the end, the Lance name unit is the most
+      active.  Lance's other properties should also be the most active ones in
+      their respective groups: Jets, 20's, J.H., Mar., and Burglar.  You can
+      see Lance's properties by looking at the Data section of the 
+      jets-n-sharks.in script.
+    <p>
+      Try clicking on the other *-in examples and checking the properties
+      activated by the network with the correct properties.  You should find
+      that the network is pretty good on Lance, Art, Sam, Ralph, but it has a
+      lot of trouble with Rick and Ken.
+    <p>
+      Let's graph what happend in the Rick case.  Run this command:
+      <pre>
+lens> graphObject {Rick.output Ralph.output Fred.output Phil.output Sharks.output Jets.output} -u TICKS</pre>
+    <p>
+      Now click on the Rick-in example.  You should see a bunch of curves
+      appear on the graph.  The Rick curve is in black.  It dominates the
+      other names early on, but then is overtaken by Ralph and Fred.
+      Likewise, the correct gang, Sharks, is active early but is eventually
+      overtaken by the Jets.  Can you figure out why this happens?
+    <p>
+      Now click on the Lance, Art, Rick, Sam, Ralph, and Ken examples to
+      activate their name units, rather than their instance units.  The
+      network will probably have more trouble in this case.
+    <p>
+      The "Sharks 20's" example drives the Sharks and 20's units.  The only
+      person in his 20's and in the Sharks is Ken.  Is his the most active
+      instance unit?  How about the most active name?  Similarly, the
+      "Div. Pusher" example activates two units that are only consistent with
+      Dave.  Does the network correctly identify him?
+    <p>
+      In the "Lance-in on/off" example, the Lance instance unit is activated
+      for thirty ticks and then the input is removed.  Does the network
+      maintain the proper activations once the input goes away?  How about for
+      "Art-in on/off"?
+    <p>
+      Read through the jets-n-sharks.in script.  It automatically builds the
+      network given the information in the Data array.  This is why having a
+      scripting language built into the simulator is so powerful.  Can you
+      figure out everything that goes on the script?
+    <p>
+      Try modifying the parameters of the model to get better performance.
+      The parameters you might want to play with are the INHIB_WEIGHT, 
+      EXCIT_WEIGHT, and the groups' maxOutput, minOutput, initOutput, 
+      clampStrength, and dtScale.  I had some luck by making the inhibitory
+      weights more negative and the excitatory weights less positive.
+    <p>
+      Invent some more experiments you would like to run on the network and
+      try to create an example file containing examples that implement your
+      experiments.  Taking a look at the jets-n-sharks.ex file should help.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 19:44:30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

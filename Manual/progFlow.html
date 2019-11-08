@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Flow of Control</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: Flow of Control</h1>
+    <hr>
+    <p>
+      Because Lens uses so many function pointers, it can be a bit confusing
+      to trace the flow of control, or the order in which functions call
+      one-another, within act.c and train.c.  This page outlines the hierarchy
+      in which functions are called during training and testing.  Function
+      pointers are contain arrows (->).  "N->" indicates a function pointer
+      that is part of the network structure. "S->" is a function pointer in the
+      example set structure.  Names in parentheses are the default functions
+      to which the corresponding function pointer points.  All functions are
+      not shown, just the most important ones.
+    <p>
+    <hr>  
+    <h3>Training Standard Networks</h3>
+    <pre>
+C_train
+  N->netTrain (standardNetTrain)
+    N->netTrainBatch (standardNetTrainBatch)
+      loadNextExample
+        S->nextExample (orderedLoadNextExample)
+          S->loadExample (standardLoadExample)
+      N->netTrainExample (standardNetRunExample)
+        S->loadEvent (standardLoadEvent)
+        N->netTrainTick (netForwardBackward)
+          computeInput
+          computeOutput
+          computeCost
+</pre>
+    <h3>Testing Standard Networks</h3>
+    <pre>
+C_test
+  N->netTestBatch (standardNetTestBatch)
+    loadNextExample
+      S->nextExample (orderedLoadNextExample)
+        S->loadExample (standardLoadExample)
+    N->netTestExample (standardNetRunExample)
+      S->loadEvent (standardLoadEvent)
+      N->netTestTick (netForward)
+        computeInput
+        computeOutput
+        computeCost
+        computeCostBack
+        computeOutputBack
+        computeInputBack
+</pre>
+<hr>
+    <h3>Training Continuous Networks</h3>
+    <pre>
+C_train
+  N->netTrain (standardNetTrain)
+    N->netTrainBatch (standardNetTrainBatch)
+      loadNextExample
+        S->nextExample (orderedLoadNextExample)
+          S->loadExample (standardLoadExample)
+      N->netTrainExample (standardNetRunExample)
+        S->loadEvent (standardLoadEvent)
+        N->netTrainTick (continuousNetTrainTickForward)
+          continuousNetTickForward
+            computeInput
+            computeOutput
+            computeCost
+          computeCostBack
+      N->netTrainExampleBack (continuousNetExampleBack)
+        computeOutputBack
+        computeInputBack
+</pre>
+    <h3>Testing Continuous Networks</h3>
+    <pre>
+C_test
+  N->netTestBatch (standardNetTestBatch)
+    loadNextExample
+      S->nextExample (orderedLoadNextExample)
+        S->loadExample (standardLoadExample)
+    N->netTestExample (standardNetRunExample)
+      S->loadEvent (standardLoadEvent)
+      N->netTestTick (continuousNetTickForward)
+        computeInput
+        computeOutput
+        computeCost
+</pre>
+<hr>
+    <h3>Training Boltzmann Machines</h3>
+    <pre>
+C_train
+  N->netTrain (standardNetTrain)
+    N->netTrainBatch (standardNetTrainBatch)
+      loadNextExample
+        S->nextExample (orderedLoadNextExample)
+          S->loadExample (standardLoadExample)
+      N->netTrainExample (boltzmannNetTrainExample)
+        S->loadEvent (standardLoadEvent)
+        N->netTrainTick (boltzmannUpdate)
+          computeInput
+          computeOutput
+        initializeBoltzmannOutputs
+        resetBoltzmannOutputs
+        boltzmannSettled
+        computeCost
+        computeInputBack
+</pre>
+    <h3>Testing Boltzmann Machines</h3>
+    <pre>
+C_test
+  N->netTestBatch (standardNetTestBatch)
+    loadNextExample
+      S->nextExample (orderedLoadNextExample)
+        S->loadExample (standardLoadExample)
+    N->netTestExample (boltzmannNetTestExample)
+      S->loadEvent (standardLoadEvent)
+      N->netTestTick (boltzmannUpdate)
+        computeInput
+        computeOutput
+      initializeBoltzmannOutputs
+      resetBoltzmannOutputs
+      boltzmannSettled
+</pre>
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 13:57:53 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

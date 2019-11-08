@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: t-c.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: t-c.in</h1>
+    <hr>
+    <p>
+      This is the problem of recognizing a T or a C irrespective of location
+      or orientation that is introduced on page 348 of Parallel Distributed
+      Processing, Explorations in the Microstructure of Cognition, Vol. 1,
+      edited by David Rumelhart and James McClelland.
+    <p>
+      It isn't hard for the network to learn the training set, but it is very
+      hard for what it learns to transfer to the testing set, which contains
+      some held-out examples.  The solution given in the PDP book was to have
+      each hidden unit look at a particular patch of the input and to tie
+      their weights together so they all compute the same function.
+    <p>
+      This seems a bit heavy-handed.  Can you come up with a different way to
+      get the network to generalize from its experiences?  I haven't solved
+      this, so let me know if you come up with a solution.  You might try
+      writing a script to form local patterns of projections from the input to
+      the hidden layer.
+    <p>
+      But this problem raises the question: Is our ability to recognize
+      objects really translation-invariant?  Are you actually good at
+      recognizing objects that you aren't fixating on?  How about images of
+      people you know?  Have a friend test you.  I'm willing to bet the brain
+      isn't so good at translation-invariance either.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 15:04:43 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

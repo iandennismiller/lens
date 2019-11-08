@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Frequently Asked Questions</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Miscellanea: Frequently Asked Questions</h1>
+    <hr>
+    <h3>What's the difference between normal and continuous networks and how 
+      do I make a network one or the other?</h3>
+    <p>
+      Normal networks are the default.  These are used for standard
+      feedforward and simple-recurrent (Elman) networks.  In the forward pass
+      that occurs on each tick in such a network, each group in order will
+      update its inputs and then immediately its outputs.  Therefore, on a
+      single tick, information can propagate from the first group to the last.
+      When training a normal network, error derivatives are backpropagated on
+      each tick and no history of outputs and inputs is needed.
+    <p>
+      In a <i>continuous</i> network, on the other hand, a forward pass is
+      "synchronous".  First all unit outputs are reset to their
+      <i>initOutput</i> if the group's <i>resetOnExample</i> flag is
+      true. Then all of groups calculate their inputs.  Finally all of the
+      groups calculate their outputs based on their inputs.  Therefore,
+      information will not propagate through the entire network on each tick.
+      It will only propagate the distance of a single link projection.
+    <p>
+      Continuous networks were given that name because typically a continuous
+      network would contain groups that continuously integrate their inputs or
+      outputs over time.  However, a continuous network could be given a
+      <i>dt</i> of 1.0 or non-integrating groups, in which case it would not
+      really be "continuous" per se.  Such a network is typically called
+      recurrent backprop-through-time (RBTT).  In Lens it is just considered a
+      special case of a continuous network.
+    <p>
+      A network is by default non-continuous.  You can make a continuous
+      network by calling <a href="Commands/addNet.html">addNet</a> with the
+      CONTINUOUS network type.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 00:01:55 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

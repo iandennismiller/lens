@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: integrate.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: integrate.in</h1>
+    <hr>
+    <p>
+      This example sets up a simple environment to help you study the behavior
+      of integrating units.  There are two main types of unit integration in
+      Lens: input and output integration.  In the former case the unit inputs
+      are time averaged and in the latter case the unit outputs are time
+      averaged.  Of course, one could use both, but that's a little crazy.
+    <p>
+      You can learn more about how integration works by reading the first part
+      of the <a href="rand10x40.html">rand10x40.in</a> description. 
+    <p>
+      There is a single input unit in this network connected to two hidden
+      units with a fixed-weight link.  There is no bias input to the hidden
+      units.  One hidden unit is input integrating and the other is output
+      integrating.
+    <p>
+      Go ahead and click on the first example in the Unit Viewer.  You should
+      see two traces in the graph.  The black trace is for the input
+      integrator and the red trace is for the output integrator.  The first
+      example has an input of 1 followed by an input of 0.  The second has a
+      -1 followed by 1.  The other two make transitions between 1 and -1.
+    <p>
+      You should find that the output integrator makes slower transitions away
+      from 0, but faster transitions towards 0.
+    <p>
+      Try studying the effect of changing the link weights, gain, and dt.  To
+      perform each experiment, click on the first example, store the graph,
+      change the parameter value, then click on the first example again.  This
+      way, you can directly compare the curves.
+    <p>
+      You should find that dt has a greater effect on output integrators but
+      gain and the input strength have a greater effect on the input
+      integrator.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 21 14:07:40 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

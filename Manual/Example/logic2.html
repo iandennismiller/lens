@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: logic2.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: logic2.in</h1>
+    <hr>
+    <p>
+      This is a much more difficult boolean formula problem than <a
+      href="logic.html">logic.in</a>.  In this task, the formulae are
+      presented to the network one symbol at a time.  The formulae involve
+      parenthesized expressions and even negated parenthesized expression.
+    <p>
+      Although it is possible to get a network to memorize the training
+      corpus, it is much harder to train a network to generalize to the
+      testing corpus.
+    <p>
+      The procedure "testit" has been provided which tests the network on both
+      the training and testing corpora and reports the correctness rates.  The
+      procedure "go" will train for a little while and then test.
+    <p>
+      The best I was able to do was 85% correct on the testing corpus.  That
+      isn't all that good since much of the testing corpus is short, familiar
+      formulae.
+    <p>
+      Can you break 85%?  You'll have to be patient training this one.  It
+      doesn't learn very quickly and there is a lot of noise because of the
+      small batches.  You may need to gradually decrease the
+      learning rate as training progresses.  Also try experimenting with
+      different size hidden layers.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 19:08:54 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

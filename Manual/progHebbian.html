@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Hebbian or Other Non-Backprop Networks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide:  How To Create Hebbian or Other Non-Backprop 
+      Networks</h1>
+    <hr>
+    <p>
+      As evidenced by the implementation of the deterministic Boltzmann
+      machine, it is possible to create non-backprop networks in Lens.  Now
+      that the DBM can serve as a model, there isn't really much to say about
+      how to go about implementing a Hebbian network.  Because you can
+      redefine the functions that train or test the network at the level of
+      the tick, example, or batch, there is a lot of freedom to implement
+      algorithms that are quite unlike backpropagation.
+    <p>
+      In any network, however, you may wish to retain the formalism that link
+      error derivatives are collected while training on a batch and then used
+      by the weight update algorithm to change the weights.  In this way,
+      the same update algorithms can operate on backprop and Hebbian networks,
+      although some Hebbian algorithms may only work properly with steepest
+      descent and online learning.
+    <p>
+      If you are doing this, it is important to remember that the values you
+      store in the links' <i>deriv</i> fields should be proportional to the
+      <i>negative</i> of the desired weight change.  For example, imagine you
+      were writing a simple Hebbian rule in which the change to weight
+      <i>Wij</i> should be equal to <i>e Oi Oj</i>, where <i>e</i> is a small
+      epsilon and the <i>O</i>'s are the outputs of the two units.  After the
+      network has finished its settling, you will want to <i>increment</i> the
+      <i>deriv</i> of each link by <i>-Oi Oj</i>.  The epsilon is just your
+      learning rate and will appear when the actual weight change is made.
+    <p>
+      If your network requires that links in opposite directions between two
+      units share the same weight, that will not be easily accommodated in
+      Lens because of the compact representation used to store links.
+      However, there are some ways to do it.  One would be to just create a
+      single set of links and change the input combining procedure to use
+      these links twice when calculating the inputs to the two units.  A more
+      complicated solution would be to add a field to each link that
+      allowed it to store a pointer to the corresponding link.  You would then
+      need to write a special <a href="progConnect.html">group connection
+      procedure</a> to set those links and possibly a new <a
+      href="progAlgorithm.html">weight update algorithm</a> to ensure that the
+      link weights stay the same.
+    <p>
+      A final option, given that most Hebbian learning rules are symmetrical
+      and a pair of links will always keep the same weight if they are
+      initialized the same way, is to just change the network resetting
+      procedure to give the corresponding links the same value at the start
+      and then treat them as separate links.  This has the advantage that it
+      is simpler, but the network may be up to twice as slow as a good
+      implementation of the first option.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 00:00:33 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

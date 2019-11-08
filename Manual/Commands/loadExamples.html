@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: loadExamples</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>loadExamples</font> - reads an example file into an
+      example set
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    loadExamples &lt;file-name> [-set &lt;example-set> | -num &lt;num-examples> |
+        -exmode &lt;example-mode> | -mode &lt;load-mode>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command loads examples from either a binary or text example
+      file into an example set.  If the file name ends in .gz, .bz,
+      .bz2, or .Z it will automatically be decompressed.  If no set
+      name is specified, the name of the example set will be the root
+      of the file name (without the path or extensions).  Otherwise
+      the examples will be loaded into the specified set.  As with
+      most file reading commands in Lens, the file may be a normal
+      file name, standard input ("-"), a Tcl channel, or a pipe.
+    <p>
+      If the <i>example-mode</i> is specified, it will set the way in which
+      examples will be selected when training or testing with this set.  The
+      example selection mode can also be set with the <a
+	href="exampleSetMode.html">exampleSetMode</a> command.  The example
+      mode should not be confused with the set loading mode, which is
+      explained below.
+    <p>
+      There are two basic forms of this command, <i>stored</i> and
+      <i>piped</i>.  Stored is the normal behavior.  It will load the examples
+      from the file and store them in the example set.  There are three forms
+      of stored mode behavior, explained below.  If <i>num-examples</i> is
+      specified, only that many examples will be loaded.  Otherwise the entire
+      file will be loaded.  If the file is a normal file or a pipe, it will
+      then be closed.
+    <p>
+      In piped mode, which occurs when a <i>load-mode</i> of PIPE is given, no
+      examples are actually loaded.  The example set header will be read and
+      then the file or pipe will be left open.  Subsequently, whenever an
+      example is needed it will be read from the file and only stored
+      temporarily.  This is most useful when working with a program that
+      generates examples on the fly.  If a <a href="../files.html">Tcl
+      channel</a> is used, it is possible to create a two way pipe that will
+      choose the next example based on some input, such as the output of the
+      network on the previous example.  In piped mode, the file or pipe will
+      remain open until the example set is deleted, a new pipe is opened with
+      this command, an error occurs, or the pipe is exhausted.  If the pipe is
+      exhausted and the example set's <i>pipeLoop</i> flag is set to TRUE,
+      which is the default, the pipe will be re-opened automatically.  Note
+      that stored mode could read from a pipe and piped mode could read from a
+      file.  The difference is only whether the examples are loaded all at
+      once or one at a time.
+    <p>
+      Piped mode can read either text or binary examples.  The pipe must begin
+      with the same header that a normal example file uses.  Unlike normal
+      files, however, there must be a newline at the end of each example with
+      piped text input.  The pipe may be buffered so any program producing
+      examples should probably flush its output after each example,
+      particularly if the pipe is two-way.  If the example set already exists
+      and has some examples stored in it, the examples will remain there if a
+      pipe is opened.  The examples can only be accessed if the example
+      selection mode is change to something other than PIPE using the <a
+      href="exampleSetMode.html">exampleSetMode</a> command.
+    <p>
+      In stored mode, the default behavior if a set with the same name already
+      exists is to silently abort.  This is typically what one would want if
+      one were using the command in a network initialization script file that
+      might be run repeatedly.  Alternately, one of two additional modes may
+      be specified: <i>REPLACE</i> or <i>APPEND</i>.  The mode name may be
+      abbreviated to the first letter.  In REPLACE mode, an existing set of
+      the same name will be discarded and the example file reloaded.  In
+      APPEND mode, the examples will be added to the existing set.  This is
+      convenient for concatenating multiple example files as the user need not
+      worry about removing the headers.  Both the default mode, REPLACE, and
+      APPEND are all <i>stored</i> modes.
+    <p>
+      If the new example set is compatible with the active network and the
+      active network has no training set, the network will use the new set as
+      its training set.  If the network has a training set but no testing set,
+      the new set will automatically become the testing set.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To read the file "Examples/digits.ex.gz" into the example set "digits":
+    <pre>
+    lens> loadExamples Examples/digits.ex.gz</pre>
+    <p>
+      To append 100 examples from the file "set2.ex" to "big set":
+     <pre>
+    lens> loadExamples set2.ex -s "big set" -n 100 -m A</pre>
+    <p>
+      To begin reading from the pipeline "generateStuff | formatExamples":
+    <pre>
+    lens> loadExamples "| generateStuff | formatExamples" -s mySet -m PIPE</pre>
+    <p>
+      To read from a Tcl channel:
+    <pre>
+    lens> set file [open myFile]
+    lens> loadExamples -$file -s mySet</pre>
+    <h3>SEE ALSO</h3>
+    <a href="useTrainingSet.html">useTrainingSet</a>,
+    <a href="useTestingSet.html">useTestingSet</a>,
+    <a href="deleteExampleSets.html">deleteExampleSets</a>,
+    <a href="moveExamples.html">moveExamples</a>,
+    <a href="saveExamples.html">saveExamples</a>,
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/open.htm">
+      open</a>,
+    <a href="exampleSetMode.html">exampleSetMode</a>,
+    <a href="../files.html">General File Usage</a>,
+    <a href="../exampleFiles.html">Example Files</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:13:26 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

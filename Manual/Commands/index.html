@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: index</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>index</font> - creates a .tclIndex file recording the locations of commands
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    index [&lt;directory> [&lt;glob-filter>]*]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This is a slightly modified version of the <code>auto_mkindex</code>
+      command.  It reads through all files that match at least one filter in
+      the specified directory and creates a <code>.tclIndex</code> file which
+      lists the procedures defined in each source file.  The default directory
+      is the current one and the default filters are "<code>*.tcl</code>" and
+      "<code>*.in</code>".
+    <p>
+      Subsequently, if an undefined procedure is invoked, Lens will look for
+      it in all index files in the <code>auto_path</code>.  If found, the
+      correct file will be <a href="source.html">sourced</a> and the command
+      executed.  This is called <i>autoloading</i>.  The
+      <code>auto_path</code> is a normal Tcl list and can be customized in the
+      <a href="../customization.html">.lensrc</a> file.
+    <p>
+      You don't need to call this function every time you start Lens.  Only do
+      it when you add a new procedure to one of your ".tcl" files.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To make an index of all "<code>*.tcl</code>" and "<code>*.in</code>"
+      files in the current directory:
+    <pre>
+    lens> index</pre>
+    <p>
+      To make an index of all "<code>*.in</code>" and "<code>net*</code>"
+      files in the directory "Scripts":
+    <pre>
+    lens> index Scripts *.in net*</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="source.html">source</a>,
+    <a href="alias.html">alias</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Feb 22 16:02:26 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

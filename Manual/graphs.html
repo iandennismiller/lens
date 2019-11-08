@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Graphs</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Graphical Displays: Graphs</h1>
+    <hr>
+    <p>
+      The Lens graphs are used to plot values over time.  Although their most
+      common use is to watch the error while the network trains, they
+      are quite flexible and can be used for a variety of purposes.  Unlike the
+      Unit and Link Viewers, there can be multiple graphs open at the same
+      time.
+
+
+    <h3>Creating Graphs</h3>
+    <p>
+       There are several ways to create a graph.  The most common is to click
+       on the "New Graph" button on the main window.  This is actually a
+       shortcut to the <a href="Commands/graphObject.html">graphObject</a>
+       command, which is the way to create graphs in a script.  These commands
+       allow you to create some initial traces.  If necessary, you can create an
+       empty graph without any traces using the <a
+       href="Commands/graph.html">graph</a> command.
+     <p>
+      Each graph is identified by an integer, which is returned by the graph
+      creation commands, <a href="Commands/graph.html">graph</a> and <a
+      href="Commands/graphObject.html">graphObject</a>, and which is shown in
+      the title bar of the graph window.  Graph structures are accessible in
+      the Object Viewer, under the <code>root</code> object, and with the <a
+      href="Commands/setObject.html">setObject</a> and <a
+      href="Commands/getObject.html">getObject</a> commands.  Graph 2 can be
+      accessed as <i>root.graph(2)</i> or simply <i>graph(2)</i>.
+    <p>
+      Often it is convenient to create a graph of the network's error
+      in your network-building script using the "<code>graphObject
+      error</code>" command.  However, if you then re-run this script to
+      rebuild the network, you will end up with a second graph.  Therefore,
+      it is a good idea to use this command, which will create a graph only if
+      there are no other graphs:
+      <pre>
+    if {[graph list] == {}} {graphObject error}</pre>
+
+    <h3>Traces</h3>
+    <p>
+      A graph can contain multiple <i>traces</i>.  A trace is a set of (x, y)
+      values connected into a continuous series of line segments.  Each trace
+      can have its own variable or function, as well as its own color, label,
+      and state.  But all of the traces in a graph share the same scale.
+    <p>
+      You can add a new trace by clicking on <b>Add Trace</b> in either the
+      <b>Graph</b> menu or the properties window, or by using the <a
+      href="Commands/trace.html">trace</a> command.
+    <p>
+      You can change the parameters for the graph and for each trace by
+      clicking on the <b>Properties</b> button on the graph's menubar to open
+      the graph properties window.  You can also change them using the Object
+      Viewer or <a href="Commands/setObject.html">setObject</a>.  But if you do
+      change a graph parameter in this way, you may need to refresh the graph
+      for the change to take effect.
+    <p>
+      A trace can either get its values from a Lens object or from a Tcl
+      procedure.  If the <b>Object/Proc</b> field is set to the name of an
+      object in the network, such as "error" or "output:3.input", the value
+      will be taken from that object whenever the trace is updated.  However,
+      the object must be of type <code>real</code>, meaning a floating point
+      value.
+    <p>
+      You can also plot the output of any Tcl procedure that takes no
+      arguments and returns a number.  For example, you might define the
+      following procedure:
+    <pre>
+    proc myError {} {expr log([getObj error])}</pre>
+    Now if you set the <b>Object/Proc</b> of the trace to
+    "<code>myError</code>", you can plot the log of the error.  Or, you could
+    skip the procedure definition and just set <b>Object/Proc</b> to
+    "<code>expr log([getObj error])</code>".
+    <p>
+      As you might imagine, the ability to use
+      arbitrary procedures gives you great flexibility in what you can graph.
+    <p>
+      If an error occurs in trying to access the object or run the procedure
+      you have specified, you will get an error message and the trace will be
+      deactivated to prevent further error messages.
+    <p>
+      You can change the color of a trace by clicking on the rectangle after
+      <b>Color</b> in the properties window and using the color dialog
+      window, or by directly setting the trace's <i>color</i> field to the
+      name of a color.
+    <p>
+      The trace's <b>Label</b> is only used when <a
+      href="#exporting">exporting data</a> from the graph.
+    <p>
+      Each trace also has three flags that control its state: Active, Visible,
+      and Transient.  These are <a href="#states">explained later</a>.
+
+<h3>Graph Updates</h3>
+    <p>
+      New values are added to the traces in a graph only when it is updated.
+      Normally a graph is updated during testing or training following actions
+      of a certain type.  These include ticks, events, examples, weight
+      updates, and progress reports.  It would not make much sense to plot the
+      error on ticks, events, or examples, because the error is accumulating
+      over the examples and we are normally only interested in it at the time
+      of a weight update.
+    <p>
+      However, if you were plotting the activations of units in a continuous
+      network, you might want to update their values every tick or every
+      event.
+    <p>
+      In the graph properties window, the number after <b>Update Every</b>
+      determines how many update signals must occur before the graph will be
+      updated.  If the number is set to 1, the graph will update every time a
+      signal occurs.  If it were set to 2, the graph would update every other
+      time a signal occurs.  If you only want the graph to update itself
+      occasionally, you might have it update every 10 progress reports, for
+      example.
+    <p>
+      If the graph is set to update after <b>User Signals</b>, it will be
+      updated when you invoke the <a
+	href="Commands/graph.html">graph update</a> command.  You might use
+      this to plot the output of a unit only on particular examples.  Or you
+      could use it to plot arbitrary functions.
+    <p>
+      For example, you could create a plot of a sin wave in the following
+    way:<pre>
+    set g [graphObject {{expr sin(double($i)/10)}}]
+    setObject graph($g).fixMin 0
+    repeat i 100 {graph update $g}</pre>
+
+<h3>Axes</h3>
+      The x-axis of the graph simply counts the number of updates.  Therefore,
+      what the numbers actually refer to depends on how frequently you are
+    updating.  Basically, the x-axis just corresponds to update signals.
+    <p>
+      The <b>Columns</b> parameter (and the graph's <code>cols</code> field)
+      determines the number of X values that will appear in the window.
+    <p>
+      If there are more values than there are
+      columns, you can use the scrollbar at the bottom to move through the
+      graph.  If the traces reach the edge of the window while the graph is
+      being plotted, it will be scrolled automatically.
+    <p>
+      The y-axis reflects whatever values were returned by the objects or
+      procedures associated with the traces.  <b>Max</b> and <b>Min</b>
+      determines the maximum and minimum y-values visible.  If set to
+      <b>Auto</b>, they will automatically become the max or min value in the
+      graph.  Otherwise, you can fix them at a particular value.
+    <p>
+      By default, <b>Max</b> is on auto and <b>Min</b> is fixed at 0.
+    <p>
+      The tick labels on the x- and y-axes are placed automatically.
+      You have no control over this.
+    <p>
+      If you resize the graph window, the graph will rescale itself to fill
+      the window, but it will not affect the number of columns visible or the
+      min or max values.
+
+<a name="states">
+<h3> Trace States</h3>
+    <p>
+      If a trace is <b>Active</b>, it will add a new point to itself whenever
+      the graph is updated.  Otherwise, the trace will remain unchanged.
+    <p>
+      If a trace is <b>Visible</b>, it will be visible.  Otherwise, it will
+      not show up on the graph and will not be printed if you export the graph
+      data.
+    <p>
+      If a trace is <b>Transient</b>, it will be deleted whenever the graph is
+      cleared.
+
+<h3>Storing the Graph</h3>
+    <p>
+      While experimenting with various training parameters, it is nice to
+      compare the learning curves of the network under various conditions.
+      Once the network has trained and you are ready to reset the network and
+      try again, you may want to leave the old error trace on the graph and
+      start drawing a new trace.
+    <p>
+      In Lens this is known as <i>storing</i> the traces.  When a trace is
+      stored, its values are copied to a new trace which is inactive and
+      transient and has a randomly chosen color.  The old trace will be
+      cleared so it is ready to start plotting from the beginning.
+    <p>
+      When the graph is stored, each active trace is stored and the graph's X
+      value is reset to 0.  In other words, any new values will be added to
+      active traces starting at the left edge of the graph.  You can store a
+      graph by clicking <b>Store Graph</b> in the properties window or the
+      <b>Graph</b> menu or using the "<code>graph store</code>" command.
+    <p>
+      If you activate the checkbutton next to <b>Store</b> following <b>On Net
+	Reset</b> in the graph properties window, then the graph will
+      be stored automatically whenever you reset the network.  This is the
+      default behaviour.  If you check both <b>Clear</b> and <b>Store</b>,
+      clear wins.
+
+<h3>Clearing the Graph</h3>
+    <p>
+      If you clear a trace, you remove all of its data points. If you clear
+      the graph, every transient trace is deleted, every 
+      active trace is cleared, and the graph's X value is reset to 0.
+    <p>
+      You can clear a graph by clicking <b>Clear Graph</b> in the properties
+      window or the <b>Graph</b> menu or using the "<code>graph clear</code>"
+      command.
+    <p>
+      If you activate the checkbutton next to <b>Clear</b> following <b>On Net
+	Reset</b> in the graph properties window, then the graph will
+      be cleared automatically whenever you reset the network.
+    <p>
+      So a typical way to use a graph of error is to train the network
+      repeatedly, storing the graph each time you reset the network.  Once you
+      have too many old traces on the graph, you can clear it to get rid of
+      all the old traces and start over fresh.
+
+<h3>Hidden Graphs</h3>
+    <p>
+      Unless you are running in batch mode, graphs are visible by default and
+      a window will be created for any new graph.  However, graphs can be
+      hidden to remove this window.  Hidden graphs continue to update as
+      before, but the updates are much faster because there is no need to draw
+      the graphics.  If the graphs are updating frequently, you are worried
+      about training time, and you are not actively watching the graphs
+      update, it is a good idea to hide them.
+      <p>
+      Graphs can be hidden with the option in the graph's Graph menu or with
+      the "<code>graph hide</code>" command.  Hidden graphs are revealed by
+      "<code>graph show</code>".
+
+<h3>Printing the Graph</h3>
+    <p>
+      You can print the contents of the graph window as a postscript file with
+      "Graph/Print...".  However, due to the way the graph is constructed, the
+      resulting file will not contain the y-axis labels.  But this feature may
+      be useful for quick and dirty printouts of your data.
+    <p>
+      If you want to make a nice looking graph from your data, you can export
+      the data and use a real chart drawing program, as described in the
+      next section.
+
+<h3>Exporting Data</h3>
+<a name="exporting">
+    <p>
+      The Lens graphs are useful for collecting data and quickly viewing it.
+      If you would like to create nice charts based on the data
+      you collect, it is best to export it to a file and use a
+      third-party chart-making program, like <i>gnuplot</i> or <i>xmgrace</i>,
+      to make a pretty picture.
+    <p>
+      Graphs can be exported to a file using the "Export Data..." window in
+      the graph's Graph menu, or with the <a
+      href="Commands/exportGraph.html">exportGraph</a> command.
+      Lens will export data in one of two formats: <i>tabular</i> or
+      <i>gnuplot</i>.  In either format, only visible traces will be included
+      in the output.
+    <p>
+      The tabular format has tab separated columns.  The first column contains
+      the x-values and there is a column for the corresponding value in each
+      visible trace.  If you have selected <b>Include Trace Labels</b>,
+      the first row will contain the trace labels.
+    <p>
+      If a trace is missing a point for a particular x-value, then there will
+      be a "-" in that trace's column.  This occurs most frequently when one
+      trace is shorter than the others.
+    <p>
+      In gnuplot mode, the traces are output one at a time with two blank rows
+      between them.  Each trace will have two columns for the x and y values.
+      This format ought to be compatible with gnuplot.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 18:09:25 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

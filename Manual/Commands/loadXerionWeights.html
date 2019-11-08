@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: loadXerionWeights</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>loadXerionWeights</font> - loads weights from a Xerion
+      text-format weight file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    loadXerionWeights &lt;file-name></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This reads weights from a weight file produced by the Xerion simulator.
+      The file should have a format similar to the following:
+    <pre>
+    named: 6936 # currentNet.currentEpoch: 15730
+    Bias -> hidden1.0: -0.663468
+    Bias -> hidden1.1: 0.190194
+    Bias -> hidden1.2: -2.51771
+    input.0 -> hidden1.0: -3.39392
+    input.1 -> hidden1.0: -1.9046
+    input.2 -> hidden1.0: -2.1046
+    ...</pre>
+    <p>    
+      Other than "Bias", the group names in the weight file must match those
+      in the active network.
+    <p>
+      If the file name has the extension .gz, .bz, .bz2, or .Z, it
+      will automatically be decompressed.  This extension may be
+      omitted when specifying the file name.  <h3>EXAMPLES</h3>
+    <p>
+      To load the weights from the compressed Xerion weight file xer1.wt.gz:
+    <pre>
+    lens> loadWeights xer1.wt</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="loadWeights.html">loadWeights</a>,
+    <a href="saveWeights.html">saveWeights</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Mar  2 13:57:44 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Usage Syntax</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Commands: Usage Syntax</h1>
+    <hr>
+    <p>
+      The usage of each Lens command is described using a particular format.
+      For example:
+    <pre>
+    connectGroups &lt;group-list1> (&lt;group-list>)* [-projection &lt;proj-type> |
+        -strength &lt;strength> | -mean &lt;mean> | -range &lt;range> |
+        -type &lt;link-type> | -bidirectional]
+    changeGroupType &lt;group> [&lt;group-type> | +&lt;group-type> |
+        -&lt;group-type>]*</pre>
+    <p>
+      The bracketing and punctuation marks used in the specification have 
+      particular meanings.  Here is a summary of the various elements:
+    <p>
+    <dl>
+      <dt><code><b>&lt;</b>...<b>></b></code>
+      <dd>Anything in angle-brackets is not literal text but a value that
+	should be provided by the user.  This may be a string or a number.
+	The type can be inferred from the command help.
+
+      <dt><code><b>[</b>...<b>|</b>...<b>|</b>...<b>]</b></code>
+      <dd>If a set of one or more elements appears separated by vertical bars
+	(pipes) within square brackets, then you may supply as many
+	elements of the set as you want in any order, but typically you would
+	not repeat any one element.  For example, [a | b] could be matched by
+	"a", "b", "a b", "b a", or nothing.
+
+      <dt><code><b>[</b>...<b>|</b>...<b>|</b>...<b>]*</b></code>
+      <dd>If the square brackets are followed by a <code>*</code>, you may
+	repeat elements from the set as many times are you like, including
+	none.  Normally only one element will appear in such sets, as in:
+	<pre>    groupType [&lt;group> [&lt;group-type>]*]</pre>
+
+      <dt><code><b>(</b>...<b>|</b>...<b>|</b>...<b>)</b></code>
+      <dd>If a set of items appears in parentheses, you must choose one and
+	only one of the items.  For example:
+	<pre>    copyUnitValues &lt;group1> -&lt;field1> (&lt;group2> | -&lt;field2> |
+        &lt;group2> -&lt;field2>)</pre>
+
+      <dt><code><b>(</b>...<b>|</b>...<b>|</b>...<b>)*</b></code>
+      <dd>If a <code>*</code> follows the parentheses, you must repeat
+	one of the elements one or more times.
+      <dt>
+	<b><code>&lt;group-list></code></b>, 
+	<b><code>&lt;unit-list></code></b>,
+	<b><code>&lt;network-list></code></b>
+      <dd>
+	Finally, these are three special element types that you should be
+	aware of.  A list may consist of a single name, such as
+	<code>hidden1</code>, a list of names, such as <code>{input "hidden 2"
+	output}</code>, or a <code>*</code>.  A list of names should
+	be enclosed in curly braces, quotes, or parentheses.  The
+	<code>*</code> will match all objects of the appropriate type, such as
+	all groups in the network.  A <code>&lt;group-list></code>, in
+	restricted form, can be	thought of as: 
+	<pre>    (* | &lt;group> | (&lt;group>)*})</pre>
+    </dl>
+
+    <p>
+      Any text that does not fall into one of those classes should actually be
+      written literally as it appears.  However, option names, such as
+      <code>-bidirectional</code>, may always be shortened to the first
+      character after the dash, <code>-b</code>.
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 14:23:52 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

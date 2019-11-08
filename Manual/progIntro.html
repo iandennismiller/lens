@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Programmer's Introduction</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: Introduction</h1>
+    <hr>
+    <p>
+      Lens was designed with the realization that it is not possible to write
+      a simulator that can satisfy the needs of all users right out of the
+      box.  The ability to access the C data structures within scripts, and to
+      assemble group types from components, makes it possible to implement
+      many customizations without altering the code.  However, more low-level
+      additions are often necessary and one of the main goals of Lens was to
+      make it relatively easy for more advanced users to get in and change the
+      code to fit their needs.  This guide is here to explain how that's done.
+    <p>
+      Lens is primarily written in C (about 25K lines in 27 modules), with the
+      graphical displays written in Tcl/Tk (about 5K lines in 11 modules).
+      Basically, the Tcl code is used for drawing windows, creating bindings
+      between window events (like button presses) and commands, and
+      controlling the behavior of the shell.  Everything else, including all
+      of the time-sensitive calculations, is done in C.
+    <p>
+      Essentially, Lens is a C program whose main activity is running a Tcl
+      interpreter.  The interpreter handles events and evaluates Tcl <a
+      href="Commands/topical.html">commands</a>.  Most of the Tcl commands end
+      up calling a C command to do the work.  These are implemented as special
+      C functions that are registered with the Tcl interpreter to create Tcl
+      commands that serve as handles to the C code.
+    <p>
+      Because Lens is still a work in progress, it is likely that the
+      modifications to the main code will be made frequently.  The philosophy
+      at this point in development is that nothing is guaranteed to remain the
+      same, though any changes will be backward compatible as much as
+      possible.
+    <p>
+      This is bound to create some conflict with users who have their own
+      versions of the code.  Therefore, when changing the source code, it is
+      important to restrict any changes to as few modules as possible.  That
+      way, if the generic version of those modules are changed, reimplementing
+      the additions is as painless as possible.  As explained in later
+      sections, as long as you contain your code changes to the <a
+      href="Src/extension.c">extension.c</a> file, very little must be done to
+      keep up-to-date with the latest version.
+    <p>
+      It is now possible to <a href="progLibrary.html">compile Lens as a
+      library</a> and embed it in another application.  This allows you to
+      integrate a neural network with your other software.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 13:57:53 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

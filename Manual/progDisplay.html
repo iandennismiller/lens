@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Graphical Displays</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Graphical Displays</h1>
+    <hr>
+    <p>
+      Building new graphical displays is not easy, so you are basically on
+      your own.  But here are some words of advice.  First learn Tcl/Tk
+      really well.  Then read through the code in <a
+      href="Src/display.tcl">display.tcl</a>, <a
+      href="Src/display.c">display.c</a>, and <a
+      href="Src/displayCom.c">displayCom.c</a> until you pretty much
+      understand it.
+    <p>
+      Now create a new .tcl file with a procedure that will construct all of
+      the static widgets needed in the display.  Remember to give all of your
+      global Tcl variables and procedures names that start with a period or
+      dash.  Look where display.tcl is sourced in <a
+      href="Src/shell.tcl">shell.tcl</a> and source your file there too.
+      Now you will need to create a C module consisting of .c, .h, and Com.c
+      files.
+    <p>
+      There are many ways to communicate data between your C code and Tcl
+      code.  In order for the display to be fast, you do not want to be
+      making a lot of calls to <a href="Commands/getObject.html">getObject</a>
+      to get the data from the network to the display.  Rather than having
+      Tcl code "pull" the data, you should have C code "push" the data by
+      making calls to <code>eval()</code> and other Tcl library functions.
+      Your .c file will probably mostly contain procedures that take data from
+      the network and make calls to the interpreter to push the data to your
+      display.  You can also use the Tcl_LinkVar() command to bind Tcl
+      variables to C variables, but use it sparingly.
+    <p>
+      The *Com.c file will define Tcl commands used to request that new data
+      be sent or to modify some property of the display in response to a user
+      action.  As with most *Com.c files, it will mostly be parsing the
+      command arguments and then calling the function in the .c file that does
+      the real work.  Any Tcl commands you create in *Com.c should be created
+      using <code><a href="progShell.html">createCommand()</a></code>, rather
+      than <code>registerCommand()</code> and should be given names starting
+      with a period since they will be hidden from the user.
+    <p>
+      You will probably want to create a button on the Main Window for your
+      display.  Do that by editing <a
+      href="Src/interface.tcl">interface.tcl</a> (see the section on the
+      <code>displayPanel</code>).  If your button should be deactivated when
+      there is no network, add some commands to configureDisplay() in
+      control.c.  You should probably also create a shell command (or it could
+      just be a Tcl procedure) that will launch the display even if the Main
+      Window is hidden.
+    <p>
+      If you want to do something that has to be really fast you may need to
+      define a new customized canvas widget.  This was done in Lens for the
+      rectangles that appear in the Unit and Link Viewers.  You might get some
+      mileage there by copying and modifying <a
+	href="Src/canvRect.c">canvRect.c</a>.  You will probably also want to
+      go hunting through the Tk source code in TclTk/tk8.3/generic/.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:58:31 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

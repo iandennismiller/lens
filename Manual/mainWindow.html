@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Main Window</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Graphical Displays: Main Window</h1>
+    <hr>
+    <p>
+      The Main Window is the only one to automatically appears when Lens
+      starts in non-batch mode.  This can be prevented by starting with the
+      <code>-nogui</code> 
+      option.  The Main Window contains 8 panels: network info, displays, file
+      commands, algorithms, algorithm parameters, training parameters,
+      training controls, and an exit button and task stopper.  Each of these panels can be
+      hidden or revealed using the "Lens/Panels" menu.  Removing panels may
+      be nice if you never use them and don't want them eating up screen
+      real-estate.  The panels can be hidden on startup by setting flags in
+      the <a href="customization.html">.lensrc</a> file.  If the window does
+      not resize properly when a panel is removed, this can be fixed in the <a
+      href="customization.html">.lensrc</a>.
+    <p>
+      "Lens/Refresh" will update the information in the display.  This
+      should not normally be needed.  By and large this window stays
+      up-to-date.  
+    <p>
+      "Lens/View Console" will open the graphical console window.  This
+      provides a nicer interface than the command-line shell if you are using
+      Lens interactively.  However, once you start the console you can't
+      return to the command-line shell.
+    <p>   
+      "Lens/Close" hides the window.  It can be re-opened with
+      the <a href="Commands/view.html">view</a> command.  Using "Lens/Exit"
+      or pressing the "Exit" button at the bottom of the Main Window will kill
+      the simulator, after a double check is made.
+    <p>
+      The network info panel shows the name of the current network and its
+      training and testing sets.  Pressing "Network", "Training Set", or
+      "Testing Set" will reveal 
+      a pull down menu that lets you change the current network or the example
+      sets.  These are shortcuts for the <a
+      href="Commands/useNet.html">useNet</a>, <a
+      href="Commands/useTrainingSet.html">useTrainingSet</a>, <a
+      href="Commands/useTestingSet.html">useTestingSet</a> commands.
+    <p>
+      The second panel is used to open graphical displays.  Only one 
+      <a href="unitViewer.html">Unit</a> or <a href="linkViewer.html">Link</a>
+      Viewer may be open at once but multiple <a href="graphs.html">Graphs</a>
+      and <a href="objectViewer.html">Object Viewers</a> may be open.
+    <p>
+      The file command panel provides shortcuts for executing some common
+      actions, including running scripts, loading example sets, and saving and
+      loading weights.  Each button will cause a file browser to be opened to let you
+      choose the file for reading or writing.  Depending on the command,
+      another popup may appear once the file is chosen for setting any
+      remaining options.  The default filters and directories used in the file
+      browser are customizable in the <a href="customization.html">.lensrc</a>
+      file.
+    <p>
+      The algorithms panel contains radio buttons for selecting the
+      current weight update method.  The active algorithm is the one that will
+      be used when "Train Network" is pressed or the <a
+      href="Commands/train.html">train</a> command is invoked with no
+      algorithm specified.
+    <p>
+      The algorithm and training parameter panels provide access to commonly
+      changed training parameters.  To change a value, click in the entry box,
+      edit the value, and then press <code>Enter</code>.  Values displayed in
+      pink have not been committed and will revert to the true value when
+      training begins.  As with most windows, <code>Tab</code> can be used to
+      advance to the next entry.
+    <p>
+      The training control panel provides easy ways to invoke the <a
+      href="Commands/resetNet.html">resetNet</a>, <a
+      href="Commands/resetExampleSets.html">resetExampleSets</a>, <a
+      href="Commands/test.html">test</a>, <a
+      href="Commands/openNetOutputFile.html">openNetOutputFile</a>, and <a
+      href="Commands/train.html">train</a> commands.
+    <p>
+      When Lens is idle, the <i>Stop Button</i> reads "Exit".  However, when one or
+      more lengthy tasks, such as training, testing, loading
+      example files, or opening the <a href="linkViewer.html">Link Viewer</a>
+      with a large network, is running in the background, this button will
+      allow you to stop the top task on the stack.  Typing
+      <code>Ctrl-C</code> in the shell window will also stop the most recent
+      job.  However, the Stop Button is usually safer.  The number to the
+      right of the button indicates the number of active tasks waiting on the
+      stack.  You can learn more about <a href="tasks.html">tasks</a> here.
+    <p>
+      "Help/Manual..." will open this manual in a web browser.  If the
+      <code>WEBBROWSER</code> environment variable is set, that command will
+      used.  Otherwise, the default browser is <code>"netscape"</code>.  If
+      Netscape is being used and a window is already open, the manual will
+      take over that window.  Otherwise a new browser will be started.  This
+      behavior can be turned off in the <a
+      href="customization.html">.lensrc</a> file.
+      <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 13:56:09 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

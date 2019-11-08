@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Tutorial Network</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Getting Started: Tutorial Network</h1>
+    <hr>
+    <p>
+      In order to gain quick familiarity with Lens, let's start by looking at
+      a sample script file.  The later manual pages will go into greater depth
+      about each of the topics touched on here.  We will examine the
+      <b>digits.in</b> network script, which is as follows: <hr width=80%>
+<pre>
+# This is a very simple digit recognition task.  You could probably solve this
+# best with no hidden layers but we threw two in there to illustrate setting 
+# group types and connecting groups.
+
+set hiddenSize 20
+
+addNet   digits.$hiddenSize
+addGroup input      20          INPUT
+addGroup hidden     $hiddenSize 
+addGroup "hidden 2" $hiddenSize OUT_NOISE COSINE_COST
+addGroup output     3           OUTPUT
+
+connectGroups input hidden -p RANDOM -s 0.5
+connectGroups hidden {"hidden 2"} output
+
+loadExamples digits.ex  -s "clean set"
+loadExamples digits2.ex -s "noisy set"
+
+setObj learningRate 0.1
+
+setObj input.numColumns 4
+autoPlot
+viewUnits
+graphObject
+</pre><hr width=80%>
+    <p>
+      Start Lens in the main Lens directory and run this script by typing:
+    <pre>
+    source Examples/digits.in</pre>
+    <p>
+      at the <code>lens></code> prompt or by clicking on the "Run Script"
+      button and using the file browser.  You could also type each line of the
+      script into the shell by hand, if you want.
+    <p>
+      If the script ran properly, two new
+      windows should have popped up.  Ignore these for a minute.
+    <p>
+      The first line of the script begins with a hash mark ("<code>#</code>")
+      and is thus treated as a comment and ignored by the interpreter.  Blank
+      lines are also ignored.  
+    <p>
+      The first command, "<code>set hiddenSize 20</code>", sets the Tcl
+      variable <i>hiddenSize</i> to the value 20.  This will be used to
+      determine the size of the hidden layers in the network.  Putting values
+      that may appear multiple times in variables makes it easier to alter the
+      parameters of the network later.
+    <p>
+      The second command creates a network
+      with the name <code>digits.20</code>.  If a <code>$</code> is placed
+      before a Tcl variable name, the variable will be replaced with its
+      value.  By default the new network contains a single group, called
+      "bias", containing a bias unit.
+    <p>
+      The next four lines create four additional groups using the <a
+      href="Commands/addGroup.html">addGroup</a> command.  The first is an
+      input layer with 20 units.  When an example is presented to the network,
+      the activations of these units will be clamped to the values specified
+      in the training example set.  The next group, "hidden", also contains 20
+      units.  It has been given no special type, so it will default to a
+      hidden layer with a DOT_PRODUCT input function and a LOGISTIC output
+      function.  Whenever you don't specify an input, output, or cost function
+      for a group that needs one, Lens will try to pick a reasonable default
+      value based on the network type.
+    <p>
+      Each unit of a HIDDEN or OUTPUT group will automatically receive an
+      incoming link from the bias unit.  If you want to prevent this, you can
+      use the -BIASED (minus biased) type.
+    <p>
+      The next line creates another hidden layer.  Quotation marks are used to
+      give the group a multi-word name.  This group has been given the types
+      OUT_NOISE and COSINE_COST.  OUT_NOISE will cause the unit outputs to be
+      noisy.  The default is additive gaussian noise with a standard deviation
+      determined by the network's <i>noiseRange</i> parameter.  COSINE_COST is
+      one of several cost functions that penalize the network for producing
+      outputs that are non-binary.  The final group is an OUTPUT layer with
+      three units.  The default type for an output layer is the same as that
+      for a hidden layer but with the addition of a cross-entropy error
+      measure.
+    <p>
+      You can use the <a href="Commands/groupType.html">groupType</a> command
+      to see the types of each of the groups in the network or a list of all
+      recognized types.
+    <p>
+      The next two lines create projections between the four groups.  By
+      default, full connectivity between all pairs of units is used.  In the
+      first command, however, the options "<code>-p RANDOM -s 0.5</code>" are
+      specified.  This means that the projection is sparse and each possible
+      link will only be formed with 50% probability.
+    <p>
+      The second <a href="Commands/connectGroups.html">connectGroups</a> call
+      connects the first hidden layer to the second and the second to the
+      output layer.  Both of these projections use full connectivity.
+    <p>
+      Because specifying the architecture of a network can be somewhat
+      tedious, <a href="Commands/addNet.html">addNet</a> allows many
+      full-connectivity networks to be described in a single line.  The
+      command:
+    <pre>
+    addNet digits.20 20 20 20 OUT_NOISE COSINE_COST 3</pre>
+    <p>
+      would have created the same network as those eight commands,
+      except that the second hidden layer would be named <code>hidden2</code> 
+      and all projections would have full connectivity.   <a
+      href="Commands/addNet.html">addNet</a> can also be used to create many
+      simple recurrent networks in a single step.
+    <p>
+      The next two lines <a href="Commands/loadExamples.html">load example
+      files</a>.  "<code>loadExamples digits.ex -s "clean set"</code>" loads
+      the examples from the file "<code>digits.ex</code>" into a set named
+      "<code>clean set</code>".  Because the current network doesn't yet have
+      a training set, this set will by default become the network's training
+      set.  If 
+      we were to re-run this script, a new network would be constructed to
+      replace the current network, but the "<code>clean set</code>" will not
+      be reloaded because it already exists.  The next command will load a
+      different example file.  By default, that will become the testing set as
+      there is already a training set.
+    <p>
+      The command "<code>setObj learningRate 0.1</code>" sets the learning
+      rate of the network to 0.1.  This command is a bit different than the
+      <code>set</code> used to set Tcl variables because
+      <i>learningRate</i> is not a variable but an object.  An object is
+      a C structure or a field in a C structure.  <code>setObj</code>, which
+      is short for <a href="Commands/setObject.html">setObject</a>, actually
+      changes the value in the C structure.  An object cannot be dereferenced
+      using <code>$</code> as a variable can.  One must use <a
+      href="Commands/getObject.html">getObject</a> to retrieve the value of an
+      object.
+    <p>
+      The next block of commands defines the layout of the network used in the
+      <a href="unitViewer.html">Unit Viewer</a>.  Network layout can be done
+      in two ways, automatically or by hand.  By default, layout will be
+      automatic.
+    <p>
+      The default Unit Viewer layout draws each group starting with the last
+      group at the top and working down to the first group at the bottom.
+      There will be a blank line between groups.  The width of each group will
+      be determined automatically to try to make things look nice.
+    <p>
+      However, some groups, like the input in this example, have a certain
+      logical width.  If you set the <i>numColumns</i> field of a group, as we
+      do in the next line, that will determine the width of the group during
+automatic layout.  After we do that, we need to call <a
+href="Commands/autoPlot.html">autoPlot</a> to redraw the layout.
+    <p>
+      If you want to customize the layout of the network, putting some groups
+      next to each other or hiding other groups, the <a
+      href="Commands/plotRow.html">plotRow</a> command can be used.  But let's
+      not get into that now.
+    <p>
+      Finally, the command <a href="Commands/viewUnits.html">viewUnits</a>
+      actually pops up the Unit Viewer and the command <a
+      href="Commands/graphObject.html">graphObject</a> creates a graph that
+      will display the overall error in the network as it changes over time.
+   <p>
+      Take a look at the Unit Viewer.  The units in the network are depicted
+      on the right.  The input layer is at the bottom and the output layer is
+      at the top.
+      <p>
+      Click through the examples in the training set, or use the up and down
+      arrows to step through them.  The inputs to the network are nice clean
+      images of the digits 0-7.
+      <p>
+      The desired output of the network is the binary encoding of each digit.
+      The target output is shown in the outer ring of the three output units
+      and the actual output is shown in the inner square.
+    <p>
+      If the network is producing the correct outputs, the output unit squares
+      will appear as all one color.  Since you haven't trained the network
+      yet, you should see distinct outer and inner parts.
+    <p>
+      Now hold onto your seat and click the "Train Network" button near the
+      bottom of the Main Window.  You should see the error head towards zero.
+      Obviously, this isn't a very hard problem for the network to solve.
+<p>   
+      You may have to hit "Train Network" again to get really good
+      performance.  Try stepping through the examples again in the Unit Viewer
+      to make sure the network is giving the
+      correct answers.  If the output units are each roughly a uniform color
+      then the output is correct.  Try using the "Example Set" pull-down menu
+      on the Unit Viewer to change to the testing set.  It is likely that the
+      network produces the wrong answer for some of these noisy examples.
+    <p>
+      Read the manual sections on each of the displays to learn more about
+      their use and look through the <a href="Commands/topical.html">Command
+      Reference</a> to get a sense of the available commands.  Then, what the
+      heck, go ahead and read the rest of the User's Guide and you will soon
+      be a Lens master.  If you are stumped by something for a while and the <a
+      href="http://www.cnbc.cmu.edu/~dr/LensSearch">manual search engine</a>
+      is no help, try looking at the <a href="questions.html">frequently asked
+      questions</a> and <a href="problems.html">common
+      problems</a>.  If all else fails, send mail to <a
+      href="mailto:dr+lens@tedlab.mit.edu">Doug Rohde</a>.  It probably means I 
+      didn't document something well.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:45:35 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

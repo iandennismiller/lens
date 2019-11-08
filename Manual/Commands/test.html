@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: test</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>test</font> - tests the network on the testing set
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    test [&lt;num-examples>] [-noreset | -return]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This runs the network (forward pass only) on examples in the
+      testing set and accumulates the overall error.  If there is no
+      testing set, the training set is used.  The total error is
+      stored in the network's <i>error</i> field.  By default, a small report
+      is printed to the terminal.  The <i>-return</i> flag can be used if you
+      instead want the report to be the command's return value.
+    <p>
+      In addition to printing the report, the numbers in the report
+      are also stored in a global array called Test.  You can access
+      the fields in the array to easily retrieve the results of the test.
+      The following are the available fields:
+     <ul>
+     <li> <b>numExamples</b>: The number of examples on which testing was done.
+     <li> <b>numTicks</b>: The total number of ticks in those examples.
+     <li> <b>totalError</b>: The total error across all examples.
+     <li> <b>exampleError</b>: The total error per example.
+     <li> <b>tickError</b>: The total error per tick.
+     <li> <b>totalCost</b>: The total unit output cost for the network.
+     <li> <b>tickCost</b>: The total unit output cost divided by the number of ticks.
+     <li> <b>examplesCorrect</b>: The number of examples on which the output groups' criteria (such as STANDARD_CRIT or MAX_CRIT) were met.
+     <li> <b>percentCorrect</b>: The percentage of examples for which the criteria were met.
+    </ul>
+      If the network has more than one output group, it prints the
+      error and cost values for the network as a whole as well as for
+      each output group.  The error values for the individual groups
+      are stored in the Test array as well.  The values for the groups
+      are accessed with the name of the group, followed by a . and
+      then the field name.  For example, the totalError for group
+      output1 is stored in Test(output1.totalError).
+    <p>
+      The default behavior is to reset the testing set and run every
+      example in it.  This is also the behavior if a
+      <i>num-examples</i> value of 0 is given.  Otherwise, the testing
+      set is not reset and only the next <i>num-examples</i> will be
+      processed.  This may be necessary if the testing set is in PIPE
+      mode.  The <i>-noreset</i> flag prevents the network's overall
+      error from being reset to 0.0 prior to testing.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To test the network, resetting the error before starting:
+    <pre>
+    lens> test
+    Test results on 100 examples, 700 ticks:
+                         Network     
+    Error total:         46.5343
+    Error per example:   0.46534
+    Error per tick:      0.06648
+    Unit cost per tick:  2.33553
+    Output unit criterion reached on 92 examples (92.00%)
+
+    lens> puts $Test(tickError)
+    0.00664776</pre>
+    <p> To append the test results to a file:
+    <pre>
+    lens> set f [open "testResults" "a"]
+    lens> puts $f [test -r]
+    lens> close $f</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="train.html">train</a>,
+    <a href="doExample.html">doExample</a>,
+    <a href="exampleSetMode.html">exampleSetMode</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 14:43:22 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

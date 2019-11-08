@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Basic Group Types</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Basic Group Types</h1>
+    <hr>
+    <p>
+    <h3>Fixed Types</h3>
+    <p>
+      The <i>fixed type</i> is the primary type of the units in a group.  The
+      main effect of the fixed type is that it determines the default input,
+      output, and cost functions of the group.  The process of determining
+      default functions can be fairly complicated as it depends on network
+      type and other group types.  So if you don't want to figure it all out,
+      you may want to just check the types of your groups with the <a
+      href="Commands/groupType.html">groupType</a> command to make sure types
+      are assigned as you expect and then explicitly specify them as
+      necessary.
+    <p>
+      Note that there is no HIDDEN type.  A hidden group simply has no fixed
+      type.  The default input type for a hidden group is DOT_PRODUCT.  The
+      default output type is LOGISTIC.  However, if the network is a BOLTZMANN
+      net, the default input type is IN_BOLTZ and the default output type is
+      OUT_BOLTZ.  Hidden groups will automatically receive an incoming link
+      from the bias unit.  This can be prevented with the -BIASED type, as
+      explained below.
+
+    <dl>
+      <dt>BIAS</dt>
+      <dd>A bias group is one that always maintains an output of 1.0 (or
+      whatever the initOutput is set to).
+	Ordinarily, a bias group will be created automatically with the
+	network and there is probably no need for more than one, so you may
+	never need to use this type.  BIAS cannot be combined with any other
+	fixed type.  A BIAS group by default is itself unbiased, has no
+	input type, and has a BIAS_CLAMP output type.  The BIAS_CLAMP function
+	simply sets the output to the group's initOutput.
+      <dt>INPUT</dt>
+      <dd>The main implication of the INPUT type is that <i>externalInput</i>s
+	will be assigned to units in the group when an example event is loaded.
+	Any group which is expecting external inputs should be
+	of type INPUT.  If the <i>externalInput</i> is NaN, the input group
+	should act like any other group, computing the inputs based on
+	incoming connections and computing the output with ordinary output
+	functions.
+	<p>
+	  However, it is usually the case that input groups will always have
+	  external inputs.  Therefore, to save processing time there is no
+	  default input type for an INPUT group and there are no bias inputs
+	  created by default.  If no <a
+	  href="outputTypes.html">basic output type</a> is specified and no
+	  clamping output type is specified and there is not a SOFT_CLAMP
+	  input type, a HARD_CLAMP output function will be prepended to the
+	  output types of an INPUT group.  If a SOFT_CLAMP input type is
+	  specified, the default output type is LOGISTIC.
+      <dt>OUTPUT</dt>
+      <dd>The main implication of the OUTPUT type is that <i>target</i>s
+	will be assigned to units in the group when an example event is
+	loaded.  These groups are treated the same as hidden groups.  However,
+	OUTPUT groups will also be assigned a default error function.
+	Groups with KOHONEN or OUT_BOLTZ output functions will have no default
+	error procedure.  LINEAR groups will have SUM_SQUARED error.  SOFT_MAX
+	groups will have DIVERGENCE error.  All other groups will have
+	CROSS_ENTROPY 
+	as their default error function.  OUTPUT groups in CONTINUOUS networks
+	have a STANDARD_CRIT criterion function by default.
+	<p>
+	  The OUTPUT type may be combined with the INPUT or ELMAN types
+	  (although the latter doesn't really make much sense).  If a group
+	  has multiple types, the default functions will be assigned as if it
+	  were just an OUTPUT group.
+
+      <dt>ELMAN</dt>
+      <dd>The ELMAN type can be used to identify context groups in simple
+	recurrent networks.  Like BIAS and INPUT groups, ELMAN groups have no
+	default bias inputs and no default input function.  The default output
+	function is ELMAN_CLAMP.  Before an ELMAN_CLAMPED group is functional,
+	you must use <a href="Commands/elmanConnect.html">elmanConnect</a> to
+	assign a source group to it.
+    </dl>
+
+    <h3>Group Criterion Functions</h3>
+    Criterion functions are used to determine when the outputs of an OUTPUT
+    group are good enough to either stop training or to continue to the next
+    event in the example.  They can also be used when testing the network to
+    determine the number of examples on which it is correct.  When training,
+    the <i>groupCriterion</i> defaults to the network's <i>trainGroupCrit</i>,
+    but can be overridden by the group's <i>trainGroupCrit</i>.  When testing,
+    the <i>testGroupCrit</i> is used.  There are separate values for training
+    and testing because you may want to, for example, use the criterion when
+    testing but not when training.
+    <dl>
+      <dt>STANDARD_CRIT</dt>
+      <dd>This criterion is true if the absolute difference between the output
+	and target of each unit is less than the <i>groupCriterion</i>.  Units
+	with NaN targets are ignored.
+      <dt>MAX_CRIT</dt>
+      <dd>This criterion is true if the unit with the largest target is also
+	the most active unit and the difference between the output and target
+	is less 
+	than the <i>groupCriterion</i>.  Units with NaN targets
+	are ignored.
+    </dl>
+    
+    <h3>History Parameters</h3>
+    Ordinarily, the <i>inputHistory</i> and <i>outputHistory</i> arrays are
+    allocated for every unit but the <i>targetHistory</i> is only allocated
+    for groups with error functions and the <i>outputDerivHistory</i> is only
+    allocated for groups with some cost type.  However, when writing your own
+    code, it may be useful to have the latter two arrays allocated anyway, to
+    be used for your own purposes.  These flags will force them to be built.
+    Also, to save time the history arrays will only be filled in when
+    necessary during training or testing.  You can use these flags to force
+    the arrays to be used.
+    <dl>
+      <dt>USE_INPUT_HIST</dt>
+      <dd>Forces the <i>inputHistory</i> to be written when the unit inputs
+	are computed.
+      <dt>USE_OUTPUT_HIST</dt>
+      <dd>Forces the <i>outputHistory</i> to be written when the unit outputs
+	are computed.
+      <dt>USE_TARGET_HIST</dt>
+      <dd>Forces the <i>targetHistory</i> to be allocated and written when the
+	cost is computed.
+      <dt>USE_OUT_DERIV_HIST</dt>
+      <dd>Forces the <i>outputDerivHistory</i> to be allocated and written
+	when the unit output derivatives are computed.
+    </dl>
+    
+    <h3>Noise Types</h3>
+    Most noise types are classified as either input or output types.  However,
+    two forms of noise don't fit into the standard pipelines.
+    
+    <dl>
+      <dt>DERIV_NOISE</dt>
+      <dd>This injects noise on the derivatives of incoming links to the group
+	just before each weight update.  There is currently no way to specify
+	exactly which type of links are to be affected.
+      <dt>EXT_INPUT_NOISE</dt>
+      <dd>This injects noise to the external inputs when they are loaded from
+	the example event.  This differs from INPUT_NOISE in that input noise
+	changes every tick but this remains constant across the event.
+    </dl>
+
+    <h3>Other Types</h3>
+    <dl>
+      <dt>BIASED</dt>
+      <dd>If this is on, the units in the group will receive incoming links
+	from the bias unit when they are created.  This only has an effect
+	when the group is created.  This defaults to off for BIAS, INPUT, and
+	ELMAN groups and to on for HIDDEN and OUTPUT groups.
+      <dt>RESET_ON_EXAMPLE</dt>
+      <dd>If this is on, the outputs of units in the group will be reset to
+	the <i>initOutput</i> at the start of each example and any integrating
+	information reset.  This defaults to on for CONTINUOUS networks and
+	to off for other networks.
+      <dt>ADAPTIVE_GAIN</dt>
+      <dd>If this is on, units using a LOGISTIC, TANH, or GAUSSIAN output
+        function will train their <i>gain</i> parameter along with the incoming
+	weights.  The <i>adaptiveGainRate</i> is the learning rate for the
+	gain changes.  Steepest descent is always used.  When the network is
+    reset, unit gains will be set to the group or network default.
+
+      <dt>WRITE_OUTPUTS</dt>
+      <dd>When the unit activations and targets are written to the activation
+	output file, which is opened with <a
+	  href="Commands/openNetOutputFile.html">openNetOutputFile</a>
+	command, only groups with this type will have their values written.
+	This type is added by default to OUTPUT groups, because those are the
+	groups whose activations one is usually interested in.
+      <dt>LESIONED</dt>
+      <dd>This is turned on if any unit in the group is lesioned.  This makes
+	it slower to traverse the units in the group because it must check
+	each unit and avoid the lesioned ones.  The user can't set this group
+	type. 
+      <dt>FROZEN</dt>
+      <dd>This is turned on if the group is frozen and thus no weight updates
+	will be performed on incoming links to the group.   The user can't set
+	this group type.  
+    </dl>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 20 13:31:51 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

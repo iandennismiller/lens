@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: stopServer</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>stopServer</font> - disengages all clients and stops running as a server
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    stopServer</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This closes the connections to all clients and stops listening for new
+      client connections.  It will return an error if the current process is
+      not acting as a server.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To make sure the current process is not acting as a server (and to avoid
+      causing an error):
+    <pre>
+    lens> catch stopServer</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="startServer.html">startServer</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:19:54 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

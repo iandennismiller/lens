@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Link Viewer</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Graphical Displays: Link Viewer</h1>
+    <hr>
+    <p>
+      The Link Viewer displays values for all or some of the weights in the
+      network.  Links are arranged in a two-dimensional connectivity matrix.
+      Each row represents a sending unit and each column a receiving unit.  If
+      drawing the links in the Link Viewer is taking too long (it's not a good
+      idea to view more than a few thousand links), it can be stopped by
+      pressing the <b>Stop Building Link Viewer</b> button in the Main Window
+      or typing <code>Ctrl-C</code> in the shell terminal.
+    <p>
+      The <b>Value</b> and <b>Palette</b> pull-downs, the <b>Viewer/Update
+      After</b> menu, printing, and the color intensity slider are all the
+      same as on the <a href="unitViewer.html">Unit Viewer</a>.
+      <b>Viewer/Cell Size</b> and <b>Viewer/Cell Spacing</b> are similar to
+      those in the Unit Viewer but they affect the <i>linkCellSize</i> and
+      <i>linkCellSpacing</i> variables.
+    <p>
+      <b>Sending Groups</b> is a menu of check buttons that allow you to hide
+      or reveal the links out of each group.  <b>Sending Groups/All</b> and
+      <b>Sending Groups/None</b> will reveal or hide all sending groups.
+      Otherwise, you can selectively toggle individual groups.
+      <b>Receiving Groups</b> lets you hide or reveal the links into each
+      group.
+    <p>
+      By default, all units are displayed.  If the network is large and you
+      only wish to view one projection, interrupt the display building by
+      selecting <b>Sending Groups/None</b>.  Now choose only the receiving and
+      sending groups you wish to view.
+    <p>
+      Left-clicking on a link rectangle will print the value being displayed.
+      The values under the menu bar show some statistics of the links that are
+      currently being displayed.  These stats are only based on the links
+      shown in the display.  <b>Mean</b> and <b>Variance</b> are
+      the mean and variance of the actual values.  <b>Mean Abs.</b> is
+      the mean of the absolute magnitudes of the values.  <b>Mean Dist.</b>
+      is the mean of the absolute difference between each value and the mean
+      of the values.  <b>Maximum</b> is the value that has the maximum
+      absolute magnitude.
+    <p>
+      Frozen links are displayed with a yellow border.
+      <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 13:55:17 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

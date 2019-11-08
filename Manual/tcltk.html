@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Tcl/Tk Basics</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Getting Started: Tcl/Tk Basics</h1>
+    <hr>
+    <p>
+      Tcl is pronounced "tickle" and Tk is pronounced "tee-kay".  Tcl/Tk is
+      "tickle tee-kay".
+    <p>
+      Lens uses <a href="http://www.scriptics.com">Tcl/Tk</a> version <a
+      href="http://dev.scriptics.com/man/tcl8.3/index.htm">8.3.4</a>.
+      Tcl was written by John Ousterhout and is now owned by Sun, but the
+      wonderful people there allow it to be used freely, even in commercial
+      applications.
+    <p>
+      To fully understand the Tcl language, you may need to read a book like
+      <i>Tcl and the Tk Toolkit</i>, by John Ousterhout, Addison-Wesley
+      Publishing, 1994.  However, this section plus the <a
+      href="http://dev.scriptics.com/man/tcl8.3/index.htm">Tcl/Tk manual
+      pages</a> should help you get by.
+    <p>
+      As you read through this document, try typing in the examples to the
+      Lens interpreter and see if you get the right results.  Probably the
+      best way to figure out a language, though, is to just look at sample
+      code.  So once you have a grasp of the basics, you may want to try
+      reading through the scripts in the "Examples/" directory or the file 
+      <a href="Src/shell.tcl">Src/shell.tcl</a>.
+
+
+    <h3>Syntax</h3>
+    <p>
+      A Tcl script consists of a series of commands.  Commands are separated
+      by newlines or semicolons.  A command may be continued from one line to
+      the next by ending the first line with a backslash ("<code>\</code>").
+      If the first character of a command is a pound or hash mark
+      ("<code>#</code>"), the rest of the line will be treated as a comment
+      and ignored.  Note that the hash mark can't be just anywhere on a line,
+      it must be at the beginning of a command, which is generally the
+      beginning of the line.
+    <p>
+      Each command has a return code and a return value.  Normally you need
+      not be concerned with the code.  It's used for errors, primarily.  The
+      return value is the important part.  If the command is typed directly
+      into the shell, the return value will be printed out.  Otherwise, the
+      return value of a command is used by surrounding the command with square
+      brackets and using this as an argument to another command.  In this case,
+      the first command will be evaluated and replaced by its return value.
+      See the next section for more on <i>command substitution</i>.
+    <p>
+      The words "command" and "procedure" will be used almost interchangeably.
+      A procedure is really just a command that is written in Tcl, while some
+      commands, including most of the Lens commands, are written in C.
+      Procedures are executed by simply following the name of the procedure
+      with its arguments.  Parentheses are not used as in C.  What we would
+      write in C this way:
+    <pre>
+    f(x, y);</pre>
+    We write in Tcl this way:
+    <pre>
+    f $x $y</pre>
+    <p>
+      The arguments to a command are separated by whitespace.  An argument
+      may contain whitespace if it is surrounded by quotation marks, curly
+      braces, or square braces.  Many commands take a fixed number of
+      arguments but some take a flexible number.
+    <p>
+      Essentially, everything in Tcl is a string.  Variables need not be given
+      types.  Integers and reals will be converted to and from strings when it
+      is appropriate, but the user need not be concerned with this.  The
+      <i>null string</i> is the universal empty value.  It can be written as
+      <code>""</code> or <code>{}</code>.  It is not the same as
+      <code>0</code>.  Think of 0 as the non-null string <code>"0"</code>.
+
+
+    <h3>Variable and Command Substitution</h3> 
+    <p>
+      The previous example called the command <code>f</code> with the
+      arguments <code>$x</code> and <code>$y</code>.  The dollar sign
+      indicates variable substitution.  It means to replace the variable name
+      <code>x</code> with the value of variable <code>x</code>.  This is necessary because <i>everything
+      in Tcl is a string</i> and if we just wrote <code>x</code> it would be
+      the string <code>"x"</code> and not the value of the variable
+      <code>x</code>.  A variable is assigned a value with the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/set.htm">set</a>
+      command.  <code>set</code> also returns this value, as in the following:
+    <pre>
+    lens> set x 5
+    5                                   <i>(this is the return value here)</i>
+    lens> set y "hello there"
+    hello there
+    lens> set z $y$x
+    hello there5</pre>
+    <p>
+      The first command sets x to the string 5.  Later we might use $x in some
+      arithmetic, but only then will it matter that x happens to hold an
+      integer.  The second command sets y to the string "hello there".
+      Because of the quotes, "hello there" is treated as a single argument.
+      The last command sets z to be the concatenation of the string held by y
+      and the string held by x.  Again, this is just one argument.
+    <p>
+      Now what if we wanted to set z to the value of y immediately followed by
+      5, but we didn't have 5 stored in a variable?  We might try the
+      following:
+    <pre>
+    lens> set z $y5
+    can't read "y5": no such variable   <i>(this is an error)</i></pre>
+
+    But this will try to dereference the variable "y5", which doesn't exist.
+    We can avoid this problem by surrounding the y with curly braces:
+    <pre>
+    lens> set z ${y}5
+    hello there5</pre>
+
+    <p>
+    If a variable has a funny name, such as one containing periods, we may 
+    also need to surround the variable name with curly braces when
+      dereferencing it:
+    <pre>
+    lens> set a.b c
+    c
+    lens> return $a.b
+    can't read "a": no such variable
+    lens> return ${a.b}
+    c</pre>
+    <p>
+      Variables need not be declared explicitly.  When a variable is first set
+      it will be created automatically.
+    <p>
+      Along with simple variables, Tcl also supports associative arrays.
+      Associative arrays don't have a finite number of integer indexes, like
+      ordinary arrays, but arbitrary strings as indexes.  Array elements are
+      accessed using parentheses rather than square brackets, as in C.  This
+      is because square brackets were reserved for command substitution.
+      Observe the following examples:
+    <pre>
+    lens> set mother(Bill) Jane
+    Jane
+    lens> set brother(Jane) Bob
+    Bob
+    lens> set sister(Bob) $mother(Bill)
+    Jane
+    lens> set uncle(Bill) $brother($mother(Bill))
+    Bob</pre>
+    
+    Tcl does not really support multi-dimensional arrays, but you can pretend
+    to have them by placing a comma or something else between the indexes, as
+    in:
+    <pre>
+    lens> set relationship(Bill,Jane) mother
+    mother</pre>
+
+
+    <h4>Avoiding Substitutions</h4>
+    <p>
+      It is often necessary to avoid substitutions or to delay them until
+      later.  This can become very complicated and is the weakest aspect of
+      the Tcl language.  The usual cases are not too bad, however.  The
+      simplest method of avoiding a substitution is using a backslash:
+    <pre>
+    lens> set z $x
+    5
+    lens> set z \$x
+    $x
+    lens> set z "\$x is equal to $x"
+    $x is equal to 5</pre>
+    <p>
+      The double quotes in the last command combine the separate words into a
+      single argument, but they allow command substitutions to continue.
+      Curly braces, {}, are similar to double quotes but stronger, in that
+      they prevent command substitutions from going on inside them.  However,
+      putting quotes around the curly braces will turn them off:
+    <pre>
+    lens> set z {\$x is equal to $x}
+    \$x is equal to $x
+    lens> set z "{\$x is equal to $x}"
+    {$x is equal to 5}</pre>
+    <p>
+      The choice between double quotes and braces is important when setting
+      variables to commands.  Using quotes causes substitution to occur
+      immediately while using braces defers it to later:
+
+    <pre>
+    lens> set x 5
+    lens> set y "return $x"
+    return 5
+    lens> set z {return $x}
+    return $x
+    lens> set x 6
+    6
+    lens> $y
+    5
+    lens> $z
+    6                                    <i>(notice the difference)</i>
+    lens> set y "return \"old x = $x  new x = \$x\""
+    return "old x = 6  new x = $x"
+    lens> set x 7
+    7
+    lens> $y
+    old x = 6  new x = 7</pre>
+    <p>
+      It is sometimes necessary to do an extra level of substitution on the
+      arguments of a command, particularly after having avoided some
+      substitutions.  This can be done by using the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/eval.htm">eval</a>
+      command.  In the following example, the value of y is the variable name
+      x.  We would like to set z to the value of the variable name that is
+      stored in y.  To do this in one step we need an extra level of
+      substitutions:
+    <pre>
+    lens> set x 5
+    5
+    lens> set y x
+    x
+    lens> set z $$y
+    $x                                   <i>(oops)</i>
+    lens> eval set z $$y
+    5
+    lens> return "$x $y $z"
+    5 x 5</pre>
+    <p>
+    When you have variable names stored in other variables, sometimes it is
+    easier to use <code>set</code> to access the value of the variable rather
+    than <code>$</code>.  Instead of "<code>eval set z $$y</code>", you could
+    do: 
+    <pre>
+    lens> set z [set $y]</pre>  
+
+
+    <h4>Command Substitution</h4>
+    <p>
+      Just as the value of a variable can be substituted for its name, the
+      result of a command can be substituted for the command.  This is done by
+      embedding the command in square brackets.  For example, <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/expr.htm">expr</a>
+      is a command for evaluating mathematical and logical expressions.  It
+      returns the value of the expression.  We can store the result of a
+      calculation in a variable as follows:
+    <pre>
+    lens> set x [expr 3 + 4]
+    7</pre>
+    Substitutions will occur within square brackets, just like they do within
+    double quotes:
+    <pre>
+    lens> set z [expr [set y [expr [set x 2] + 1]] * 2]
+    6
+    lens> set values "$x $y $z"
+    2 3 6</pre>
+    <p> 
+      It is often necessary to escape command substitutions just as we escape
+      variable substitutions.  This can be done by preceding both the opening
+      and closing brackets with a backslash or by enclosing the brackets in
+      curly braces:
+    <pre>
+    lens> set y "return [expr $x + 2]"
+    return 4
+    lens> set z "return \[expr \$x + 2\]"
+    return [expr $x + 2]
+    lens> set w {return [expr $x + 2]}
+    return [expr $x + 2]                 <i>(equivalent but cleaner)</i>
+    lens> set x 10
+    10
+    lens> return "[$y] [$z] [$w]"
+    4 12 12</pre>
+
+
+    <h4>File Name Expansion</h4>
+    <p>
+      One related thing to note is that file name globbing does not occur
+      automatically in Tcl.  The following does not work because
+      <code>*.c</code> does not get expanded:
+    <pre>
+    lens> rm *.c
+    /bin/rm: *.c: No such file or directory
+    child process exited abnormally</pre>
+      <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/glob.htm">glob</a>
+      is a command for doing file name expansion:
+    <pre>
+    lens> glob *.c foo.c bar.c</pre> 
+    <p>
+      However, <code>glob</code> returns all of the filenames as a single
+      argument so this will not work:
+    <pre>
+    lens> rm [glob *.c]
+    /bin/rm: foo.c bar.c: No such file or directory
+    child process exited abnormally</pre>
+    That is because "foo.c bar.c" is treated as a single file name.
+    Therefore, an extra evaluation is needed so that the single argument
+    becomes two arguments:
+    <pre>
+    lens> eval rm [glob *.c]</pre>
+    <p>
+      When you combine the complexity of command substitutions, arrays and
+      variables having strange names, variables containing other variable
+      names, and the need to delay or force evaluation, substitutions can
+      become very complex.  In fact, there are a few things that are simply
+      impossible given the Tcl syntax.  This can sometimes be avoided by
+      dividing a step into several sub-steps and storing the intermediate
+      results.  But when it comes down to it, sometimes trial and error is the
+      only way to get a tricky piece of code correct.
+
+
+    <h3>Strings</h3>
+    As mentioned, virtually everything in Tcl is a string, so string
+    manipulation is rather important.  Simple string concatenation occurs when
+    two strings are placed side-by-side.  A string can also be appended to the
+    end of a variable using the append command:
+    <pre>
+    lens> set x howdy
+    howdy
+    lens> set x "$x $x"
+    howdy howdy
+    lens> append x " $x"
+    howdy howdy howdy howdy</pre>
+
+    If you want to get more sophisticated than concatenation, the <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/format.htm">format</a>
+    command can be used to form strings.  It is similar to the C sprintf()
+    function and is able to alter the representation of numeric variables,
+    rounding the decimals or changing base:
+    <pre>
+    lens> set y 3.14159
+    lens> format "%-10.3f %.0f %x" $y $y 100
+         3.142 3 64</pre>
+
+    A number of other commands are used to manipulate strings.  <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/regexp.htm">regexp</a>
+    does regular expression matching given an expression and a string.  <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/regsub.htm">regsub</a>
+    does regular expression matching and substitution.  <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/scan.htm">scan</a>
+    parses a string in a similar way to <code>sscanf</code>.  Finally, the <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/string.htm">string</a>
+    command does a number of other operations on strings, such as returning a
+    string's length, comparing strings, doing substring lookup, and trimming
+    the head and tail of a string.
+    
+    The <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/puts.htm">puts</a>
+    command prints strings to standard output (or to another channel).  It is
+    like the <code>echo</code> used in other shell languages.  The string
+    given to <code>puts</code> must be in a single argument, as follows:
+    <pre>
+    lens> puts "$x.  Look, I'm a cowboy!"
+    howdy howdy howdy howdy.  Look, I'm a cowboy!</pre>
+    Note, that printing a string is very different from returning a string:
+    <pre>
+    lens> set x [expr 3 + 4]
+    7
+    lens> set x
+    7
+    lens> set x [puts 7]
+    7
+    lens> set x
+                                       <i>(there is no value here because puts
+                                        didn't return anything)</i></pre>
+
+
+    <h3>Lists</h3>
+    <p>
+      Lists are used to store collections of things.  Lists are strings with a
+      special structure.  The simplest list is just a string with several
+      words separated by spaces.  Each word is an element in a list.  We can
+      make multiple word elements by enclosing the elements in braces or
+      double quotes.  The
+      <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/lindex.htm">lindex</a>
+      command returns a selected element of a list.  Observe the following
+      examples:
+    <pre>
+    lens> lindex {Snoopy Linus Sally "the girl with red hair"} 1
+    Linus
+    lens> set x {Snoopy Linus Sally "the girl with red hair"}
+    Snoopy Linus Sally "the girl with red hair"
+    lens> lindex $x 3
+    the girl with red hair
+    lens> lindex [lindex $x 3] 4
+    hair</pre>
+    <p>
+      There are a number of commands for handling lists.  <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/llength.htm">llength</a>
+      returns the length of a list.  <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/concat.htm">concat</a>
+      concatenates multiple lists.  Note that this is can also be done using
+      ordinary string concatenation.  <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/lappend.htm">lappend</a>
+      adds new elements to the end of a list.  <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/linsert.htm">linsert</a>
+      adds new elements to the middle of a list.  <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/lrange.htm">lrange</a>
+      returns part of a list.  <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/split.htm">split</a>
+      breaks a string into a list at specified characters.  And there are a
+      few more list commands described in the Tcl/Tk manual.
+
+
+    <h3>Expressions</h3>
+    <p>
+      Expressions combine numeric or logical values to produce new values.
+      Expressions are ordinarily evaluated using the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/expr.htm">expr</a>
+      command.  Expressions are also evaluated automatically when they are in
+      the "test" argument of <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/if.htm">if</a>
+      statements and other control structures.
+    <p>
+      Most C expressions are valid in Tcl.  However, you must remember to use
+      a dollar sign to perform variable substitution on each occurrence of a
+      variable.  All of the standard math library functions are available in
+      Tcl expressions.  Note that in Tcl these are not procedures as they are
+      in C.  Using these mathematical functions is the only case where C-like
+      function syntax, f(), is used, rather than Tcl command syntax.  Here are
+      some expressions:
+    <pre>
+    lens> set x 0.5
+    0.5
+    lens> set y 2
+    2
+    lens> expr ($x + $y) / $y
+    1.25
+    lens> expr pow(35 % 4, $y)
+    9.0
+    lens> expr 2 | 1
+    3                                  <i>(bitwise operations!)</i>
+    lens> expr (3.14 > 3) && (round(3.14) == 3)
+    1                                  <i>(logic!)</i>
+    lens> expr {[format "%d %d" 3 4] == "3 4"}
+    1                                  <i>(easy string comparisons!)</i></pre>
+    <p>
+      Note that in the last example curly braces were used around the
+      expression.  This is necessary to prevent an extra level of substitution
+      to occur before the expression itself is evaluated.  Leaving them out
+      would have caused problems because the expression would have read
+      <code>3 4 == "3 4"</code> rather than <code>"3 4" == "3 4"</code>.  This
+      is a bit tricky, but you will almost always be fine if you surround all
+      expressions with curly braces.
+    <p>   
+      Logical true is 1 and logical false is 0.  Note that the empty string is
+      not logical false.  To test if a string is empty, you should do:
+    <pre>
+    lens> if {$s == {}} {...}</pre>
+    <p>
+      When performing division and possibly other procedures, Tcl will attempt
+      to detect whether the numerator is an integer or a real number.  If the
+      numerator is an integer, integer division will be performed and the
+      result truncated.  To prevent this, constants that should be treated as
+      real numbers should always be given at least one decimal, even if it is
+      zero.  Furthermore, <code>double()</code> should be used on variables to
+      ensure that they are not treated as integers.  For example:
+    <pre>
+    lens> expr 8 / 5
+    1
+    lens> expr 8.0 / 5
+    1.6
+    lens> set x 8
+    8
+    lens> expr $x / 5
+    1
+    lens> expr double($x) / 5
+    1.6</pre>
+
+
+    <h3>Control Structures</h3> 
+    <p>
+      Control structures are implemented in Tcl like normal commands.  There
+      is an <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/if.htm">if</a>
+      statement, which uses the special arguments <code>else</code> and 
+      <code>elseif</code> for alternatives.  Note that there can't be a space
+      in <code>elseif</code>:
+    <pre>
+    if {$x < 0} {set x 0}
+
+    if {$y == "hello"} {
+        puts $y
+    }
+
+    if {(sin($x) < 0.5) || $x < 0} \
+        {puts hi}
+
+    if {$x == $y} {
+        puts y
+    } elseif {$x == $z} {
+        puts z
+    } else {puts huh?}</pre>
+
+    There is a <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/for.htm">for</a>
+    loop:
+    <pre>
+    for {set i 0} {$i < 10} {incr i} {
+        puts $i
+    }</pre>
+
+    and a <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/while.htm">while</a>
+    loop:
+    <pre>
+    while {$i > 0} {
+        puts [incr i -1]
+    }</pre>
+
+    The <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/foreach.htm">foreach</a> command iterates over elements of a list:
+    <pre>
+    foreach i {a b c d e} {
+        puts $i
+    }</pre>
+    <p>
+      <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/break.htm">break</a> and <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/continue.htm">continue</a> can be used in loops in the same way they are used in C.
+    <p>
+      Finally, the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/switch.htm">switch</a>
+      statement is like the C version but it takes a single argument
+      specifying the value and then a list of even length.  The even elements
+      of the list are case values and the odd elements are commands that are
+      executed if the preceding case is met.  Breaks are implicit following
+      any match, unlike in C.  The special case </code>default</code> matches
+      everything.  The special command </code>-</code> causes
+      <code>switch</code> to fall through to the next command, avoiding the
+      <code>break</code>.  Here are some examples:
+    <pre>
+    switch $x "a {puts hi} b {puts bye} $y {puts arghhhh}"
+      
+    switch [expr $x + 3] {
+        2 -
+        3 {puts "2 or 3"}
+        4 {puts 4!!!}
+        default {puts "What you talkin' 'bout, Willis?"}
+    }</pre>
+    <p>
+      If you want to get fancy, it is possible to make <code>switch</code> do
+      regular expression matching rather than simple string matching.
+
+
+    <h3>Procedures</h3>
+    <p>
+      The <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/proc.htm">proc</a>
+      command is used to define new procedures.  It takes three arguments: the
+      name of the new procedure, a list of arguments, and the body of the
+      command.  The list of arguments can be the name of a single argument,
+      <code>foo</code>, or a list of arguments, <code>{foo bar}</code>.  An
+      argument can either be a single name or a pair consisting of a name and
+      a default value.  If a default value is given, the argument is optional.
+      All optional arguments must be at the end of the argument list.
+    <p>
+      The return value of a procedure is the value of the last command
+      executed.  The <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/return.htm">return</a>
+      and <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/error.htm">error</a>
+      commands can be used to return normally or abnormally at any point in
+      the execution of the procedure.  
+    <p>
+      Here is a command that returns the natural log of a value if given one
+      argument or the log to a particular base if given two arguments.  Note
+      that the default value for <code>base</code> is the null string, but
+      there is no default value for <code>x</code> so it must be specified:
+    <pre>
+    proc superLog {x {base {}}} {
+        if {$base == {}} {
+            return [expr log($x)]
+        } else {
+            return [expr log($x) / log($base)]
+        }
+    }
+
+    lens> superLog 100
+    4.60517018599
+    lens> superLog 100 10
+    2.0</pre>
+
+    The scope of variables in procedures does not automatically extend to the
+    global environment.  Variables are by default local.  The <a
+    href="http://dev.scriptics.com/man/tcl8.3/TclCmd/global.htm">global</a>
+    command, when used inside a procedure, instructs the interpreter that one
+    or more variables are to be global:
+
+    <pre>
+    proc area radius {
+        global PI
+        expr $radius * $radius * $PI
+    }
+
+    lens> set PI 3.14159
+    3.14159
+    lens> area [expr sqrt(2)]
+    6.28.38</pre>
+    <p>
+      Procedures can deleted by renaming them to the empty string, as in:
+    <pre>
+    lens> rename myproc {}</pre>
+    
+
+    <h3>Errors and Exceptions</h3>
+    <p>
+      As mentioned before, commands return both a code and a value.
+      Ordinarily the code is 0 and is ignored.  If an error occurs in the
+      command (or if the <code>error</code> command is called inside a
+      procedure) it will return with the code 1.  The interpreter will
+      ordinarily catch this error and propagate it up through the call stack
+      until the top level is reached.  Then the value associated with the
+      error is reported to the user.
+    <p>
+      However, the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/catch.htm">catch</a>
+      command can be used to intercept errors and to deal with them in a less
+      destructive way.  For example, if you wanted to make sure that the
+      variable <code>x</code> does not exist, you would use the command
+      <code>unset x</code>.  However, this will result in an error if
+      <code>x</code> didn't already exist.  This error would terminate any
+      scripts invoking this command.  Therefore, it is good practice to
+      protect such commands as follows:
+    <pre>
+    lens> catch {unset x}</pre>
+      <code>catch</code> will return the code from the <code>unset</code>
+    command as its value.  If <code>x</code> existed it would return 0 and if
+    <code>x</code> didn't exist, it would return 1.
+    <p>
+      The <code>return</code>, <code>break</code>, and <code>continue</code>
+      commands give the return codes 2, 3, and 4, respectively.  These are
+      each handled differently by the interpreter.  The <code>return</code>
+      command is also able to return with a particular code. 
+    <p>
+      The one potentially useful variant is "<code>return -code return
+      &lt;string></code>".  If invoked anywhere inside a Tcl script, even
+      inside of a procedure called by the script, this will cause the script
+      to exit.  This is somewhat like the <code>quit</code> command in some
+      scripting languages.
+
+
+    <h3>Processes</h3>
+    <p>
+      Subprocesses may be started in one of several ways.  If a command name is
+      used that doesn't match a valid Tcl command, the interpreter will see if
+      the name matches an executable program.  If so, the program will be
+      invoked with the specified arguments.
+    <p>
+      The normal way to run subprocesses, however, is with the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/exec.htm">exec</a>
+      command.  <code>exec</code> supports input and output redirection as
+      well as pipes.  The usage is best understood by reading the official
+      manual page.  One thing of interest is that a single <code>&lt;</code>
+      will make the command read from a file while a double
+      <code>&lt;&lt;</code> will make the command read from a variable.  The
+      <code>exec</code> command will only return when the subprocesses
+      terminate, unless the last argument is <code>&</code>.
+    <p>
+      Finally, <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/open.htm">open</a>
+      may be used to create perpetual pipelines that can be written to or read
+      from and must be terminated with the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/close.htm">close</a>
+      command.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 23:51:52 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

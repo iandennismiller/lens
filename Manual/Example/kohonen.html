@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: kohonen.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: kohonen.in</h1>
+    <hr>
+    <p>
+      This example involves a Kohonen network that is trained on the
+      handwritten digits task.  A Kohonen network is a type of unsupervised
+      Hebbian network that can be used to solve clustering problems.  Like
+      most Hebbian networks, this one consists of two layers: the input and
+      the map layer.  The input is just the standard hand-digits input.  The
+      interesting one is the map layer.
+    <p>
+      The map layer is topographically organized.  It is a two-dimensional
+      sheet and the distance between units is determined by their Euclidean
+      distance in the sheet.  The map layer uses the DISTANCE input function
+      and the KOHONEN output function.  Note that a Kohonen network is a form
+      of standard network.  It does not have a special network type.
+    <p>
+      The DISTANCE input function computes the input to the unit as the
+      squared Euclidian distance between the incoming weight vector and the
+      corresponding vector of input unit activations.  If the pattern of
+      activations on the input units is similar to the pattern of link weights
+      from those units into a map unit, that map unit will have a small input.
+    <p>
+      The thing to remember here is that, with the KOHONEN output function,
+      smaller inputs mean greater activation.  Thus, the more similar a map
+      unit's vector of incoming weights is to the input pattern, the more the
+      unit will prefer that pattern, as indicated by a small input value.
+    <p>
+      The KOHONEN output function is not like most output functions.  First it
+      determines which unit in the layer has the smallest input.  This is the
+      winning unit.  It also calculates the max input to any unit.  Any unit
+      that is farther from the winning unit than the map group's
+      <i>neighborhood</i> distance will have 0.0 output.
+    <p>
+      Only those units within the neighborhood of the winning unit will be
+      active.  Their activation is given by the formula:
+    <pre>
+    output = 1 - (input / max);</pre>
+    <p>
+      Thus, the smaller the input, the larger the output.  And the output is
+      always in the range [0,1].  
+    <p>
+      The backprogation phase in a DISTANCE/KOHONEN group will only affect the
+      links of active units.  The error derivative of links into active units
+      will be incremented by the difference between the link weight and the
+      activation of the sending unit.  When the weight upate takes place, this
+      will nudge the weight to be more like the sending activation.  Thus,
+      active units will be more sharply tuned to outputs that activate them.
+    <p>
+      The other crucial part of the Kohonen algorithm is that the neighborhood
+      distance starts large and is gradually reduced.  This can be done in
+      Lens using a preEpochProc procedure.  The setNeighborhood procedure,
+      defined in kohonen.in, initializes the neighborhood to 6.0 when training
+      begins. Every 50 epochs it will reduce the neighborhood according to the
+      following function:
+    <pre>
+    neighborhood = 0.9 * neighborhood + 0.1</pre>
+    <p>
+      This function causes the neighborhood to gradually decay towards 1.0.
+      This isn't necessarily the best neighborhood decay function and you
+      might get better learning with one that decays more or less quickly.
+    <p>
+      Now it's time to train the model.  So hit the train button.  This will
+      train the Kohonen network on 2000 batches of 100 examples, or 200,000
+      total examples.  As the network trains, the neighborhood value will be
+      printed out whenever it is changed.
+    <p>
+      Now open the Unit Viewer and click on some examples.  You should see
+      that only a small region of the map layer is activated by each example.
+      This is probably a plus shaped region if the neighborhood is just a bit
+      over 1.0.
+    <p>
+      You should notice that 0's seem to activate the same or nearby sets of
+      units.  Other digits should activate different areas of the map layer.
+      This is the basis of the Kohonen net's clustering ability.  Although it
+      received no feedback, it has separated the different types of digit.
+      Later we'll work on actually producing a classification of the examples
+      using the Kohonen network.
+    <p>
+      Now change the value shown in the Unit Viewer to Inputs.  You may want to
+      change the intensity slider on the right to get better contrast.  This
+      shows you how activated (or deactivated, really) the map units are by
+      each example.  You might consider basing a classifier on the map unit
+      inputs, rather than their outputs.
+    <p>
+      Try to figure out where the cluster for each of the digits is located.
+      It is possible that a digit has more than one cluster.  This may be the
+      case if some digits have multiple forms, like an open or closed 4 or a
+      crossed or uncrossed 7.
+    <p>
+      Now this is the cool part.  Right click on a unit in the middle of one
+      of the clusters.  This will show you the incoming weights to that unit.
+      You should see that weights from the input layer form a idealized digit
+      of the type recognized by that cluster.  You may need to adjust the
+      intensity scale again.
+    <p>
+      The weights to units near the cluster centers should be in the form of
+      recognizable digits.  As you move between clusters, the weight patterns
+      will morph from one digit to another.
+    <p>
+      You will notice that the neighborhoods don't wrap around the edges of
+      the map in this network.  So clusters on the sides of the map tend to be
+      crushed.  We can allow the distance function to wrap around the edges of
+      the map by setting its <i>periodicBoundary</i> field to 1.
+    <p>
+      Turn on periodic boundary conditions and reset the network.  Now train
+      again.  But first, open the Link Viewer and Unit Viewer.  In the Unit
+      Viewer you can watch the shape of the neighborhoods.  The neighborhoods
+      should now wrap around the edges of the map.  In the Link Viewer you can
+      watch the patterns that form in the weights as it trains.
+    <p>
+      If you are interested in Kohonen networks, try writing an actual
+      classifier based on it.  One way to do that is as follows:  Write a
+      script that runs through the examples with a trained network and,
+      for each map unit, computes the probability that each digit has 
+      appeared given that the map unit was active.
+    <p>
+      Now you can classify examples by running the network on the example,
+      finding the most active unit, and guessing the most likely digit given
+      that example.  How well does your classifier do on the testing examples?
+    <p>
+      In case you're lazy, I wrote a classifier that you can play with and
+      modify.  It is located in kohonen.tcl.  Just source the file and then
+      you can run its procedures.  With a trained network, run
+      gatherStatistics.  This goes through the training examples and gathers
+      the data.  Then run testClassifier and give it either the name of the
+      training or testing set.  This will report the percentage of correct
+      classifications.  It gets about 90% correct on either set.
+    <p>
+      You could write a much faster classifier if you wrote it in C.  But
+      you'll have to refer to the Programmer's Guide to learn how to do that.
+    <p>
+      Can you modify the method to produce a more accurate classifier?  Can
+      you get better performance by improving the way the network was
+      trained.  Consider using a large map layer, a different learning rate,
+      reducing the learning rate as it trains, and using a different
+      neighborhood decay function.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 22 15:29:25 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

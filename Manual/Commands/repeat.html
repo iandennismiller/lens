@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: repeat</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>repeat</font> - loops a specified number of times
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    repeat [&lt;variable>] &lt;iterations> &lt;body></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      Because writing <i>for</i> loops in Tcl is annoying, this command
+      provides an easier way to perform the most common sorts of loops.
+    <p>
+      If iterations is an integer, the code in <i>body</i> will be executed
+      <i>iterations</i> number of times.  On the first iteration, the counter
+      <i>variable</i> will be 0 and on the <i>i</i>th iteration it
+      will be <i>i-1</i>.  Changing the variable within the body will not
+      affect this.
+    <p>
+      You may omit the variable and there will simply not be one accessible
+      within the body of the loop.
+    <p>
+      Alternatively, if <i>iterations</i> is a pair of numbers, <i>"a b"</i>,
+      the counter variable will range from <i>a</i> to <i>b</i>, inclusive.
+      If <i>a</i> is greater than <i>b</i> it will count backwards.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To just do something 10 times:
+    <pre>
+    repeat 10 {puts hi}</pre>
+    <p>
+      To train the network for 1000 iterations, testing every 100:
+    <pre>
+    repeat i 10 {
+        train 100
+        echo "Updates: [expr $i * 100]\n[test]" >> outputFile
+    }</pre>
+    <p>
+      To print 3, 4, and 5:
+    <pre>
+    repeat i "3 5" {puts $i}</pre>
+    <p>
+      To print 5, 4, and 3:
+    <pre>
+    repeat x "5 3" {puts $x}</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/for.htm">for</a>,
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/while.htm">while</a>,
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/foreach.htm">foreach</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 22 14:15:59 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

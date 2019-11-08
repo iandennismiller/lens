@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Tasks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Tasks</h1>
+    <hr>
+    <p>
+      Most Lens commands run atomically and don't give up control until they
+      return.  However, some commands take a long time to complete and
+      they will periodically give up control to refresh the displays and allow
+      the user to execute other commands.  These are called <i>tasks</i>.
+      They include training (normal and parallel), testing, loading and saving
+      example files, building the link viewer, and executing the <a
+	href="Commands/wait.html">wait</a> command.
+    <p>
+      If the Main Window is open when a task begins, you will see the "Exit"
+      button at the bottom of the window change to "Stop &lt;the task>".  If
+      you press the button or cause an interrupt signal with Ctrl-C, the task
+      will be aborted when it is safe to do so.
+    <p>
+      If you start a second task while one is already running, the first task
+      will wait until the second one finishes.  Therefore, you could have an
+      entire stack of tasks.  Only the top one will actually be executing and
+      the others will be waiting for the ones above them to complete.  An
+      interrupt will only affect the top task on the stack.
+    <p>
+      It would be unsafe to execute some commands while certain tasks are
+      running.  For example, you would not want to delete the network in the
+      middle of training.  Therefore, each command will check whether it is
+      safe to run before doing so and return with an error if it would be
+      unsafe.  Ideally, this should prevent you from causing a segmentation
+      fault.
+    <p>
+      Incidentally, you cannot load examples from more than one set at a time.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sat Nov 11 13:57:36 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

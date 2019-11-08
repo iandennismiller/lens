@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: saveWeights</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>saveWeights</font> - saves the link weights and other
+      values in a file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    saveWeights &lt;file-name> [-values &lt;num-values> | -text |
+        -noFrozen | -onlyFrozen]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This writes the weights for every link in the network into a
+      special file.  The file can be later reloaded into a network of
+      the same architecture.  If the file name has the extension .gz,
+      .bz, .bz2, or .Z it will automatically be compressed.  It is
+      customary to give weight files the extension .wt.
+    <p>
+      When training networks with momentum, deltaBarDelta, or other
+      "sophisticated" algorithms, it is usually important to save more
+      information for each link than just its weight.  If <i>num-values</i> is
+      2, both the weights and the deltas (used by momentum) will be saved.  A
+      value of 3 will save the weights, deltas, and "last values", which are
+      used by deltaBarDelta in <code>alens</code>.
+    <p>
+      If a <i>num-values</i> of 3 is specified in standard <code>lens</code>,
+      only the weights and deltas will be written (as there are no
+      <i>lastValue</i> fields).  Therefore, you can use 3 to store all of the
+      link values in either version of Lens.
+    <p>
+      The default is to write a binary weight file.  If the <i>-text</i> flag
+      is given, values will be written in text format.
+    <p>
+      Ordinarily, all links in the network will be saved.  If <i>-noFrozen</i>
+      is specified, frozen links will not be saved.  If <i>-onlyFrozen</i> is
+      specified, thawed links will not be saved.  These are useful if you only
+      wish to save part of the network.
+    <p>
+      When using networks with randomized structures, it is important to
+      record the random <a href="seed.html">seed</a> used when building the
+      network so the same architecture can be reconstructed later.  Otherwise,
+      weight files saved with this command may be useless later.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To save the weights in the compressed binary file greatNet.wt.gz:
+    <pre>
+    lens> saveWeights greatNet.wt.gz</pre>
+    To save all of the link values of non-frozen weights in text format:
+    <pre>
+    lens> saveWeights foo.wt.gz -v 3 -n -t</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="loadWeights.html">loadWeights</a>,
+    <a href="seed.html">seed</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 00:05:03 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

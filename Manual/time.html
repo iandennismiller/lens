@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Time and Events</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Time and Events</h1>
+    <hr>
+    <p>
+      Dealing with time can be a bit confusing in Lens.  Those who are just
+      using feed-forward networks don't need to be too concerned with this
+      because your examples will typically have a single event that is not
+      extended over time.  But if you are using recurrent networks or
+      Boltzmann machines, you will need to understand time intervals, ticks
+      and example events.
+    <p>
+      Time <i>intervals</i> are meant to represent abstract units of time in
+      the network's environment.  You might think of a time interval as a
+      second or a tenth of a second of real time.  The network's
+      <i>timeIntervals</i> value is the maximum amount of time that the netwrk
+      will be run on any example.  To be safe, it should be just a bit longer
+      than the maximum length of any example the network will see.  You should
+      not think of time intervals as discrete steps.  They are really just a
+      measure of continuous time.
+    <p>
+      However, actually simulating the network is done in discrete steps
+      called <i>ticks</i>.  The activation values are updated in the network
+      once per tick.  Typically there will be from 1 to 20 ticks per time
+      interval.  The more ticks per interval, the finer the grain at which the
+      continuous network is simulated.  With standard and simple recurrent
+      networks, there can be only one tick per time interval, so they needn't
+      be distinguished.  But in fully recurrent networks, it is usual to have
+      more than one tick per time interval.  In this case, it is helpful to
+      think of an interval as representing a span of real time and the ticks
+      as the granularity at which this time is simulated.  The maximum number
+      of intervals per example and the number of ticks per interval can be
+      specified when a network is constructed with <a
+      href="Commands/addNet.html">addNet</a> or later on with the <a
+      href="Commands/setTime.html">setTime</a> command.
+    <p>
+      The <i>dt</i> parameter is used in fully recurrent networks to scale the
+      rate at which unit inputs or outputs can change.  It is automatically
+      set to <i>1 / ticksPerInterval</i> when the network is created or when
+      the ticksPerInterval is changed with the <a
+      href="Commands/setTime.html">setTime</a> command.  However, <i>dt</i>
+      can then be directly changed by the user if a faster or slower time
+      constant is wanted.  If you have changed <i>dt</i> and would not like it
+      to be overridden when setTime is called, you can used the -dtfixed flag.
+      Every group also has its own <i>dtScale</i> that is multiplied by the
+      network's <i>dt</i>.  Thus, each group can have its own integration
+      rate, but you can still scale the rate of the whole network together.
+      Each unit can also scale its integration rate with its own
+      <i>dtScale</i> parameter.  The effective dt for a unit is actually the
+      product of the network's <i>dt</i>, the group's <i>dtScale</i>, and the
+      unit's <i>dtScale</i>.  The group and unit <i>dtScale</i>s default to
+      1.0.
+    <p>
+      Training examples are composed of <i>events</i>.  Each event specifies a
+      pattern of inputs and targets.  Most examples will just consist of a
+      single event, but multiple events can be used to create examples with
+      inputs and/or targets that change over time.  Each event lasts a certain
+      amount of time, expressed as a number of time intervals, which need not
+      be an integer.  Parts of time intervals will be rounded down to the
+      closest tick.  The event has a <i>minTime</i>, a <i>maxTime</i>, and a
+      <i>graceTime</i> associated with it.  These are real values specified in
+      time intervals (or fractions thereof), but for a network with one tick
+      per time interval, they
+      may as well be thought of as integers specified in ticks.  The event
+      will always last <i>minTime</i> ticks and will never last more than
+      <i>maxTime</i>.
+    <p>
+      When running fully recurrent networks, it is common to turn on an
+      event's inputs for some time before the targets appear.  This can be
+      accomplished in a single event by using <i>graceTime</i>.  This
+      specifies the delay between turning on the inputs and turning on the
+      targets.  Before
+      this point, targets will be NaN and the network will receive no error
+      derivatives.  If the <i>minTime</i>, <i>maxTime</i>, or
+      <i>graceTime</i> is set to NaN, the example set's
+      default <i>minTime</i>, <i>maxTime</i>, or <i>graceTime</i>, field
+      will be used for the event.
+    <p>
+      Several conditions can cause an event to end.  An event will not last
+      longer than its <i>maxTime</i>.
+      If an event has lasted at least as long as its <i>minTime</i>, the event
+      will end if the <i>groupCriterionReached</i> is true for all groups that
+      have one.  The standard criterion function is true during training if
+      all output units are within the <i>trainGroupCrit</i> of their targets
+      (or within the <i>testGroupCrit</i> during testing).  If the group's
+      <i>trainGroupCrit</i> is NaN, the network's value will be used.  Note
+      that the event's <i>graceTime</i> should generally be shorter than the
+      <i>minTime</i>.  Otherwise, the event could end before the targets even
+      appear.
+    <p>
+      Sometimes you only want the next event to be presented if the network
+      has reached criterion on the current event.  This can be accomplished
+      with the <i>groupCritRequired</i> flag.  If this is set to true (1), the
+      example will end as soon as the network fails to reach criterion by the
+      end of an event.
+    <p>
+      An example will be run for enough ticks to process each event or until
+      the tick given by the network's <i>maxTicks</i>, whichever comes first.
+      The <i>maxTicks</i> is just the product of the network's
+      <i>timeIntervals</i> and its <i>ticksPerInterval</i>.  The
+      <i>historyLength</i> field determines the size of the units' history
+      arrays, which are used in continuous backpropagation and for drawing the
+      <a href="unitViewer.html">Unit Viewer</a>.  By default, this is the same
+      as the <i>maxTicks</i>.  However, if you do not want to waste the space
+      consumed by these arrays, you can reduce the history length using the <a
+      href="Commands/setTime.html">setTime</a> command.
+    <p>
+   <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 20:15:04 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

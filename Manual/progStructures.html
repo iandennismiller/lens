@@ -1,0 +1,1903 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: The Structures</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: The Structures</h1>
+    <hr>
+    The following tables explain all of the C structures and important global
+    variables used in Lens.
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>RootRec</td>
+	<td>Holds the arrays of all networks and all example sets.  The user
+	  can access this through the <i>root</i> field in any network.  It is
+	  defined in network.h.<tr></tr></tr>
+      <tr><td width="150">int <b>numNetworks</b></td>
+	<td>The number of networks in the simulator.</td></tr>
+      <tr><td>Network *<b>net</b></td>
+	<td>An array of pointers to the networks, sorted in creation 
+	  order.</td></tr>
+      <tr><td>int <b>numExampleSets</b></td>
+	<td>The number of example sets loaded.</td></tr>
+      <tr><td>ExampleSet *<b>set</b></td>
+	<td>An array of pointers to the example sets, sorted in creation 
+	  order.</td></tr>
+      <tr><td>int <b>numGraphs</b></td>
+	<td>This is not the actual number of graphs but the number of entries
+	allocated in the graph array.  Not all of the entries will necessarily
+	be filled in.</td></tr>
+      <tr><td>Graph *<b>graph</b></td>
+	<td>An array of pointers to the graphs.  The number of a graph,
+	reported when it is created is the index of the graph in this 
+	array.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Network</td>
+	<td>Defined in network.h.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of the network.</td></tr>
+      <tr><td>int <b>num</b></td>
+	<td>The index of this network in the root <i>net</i> array.</td></tr>
+      <tr><td>mask <b>type</b></td>
+	<td>A bitmask containing the type of the network, which may have the
+	  CONTINUOUS or BOLTZMANN and/or the FROZEN bit on.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>numGroups</b></td>
+	<td>The number of groups in the network.</td></tr>
+      <tr><td>Group *<b>group</b></td>
+	<td>An array of pointers to group structures.  The order of
+	  groups in the array is the order in which they are traversed during
+	  updating.  The index of each group should be the same as its
+	  <i>num</i> field.</td></tr>
+      <tr><td>int <b>numUnits</b></td>
+	<td>The number of units in the network.  This is just for reference;
+	  it may not actually be used.</td></tr>
+      <tr><td>int <b>numInputs</b></td>
+	<td>The number of input units in the network.</td></tr>
+      <tr><td>Unit *<b>input</b></td>
+	<td>An array of pointers to each of the input units.  The order of
+	  the units is determined by the order of the input groups.  This aids
+	  in loading <i>externalInput</i> values from example events.</td></tr>
+      <tr><td>int <b>numOutputs</b></td>
+	<td>The number of output units in the network.</td></tr>
+      <tr><td>Unit *<b>output</b></td>
+	<td>An array of pointers to each of the output units.  The order of
+	  the units is determined by the order of the output groups.  This aids
+	  in loading target values from example events.</td></tr>
+      <tr><td>int <b>numLinks</b></td>
+	<td>The total number of links in the network.  This is used for
+	  verifying compatibility when a weight file is loaded, and is nice
+	  for reference.</td></tr>
+      <tr><td>NetExt <b>ext</b></td>
+	<td>A pointer to the network extension structure.  This is defined in
+	  extension.h and allocated in extension.c.  Programmers should try to
+	  put any extensions to the network structure in there.</td></tr>
+      <tr><td>RootRec <b>root</b></td>
+	<td>A pointer to the single <i>root</i> structure that contains the
+	  numbers and arrays of networks and example sets.</td></tr>
+      <tr></tr>
+
+      <tr><td>ExampleSet <b>trainingSet</b></td>
+	<td>A pointer to the network's training set.</td></tr>
+      <tr><td>ExampleSet  <b>testingSet</b></td>
+	<td>A pointer to the network's testing set.</td></tr>
+      <tr><td>Example <b>currentExample</b></td>
+	<td>A pointer to the most recent example on which the network
+	  was run.  It is used primarily for the graphical displays.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>timeIntervals</b></td>
+	<td>The maximum number of time intervals the network can have
+	  per example.  These are to be thought of as units of "real"
+	  time.</td></tr>
+      <tr><td>int <b>ticksPerInterval</b></td>
+	<td>The number of ticks in each time interval.  This is just the
+	  number of times a continuous network is updated per unit of real
+	  time.</td></tr>
+      <tr><td>int <b>maxTicks</b></td>
+	<td>Equal to timeIntervals x ticksPerInterval.  This is
+	  the total number of ticks that could occur per example.</td></tr>
+      <tr><td>int <b>historyLength</b></td>
+	<td>This is the length of the history arrays in each unit.  The
+	  maximum useful value is <i>maxTicks</i>, which is also the default.
+	  This can only be changed with the <a
+	    href="Commands/setTime.html">setTime</a> command.  If this is less
+	  than the maximum value, the history arrays will act as circular
+	  buffers.</td></tr>
+      <tr><td>int <b>backpropTicks</b></td>
+	<td>When training a simple recurrent network, this is the number of
+	  ticks error is propagated back through time during the
+	  backpropagation phase.  It defaults to 1.  <i>historyLength</i> 
+	  should be at least this large for it to work properly.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>totalUpdates</b></td>
+	<td>The total number of weight updates that have occurred
+	  since the network was reset.</td></tr>
+      <tr><td>real <b>error</b></td>
+	<td>The sum of the error over all output units on all ticks on
+	  all examples in the training or testing batch.</td></tr>
+      <tr><td>real <b>weightCost</b></td>
+	<td>The sum of the squared link weights.  This is only calculated
+	  during a weight update if a report is to be generated.</td></tr>
+      <tr><td>real <b>outputCost</b></td>
+	<td>The sum of the cost ascribed to the output of each unit with a
+	  "unit output cost function".  This is reset at the start of training
+	  or testing and acrues whenever an example is processed.  It is not
+	  scaled by the <i>outputCostStrength</i>.</td></tr>
+      <tr><td>real <b>gradientLinearity</b></td>
+	<td>The cosine of the angle between the previous weight step vector and
+	  the new weight derivative vector.  This is only calculated during a
+	  weight update if a report is to be generated.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>exampleHistoryStart</b></td>
+	<td>This is the index into the unit history arrays that corresponds to
+	  the first tick of the current example.  This is necessary because
+	  the arrays are circular.</td></tr>
+      <tr><td>int <b>ticksOnExample</b></td>
+	<td>The total number of ticks that were used on the most
+	  recent example.</td></tr>
+      <tr><td>int <b>currentTick</b></td>
+	<td>As the network goes through forward and backward passes on an
+	  example, this keeps track of the current tick being
+	  processed.</td></tr>
+      <tr><td>flag <b>inGracePeriod</b></td>
+	<td>TRUE if the network is still in the <i>grace period</i> of
+	  the current event.</td></tr>
+      <tr><td>int *<b>eventHistory</b></td>
+	<td>An array of length <i>maxTicks</i>, although only the
+	  first <i>ticksOnExample</i> entries are meaningful.  For each tick
+	  on the previous example, it stores the event that was taking place
+	  on that tick.</td></tr>
+      <tr><td>flag *<b>resetHistory</b></td>
+	<td>An array of length <i>historyLength</i>.  It stores a boolean
+	  value that indicates whether a new example began on that location in
+ 	the circular history buffer.  This is used when backpropagating SRNs
+	  across multiple ticks.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>numUpdates</b></td>
+	<td>The number of weight updates to be done on the next or
+	  current round of training.</td></tr>
+      <tr><td>int <b>batchSize</b></td>
+	<td>The number of examples over which link error derivatives are
+	  accumulated before updating the weights.  A value of 0 will make
+	  the batch the entire training set.</td></tr>
+      <tr><td>int <b>reportInterval</b></td>
+	<td>The number of weight updates between each printed report
+	  during training.</td></tr>
+      <tr><td>real <b>criterion</b></td>
+	<td>Training will stop if the total error on a batch falls below
+	  this value.</td></tr>
+      <tr><td>real <b>trainGroupCrit</b></td>
+	<td>Each group can have a <i>groupCriterionReached</i> function that
+	  determines whether the group's outputs are good enough for the
+	  current example.  The standard function returns true during training
+	  when the
+	  difference between the activation and target for each unit of the
+	  group is below the <i>trainGroupCrit</i>.  Other functions could use
+	  this value in different ways.</td></tr>
+      <tr><td>real <b>testGroupCrit</b></td>
+	<td>This is similar to the <i>trainGroupCrit</i> but applies during
+	  testing.</td></tr>
+      <tr><td>flag <b>groupCritRequired</b></td>
+	<td>If this is TRUE, an example will stop (no more events will occur) 
+	  if an event ends and the group criterion was not reached.  This is 
+	  used primarily for continuous networks.  
+	  The default is FALSE.</td></tr>
+      <tr><td>int <b>minCritBatches</b></td>
+	<td>The overall error <i>criterion</i> or the group criterion
+	  must be met for this many consecutive batches for training to stop.
+	  A value of 0 will prevent the criteria from stopping training.  The
+	  default is 1.</td></tr>
+      <tr><td>flag <b>pseudoExampleFreq</b></td>
+	<td>If TRUE, network error and error derivatives will be scaled by the
+	  current example's frequency to simulate the effect of sampling
+	  examples based on their frequency.</td></tr>
+      <tr></tr>
+
+      <tr><td>mask <b>algorithm</b></td>
+	<td>This is a bit mask which indicated which weight update algorithm
+	  is currently being used.  The algorithm can be changed on the fly
+	  during training.</td></tr>
+      <tr><td>real <b>learningRate</b></td>
+	<td>Scales the magnitude of link weight changes.</td></tr>
+      <tr><td>real <b>rateIncrement</b></td>
+	<td>Used in the delta-bar-delta weight update algorithm.  This is
+	  added to a link's learning rate if its weight updates are
+	  proceeding in a consistent direction.  This only exists in the
+	  ADVANCED version.</td></tr>
+      <tr><td>real <b>rateDecrement</b></td>
+	<td>Used in the delta-bar-delta weight update algorithm.  This is
+	  multiplied by a link's learning rate if its weight updates are not
+	  proceeding in a consistent direction.  This only exists in the
+	  ADVANCED version.</td></tr>
+      <tr><td>real <b>momentum</b></td>
+	<td>The carryover of previous weight changes to the new
+	  step.</td></tr> 
+      <tr><td>real <b>adaptiveGainRate</b></td>
+	<td>This is the learning rate used in updating the <i>gain</i> field
+	  of units in ADAPTIVE_GAIN groups.</td></tr>
+      <tr><td>real <b>weightDecay</b></td>
+	<td>Controls the reduction of weight magnitudes following weight
+	  updates.  A value of 0.0 means no decay.  0.1 is a 10% reduction on
+	  each update.</td></tr>
+      <tr><td>real <b>outputCostStrength</b></td>
+	<td>The factor used to scale the derivative of the unit cost with
+	  respect to a unit's output.  This adjusts how strong of an effect
+	  the unit cost has relative to the weight decay and the main error
+	  derivatives.  It does not scale the <i>outputCost</i> 
+	  itself.</td></tr>
+      <tr><td>real <b>outputCostPeak</b></td>
+	<td>For bounded units (with an output between 0 and 1), this is the
+	  output value that is most costly (having a cost of 1.0).  This is
+	  continental divide of the bounded unit cost functions.</td></tr>
+      <tr><td>real <b>targetRadius</b></td>
+	<td>The distance that targets will migrate towards outputs, thus
+	  reducing the error.  If this is non-zero, the target is effectively
+	  a range, rather than a point.</td></tr>
+      <tr><td>real <b>zeroErrorRadius</b></td>
+	<td>The distance from targets within which output units will incur no
+	  error.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>dt</b></td>
+	<td>Affects how quickly the inputs or activations of integrating
+	  units in continuous networks will change.  It defaults to
+	  1/<i>ticksPerInterval</i>, but may be adjusted to alter the "time
+	  constant" of the network.</td></tr>
+      <tr><td>real <b>gain</b></td>
+	<td>This is the multiplicative inverse of the temperature used in
+	  logistic transfer functions.  The gain is stored, rather than the
+	  temperature, to avoid divisions.  The default is 1.0.</td></tr>
+      <tr><td>real <b>ternaryShift</b></td>
+	<td>This is used for ternary units, whose transfer function is the sum
+	  of two sigmoids so the unit has stable points at 0, 0.5, and 1.0.
+	  This determines the distance between the two sigmoids and thus the
+	  width of the middle plateau.  The default is 5.0.</td></tr>
+      <tr><td>real <b>clampStrength</b></td>
+	<td>This parameter is used in the SOFT_CLAMP input function and the
+	  WEAK_CLAMP output function.  Generally it ranges from 0 to
+	  1.  The default is 0.5.  It is also used at the beginning of the
+	  negative phase in training Boltzmann machines, when the activations
+	  of non-clamped units are shifted towards the <i>initOutput</i>.
+	  This governs the fraction of the way the values are shifted, 
+	  as in a WEAK_CLAMP.</td></tr>
+      <tr><td>real <b>initOutput</b></td>
+	<td>This is the default initial unit output for groups that have an
+	  <i>initOutput</i> of NaN.  However, most groups will automatically
+	  determine their own <i>initOutput</i> so ordinarily this won't be
+	  used.  It defaults to 0.5.</td></tr>
+      <tr><td>real <b>initInput</b></td>
+	<td>This is the default initial unit input for groups that have an
+	  <i>initInput</i> of NaN.  However, most groups will automatically
+	  determine their own <i>initInput</i> so ordinarily this won't be
+	  used.  It defaults to 0.0.</td></tr>
+      <tr><td>real <b>initGain</b></td>
+	<td>This is the temperature at which the settling process in a
+	  Boltzmann machine will begin.  Note that this is an actual
+	  temperature and not a gain.
+	  The default is 1.0.</td></tr>
+      <tr><td>real <b>finalGain</b></td>
+	<td>This is the value toward which the temperature will be annealed
+	  during the settling process in a Boltzmann machine.  Note that this
+	  is an actual temperature and not a gain.  The default
+	  is 1.0.</td></tr> 
+      <tr><td>real <b>annealTime</b></td>
+	<td>This is the time constant of the exponential decay from the 
+	  <i>initGain</i> towards the <i>finalGain</i> during settling in a 
+	  Boltzmann machine.  The temperature will fall halfway towards the 
+	  <i>finalGain</i> after this many ticks.  
+	  The default is 1.0.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>randMean</b></td>
+	<td>The default mean for weight randomizations.</td></tr>
+      <tr><td>real <b>randRange</b></td>
+	<td>The default range (on either side of the mean) for weight
+	  randomizations.</td></tr>
+      <tr><td>real <b>noiseRange</b></td>
+	<td>The default range (or standard deviation for Gaussian noise) of
+	any noise functions computed in the network.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag <b>autoPlot</b></td>
+	<td>Indicates whether the network is in "autoPlot" mode, which causes
+	  the Unit Viewer plot to be re-arranged whenever the network
+	  architecture changes.</td></tr>
+      <tr><td>int <b>plotCols</b></td>
+	<td>The desired width of each row in the Unit Viewer.</td></tr>
+      <tr><td>int <b>plotRows</b></td>
+	<td>The number of rows actually used by the Unit Viewer plot so
+	  far.</td></tr>
+      <tr><td>int <b>unitCellSize</b></td>
+	<td>The size of the cells in the Unit Viewer, in pixels.</td></tr>
+      <tr><td>int <b>unitCellSpacing</b></td>
+	<td>The number of pixels between cells in the Unit Viewer.</td></tr>
+      <tr><td>int <b>unitUpdates</b></td>
+	<td>An integer specifying the event on which the Unit Viewer is
+	  updated.</td></tr>
+      <tr><td>int <b>unitDisplayValue</b></td>
+	<td>The value (Activations, Inputs, etc.) being displayed in the Unit
+	  Viewer.  The possible values are defined in <i>enum unitValues</i>
+	  in display.h.</td></tr>
+      <tr><td>Unit <b>unitDisplayUnit</b></td>
+	<td>If the Unit Viewer is displaying link weights, this is the unit
+	  that was activated with a right mouse click.</td></tr>
+      <tr><td>Unit <b>unitLocked</b></td>
+	<td>If the active unit has been locked by left-clicking in the Unit
+	Viewer, this is a pointer to that unit.</td></tr>
+      <tr><td>int <b>unitDisplaySet</b></td>
+	<td>This is a code for the example set displayed in the Unit Viewer.
+	  Possible values are TRAINING, TESTING, or NOSET.</td></tr>
+      <tr><td>real <b>unitTemp</b></td>
+	<td>The temperature used in calculating the colors of the cells in the
+	  Unit Viewer.</td></tr>
+      <tr><td>double <b>unitLogTemp</b></td>
+	<td>The log of the temperature used in calculating the colors of the
+	  cells in the Unit Viewer.  This is linked to the Tcl variable used
+	  in the slider.</td></tr>
+      <tr><td>int <b>unitPalette</b></td>
+	<td>The palette used in the Unit Viewer.</td></tr>
+      <tr><td>real <b>unitExampleProc</b></td>
+	<td>The procedure run when an example is clicked on the in the Unit
+	  Viewer.  0 is for testing and 1 is for training.</td></tr>
+      
+      <tr></tr>
+      <tr><td>int <b>linkCellSize</b></td>
+	<td>The size of the cells in the Link Viewer, in pixels.</td></tr>
+      <tr><td>int <b>linkCellSpacing</b></td>
+	<td>The number of pixels between cells in the Link Viewer.</td></tr>
+      <tr><td>int <b>linkUpdates</b></td>
+	<td>An integer specifying the event on which the Link Viewer is
+	  updated.</td></tr>
+      <tr><td>int <b>linkDisplayValue</b></td>
+	<td>The value being displayed in the Link Viewer.  The possible values
+	  are LINKWEIGHTS, LINKDERIVS, and LINKDELTAS.</td></tr>
+      <tr><td>real <b>linkTemp</b></td>
+	<td>The temperature used in calculating the colors of the cells in the
+	  Link Viewer.</td></tr>
+      <tr><td>double <b>linkLogTemp</b></td>
+	<td>The log of the temperature used in calculating the colors of the
+	  cells in the Link Viewer.  This is linked to the Tcl variable used
+	  in the slider.</td></tr>
+      <tr><td>int <b>linkPalette</b></td>
+	<td>The palette used in the Link Viewer.</td></tr>
+      <tr><td>Unit <b>linkLockedUnit</b></td>
+	<td>If the active link has been locked by left-clicking in the Link
+	    Viewer, this is a pointer to the unit receiving that 
+	    link.</td></tr>
+      <tr><td>int <b>linkLockedNum</b></td>
+	<td>If the active link has been locked by left-clicking in the Link
+	    Viewer, this is the index of that link in the incoming array of
+            the receiving unit.</td></tr>
+      <tr></tr>
+
+      <tr><td>Tcl_Obj *<b>preEpochProc</b></td>
+	<td>This command is run before each batch of examples is
+	  processed during training.  It could be used to adjust the learning
+	  rate of other parameters automatically at certain
+	  intervals.</td></tr>
+      <tr><td>Tcl_Obj *<b>postEpochProc</b></td>
+	<td>This is run after link derivatives have been gathered on a batch
+	  of examples during training but before the weight update.</td></tr> 
+      <tr><td>Tcl_Obj *<b>postUpdateProc</b></td>
+	<td>This is run after a weight update, either during normal training
+	  or when the <a href="Commands/updateWeights">updateWeights</a>
+	  command is used.</td></tr>
+      <tr><td>Tcl_Obj *<b>preExampleProc</b></td>
+	<td>This is run before each example during training or
+	  testing.</td></tr>
+      <tr><td>Tcl_Obj *<b>postExampleProc</b></td>
+	<td>This is run after each example during training or
+	  testing.</td></tr>
+      <tr><td>Tcl_Obj *<b>preExampleBackProc</b></td>
+	<td>In a network that does the backward pass in one sweep for the
+	  whole example (such as a CONTINUOUS or SRBPTT net), this is run
+	  after the forward sweep and before the backward one.</td></tr>
+      <tr><td>Tcl_Obj *<b>preEventProc</b></td>
+	<td>This is run before each example event during training or testing.
+	  Note that this is not run every tick, only when a new event 
+	  begins.</td></tr>
+      <tr><td>Tcl_Obj *<b>postEventProc</b></td>
+	<td>This is run after each example event during training or testing.
+	  Note that this is not run every tick, only when an event 
+	  ends.</td></tr>
+      <tr><td>Tcl_Obj *<b>preTickProc</b></td>
+	<td>This is run before each tick.</td></tr>
+      <tr><td>Tcl_Obj *<b>postTickProc</b></td>
+	<td>This is run after each tick.</td></tr>
+      <tr><td>Tcl_Obj *<b>preTickBackProc</b></td>
+	<td>In a network that does a forward and backward pass on each tick,
+	  such as a standard net or SRN, this is run between the forward and
+	  backward pass.</td></tr>
+      <tr><td>Tcl_Obj *<b>sigUSR1Proc</b></td>
+	<td>This procedure will be run when a USR1 signal is received.
+	      The initial value can be set in .lensrc but defaults to
+	      "saveWeights quicksave.wt.gz -3".</td></tr>
+      <tr><td>Tcl_Obj *<b>sigUSR2Proc</b></td>
+	    <td>This procedure will be run when a USR2 signal is received.
+	      It defaults to "saveParameters quicksave.prm.gz".</td></tr>
+      <tr><td>char *<b>outputFileName</b></td>
+	<td>If the network is writing outputs and targets to an output file,
+	  this is the name of the file.</td></tr>
+      <tr><td>Tcl_Channel <b>outputFile</b></td>
+	<td>If the network is writing outputs and targets to an output file,
+	  this is the channel used for writing.</td></tr>
+      <tr><td>flag <b>binaryOutputFile</b></td>
+	<td>If the network is writing outputs and targets to an output file,
+	  this is TRUE if the outputs are in binary format.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag (*<b>netTrain</b>)<br>(mask alg)</td>
+	<td>The function used to train the network on a series of batches.  
+	  The default is <i>standardNetTrain</i>.  <i>alg</i> is a type mask
+	  specifying the weight update algorithm to be used.  The algorithm
+	  must have been registered with <i>registerAlgorithm</i>.</td></tr>
+      <tr><td>flag (*<b>netTrainBatch</b>)<br>(flag *allCorrect)</td>
+	<td>The function used to gather link error derivatives on a batch of
+	  examples.  The default is <i>standardNetTrainBatch</i>.
+	  <i>allCorrect</i> is used to return a boolean indicating whether the
+	  <i>groupCriterionReached</i> was true for all group's in the
+	  network.  This is always false if no groups have a criterion
+	  function.</td></tr>
+      <tr><td>flag (*<b>netTrainExample</b>)<br>(Example E,<br>
+	  flag (*tickProc)(Event),<br> flag *correct)</td>
+	<td>The function used to perform the forward and backward passes in
+	  the network on a single example.  The default is
+	  <i>standardNetRunExample</i>.  <i>E</i> is the example to be
+	  processed.  <i>tickProc</i> is a function that will be called to
+	  update the activations (and possibly backpropagate error) on each
+	  tick.  <i>correct</i> is used to return a boolean indicating whether
+	  the <i>groupCriterionReached</i> was true for all groups on all 
+	  events in the example.</td></tr>
+      <tr><td>flag (*<b>netTrainTick</b>)<br>(Event V)</td>
+	<td>The function used to perform one forward pass and possibly one
+	  backpropagation pass during a single tick of training.  The default
+	  is <i>netForwardBackward</i>.</td></tr>
+      <tr><td>flag (*<b>netTestBatch</b>)<br>(int numExamples,<br>
+	  flag resetError)</td>
+	<td>The function used to test the network on a bunch of examples.  The
+	  default is <i>standardNetTestBatch</i>.  If <i>numExamples</i> is 0,
+	  the testing set will be reset to the first example and the entire
+	  set used.  If <i>resetError</i> is true, the network's <i>error</i>
+	  field will be reset to 0.0 before starting.</td></tr>
+      <tr><td>flag (*<b>netTestExample</b>)<br>(Example E,<br>
+	  flag (*tickProc)(Event),<br> flag *correct)</td>
+	<td>The function used to perform the forward pass in
+	  the network on a single example during testing.  The default is 
+	  <i>standardNetRunExample</i>.</td></tr>
+      <tr><td>flag (*<b>netTestTick</b>)<br>(Event V)</td>
+	<td>Similar to <i>netTrainTick</i> but used when testing rather than
+	  training.  The default is <i>netForward</i>.</td></tr>
+      <tr><td>flag (*<b>netRunExampleNum</b>)<br>(int num, ExampleSet S)</td>
+	<td>The function called when an example is selected in the Unit 
+	  Viewer.  Basically all that happens is that <i>netRunExample</i> is
+	  called on the example.  The default is 
+	  <i>standardNetRunExampleNum</i>.</td></tr>
+      <tr><td>flag (*<b>netRunExample</b>)<br>(Example E,<br>
+	  flag (*tickProc)(Event),<br> flag *correct)</td>
+	<td>Similar to <i>netTrainExample</i> but this is used when an example
+	  is selected in the Unit Viewer.  This is generally set to the same
+	  value as either <i>netTrainExample</i> or <i>netTestExample</i>.
+	  The default is <i>standardNetRunExample</i>.</td></tr>
+      <tr><td>flag (*<b>netRunTick</b>)<br>(Event V)</td>
+	<td>Similar to <i>netTrainTick</i> but used when an example is
+	  selected in the Unit Viewer rather than when training.
+	  The default is <i>netForward</i>.</td></tr>
+      <tr><td>flag (*<b>resetNet</b>)<br>(flag randomize)</td>
+	<td>The function used when <a
+	    href="Commands/resetNet.html">resetNet</a> is called.  The default
+	    is <i>standardResetNet</i>.</td></tr>
+      <tr><td>flag (*<b>saveWeights</b>)<br>(char *fileName,<br>
+	  flag binary)</td>
+	<td>The function used to save the network's weight to a file.  The
+	  default is <i>standardSaveWeights</i>.  <i>binary</i> indicates
+	  whether weights should be saved in binary format.</td></tr>
+      <tr><td>flag (*<b>loadWeights</b>)<br>(char *fileName)</td>
+	<td>The function used to load the network's weights from a file.  The
+	  default is <i>standardLoadWeights</i>.</td></tr>
+      <tr><td>flag (*<b>writeExample</b>)<br>(Example E)</td>
+	<td>The function used to write the information about an example to the
+          outputFile, if one has been opened.  The
+	  default is <i>standardWriteExample</i>.</td></tr>
+    </table>
+    
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Group</td>
+	<td>Defined in network.h.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of the group.</td></tr>
+      <tr><td>int <b>num</b></td>
+	<td>The index of the group in the network's <i>group</i> 
+	  array.</td></tr>
+      <tr><td>mask <b>type</b></td>
+	<td>Holds the fixed group type, such as INPUT or OUTPUT, as well
+	  as a number of miscellaneous types for a group.</td></tr>
+      <tr><td>mask <b>inputType</b></td>
+	<td>A conjuction of the types of all of the input functions in
+	  the group.</td></tr>
+      <tr><td>GroupProc <b>inputProcs</b></td>
+	<td>A linked list of the functions that are used to compute
+	  the input of each unit in the group.</td></tr>
+      <tr><td>mask <b>outputType</b></td>
+	<td>A conjuction of the types of all of the output functions in
+	  the group.</td></tr>
+      <tr><td>GroupProc <b>outputProcs</b></td>
+	<td>A linked list of the functions that are used to compute
+	  the output of each unit in the group.</td></tr>
+      <tr><td>mask <b>costType</b></td>
+	<td>A conjuction of the types of all of the cost functions in
+	  the group.</td></tr>
+      <tr><td>GroupProc <b>costProcs</b></td>
+	<td>A linked list of the functions that are used to compute the error
+	  and output error derivative of each unit in the group.  This
+	  includes both error functions like CROSS_ENTROPY and unit output
+	  cost functions like COSINE_COST.</td></tr>
+      <tr></tr>
+      
+      <tr><td>Network <b>net</b></td>
+	<td>A pointer to the network which owns this group.  It may only be
+	  used in object.c for traversing the objects.</td></tr>
+      <tr><td>int <b>numUnits</b></td>
+	<td>The number of units in the group.</td></tr>
+      <tr><td>Unit <b>unit</b></td>
+	<td>An array of <i>unit structures</i>.  The units are
+	  arranged in a contiguous block to reduce the number of pointer
+	  dereferences necessary to traverse all links projecting from the
+	  group to a particular unit.</td></tr>
+      <tr><td>real *<b>output</b></td>
+	<td>This array is used to cache the <i>output</i>s of the 
+	  units in the group.  This reduces the amount of memory accessed in
+	  the inner loops, improving performance on large networks.</td></tr>
+      <tr><td>real *<b>outputDeriv</b></td>
+	<td>This array is used to cache the <i>outputDeriv</i>s of the 
+	  units in the group.  In continuous networks, this is used to
+	  accumulate the instant output derivatives.</td></tr>
+      <tr><td>int <b>numIncoming</b></td>
+	<td>The number of links coming into the group.  This is mostly for
+	  reference.</td></tr>
+      <tr><td>int <b>numOutgoing</b></td>
+	<td>The number of links going out of the group.  This is mostly for
+	  reference.</td></tr>
+      <tr><td>GroupExt <b>ext</b></td>
+	<td>A pointer to the group extension structure.  This is defined in
+	  extension.h and allocated in extension.c.  Programmers should try to
+	  put any extensions to the group structure in there.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>trainGroupCrit</b></td>
+	<td>If this is not NaN, it will override the network's value.  The
+	  group's <i>criterionReached</i> function uses this during training
+	  to determine when the event or example has been processed
+	  correctly.</td></tr>
+      <tr><td>real <b>testGroupCrit</b></td>
+	<td>If this is not NaN, it will override the network's value.  The
+	  group's <i>criterionReached</i> function uses this during testing
+	  to determine when the event or example has been processed
+	  correctly.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>learningRate</b></td>
+	<td>The learning rate of links into this group.  If not NaN, the
+	  default, this will override the network's value but can be
+	  overridden by values in the block structures of units in the
+	  group.</td></tr>
+      <tr><td>real <b>momentum</b></td>
+	<td>The momentum acting on links into this group.  If not NaN, the
+	  default, this will override the network's value but can be
+	  overridden by values in the block structures of units in the
+	  group.</td></tr>
+      <tr><td>real <b>weightDecay</b></td>
+	<td>The weightDecay of links into this group.  If not NaN, the
+	  default, this will override the network's value but can be
+	  overridden by values in the block structures of units in the
+	  group.</td></tr>
+      <tr><td>real <b>targetRadius</b></td>
+	<td>The distance that targets will migrate towards outputs, thus
+	  reducing the error.  If this is non-zero, the target is effectively
+	  a range, rather than a point.  If this is NaN, the default, the
+	  network's value will be used.</td></tr>
+      <tr><td>real <b>zeroErrorRadius</b></td>
+	<td>The distance from targets within which output units will incur no
+	  error.  If this is NaN, the default, the network's value will be 
+	  used.</td></tr>
+      <tr><td>real <b>outputCostScale</b></td>
+	<td>This scales the output cost assigned to units in the group,
+	  allowing the cost of some groups to be more influential than that of
+	  other groups.  The default is 1.0.</td></tr>
+      <tr><td>real <b>outputCostPeak</b></td>
+	<td>If not NaN, this overrides the network's value.</td></tr>
+      <tr><td>real <b>outputCost</b></td>
+	<td>The outputCost incurred by this group on the most recent
+	  batch.</td></tr> 
+      <tr><td>real <b>errorScale</b></td>
+	<td>Scales the error and error derivatives produced at this
+	  group, which would typically have to be an output group.  This
+	  allows some output groups can be made more important than
+	  others.</td></tr>
+      <tr><td>real <b>error</b></td>
+	<td>The error incurred by this group on the most recent
+	  batch.</td></tr> 
+      <tr><td>real <b>polaritySum</b></td>
+	<td>The sum of the polarity of all the units in the group summed over
+	all of the times that "<a href="Commands/polarity.html">polarity
+	update</a>" was called on the group.</td></tr>
+      <tr><td>int <b>polarityNum</b></td>
+	<td>The number of observations that have gone into the polaritySum
+	(used to compute the average polarity).</td></tr> 
+      <tr></tr>
+
+      <tr><td>real <b>dtScale</b></td>
+	<td>Scales the rate at which units will adapt if this is an input
+	  or output integrating group in a continuous network.  The default is
+	  1.0, which means that the network's <i>dt</i> will be used as
+	  is.  Higher values make the units in the group respond quicker and 
+	  lower values make the units more sluggish.  Note that each unit also 
+	  has its own <i>dtScale</i>.</td></tr>
+      <tr><td>real <b>gain</b></td>
+	<td>The multiplicative inverse of the temperature used in
+	  logistic transfer functions in the group.  The gain is stored to 
+	  avoid divisions.  If set, this will override the network's 
+	  value.</td></tr>
+      <tr><td>real <b>ternaryShift</b></td>
+	<td>Overrides the network's value if not NaN.</td></tr>
+      <tr><td>real <b>clampStrength</b></td>
+	<td>Overrides the network's value if not NaN.</td></tr>
+      <tr><td>real <b>minOutput</b></td>
+	<td>The minimum output that should be produced by a unit in
+	  this group.  It is computed automatically based on the group's type
+	  whenever the type changes but can then be overridden.  It is used by
+	  the OUT_CROP function and affects how the outputs are displayed in
+	  the Unit Viewer.</td></tr> 
+      <tr><td>real <b>maxOutput</b></td>
+	<td>The maximum output that should be produced by a unit in
+	  this group.  It is computed automatically based on the group's type
+	  whenever the type changes but can then be overridden.  It is used by
+	  the OUT_CROP function and affects how the outputs are displayed in
+	  the Unit Viewer.</td></tr>
+      <tr><td>real <b>initOutput</b></td>
+	<td>The value to which unit outputs are set when the group is reset at
+	the start of an example.  This is also computed
+	  automatically.</td></tr>
+      <tr><td>real <b>initInput</b></td>
+	<td>The value to which unit outputs are set when the group is reset at
+	the start of an example.  Input integrators are also reset to this
+	  value before integration begins.  This is not computed
+	  automatically and defaults to 0.0.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>randMean</b></td>
+	<td>The mean of the distribution used when randomizing the weights of
+	  links into this group.  If not NaN, the default, this will override
+	  the network's value but can be overridden by values in the block
+	  structures of units in the group.</td></tr>
+      <tr><td>real <b>randRange</b></td>
+	<td>The range of the distribution used when randomizing the weights of
+	  links into this group.  If not NaN, the default, this will override
+	  the network's value but can be overridden by values in the block
+	  structures of units in the group.</td></tr>
+      <tr><td>real <b>noiseRange</b></td>
+	<td>Overrides the network's value if not NaN.</td></tr>
+      <tr><td>real (*<b>noiseProc</b>)(real value,<br>real range)</td>
+	<td>The command used to generate noise in this group.  It will be one
+	  of <i>multGaussianNoise</i>, <i>addGaussianNoise</i>,
+	  <i>multUniformNoise</i>, or <i>addUniformNoise</i>.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag <b>showIncoming</b></td>
+	<td>A boolean indicating whether incoming links to the group are being
+	  displayed in the Link Viewer.</td></tr>
+      <tr><td>flag <b>showOutgoing</b></td>
+	<td>A boolean indicating whether outgoing links from the group are
+	  being displayed in the Link Viewer.</td></tr>
+      <tr><td>int <b>inPosition</b></td>
+	<td>The horizontal position of this group on the Link Viewer.</td></tr>
+      <tr><td>int <b>outPosition</b></td>
+	<td>The vertical position of this group on the Link Viewer.</td></tr>
+      <tr><td>int <b>numColumns</b></td>
+	<td>Some algorithms treat the group as a two-dimensional array.  For
+	  example, this is done in Kohonen nets.  This parameter sets the
+	  number of columns (the width) of this matrix.  The number of rows
+	  will depend on the number of units.  If non-zero, this determines
+	  the width of the group when auto-plotted.  The default is
+	  0.</td></tr>
+      <tr><td>real <b>neighborhood</b></td>
+	<td>This is used in Kohonen nets to determine the radius of influence
+	  around the winning unit.  It could be used for similar purposes in
+	  other algorithms.</td></tr>
+      <tr><td>int <b>periodicBoundary</b></td>
+	<td>This is used for networks, such as Kohonen nets, that treat the 
+	  group as a two-dimensional layer with some distance metric between
+	  units.  If this is true, units on opposite edges of the rectangle
+	  are considered adjacent.  The default is FALSE.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag (*<b>groupCriterionReached</b>)<br>(Group G)</td>
+	<td>This function is called on every tick during training or testing.
+	It indicates whether the group's activations are "good enough".  The
+	  standard function tests whether the difference between each unit's
+	  output and target is less than or equal to the
+	  <i>groupCriterion</i>.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>GroupProc</td>
+	<td>These form a doubly linked list of procedures that are used to
+	  calculate the inputs, outputs, or error for a group.  Defined in
+	  network.h.<tr></tr></tr>
+      <tr><td width="150">mask <b>type</b></td>
+	<td>The type of the procedure.</td></tr>
+      <tr><td>int <b>class</b></td>
+	<td>The type class of the procedure.  This is either GROUP_INPUT,
+	  GROUP_OUTPUT, or GROUP_COST.</td></tr>
+      <tr><td>Group <b>group</b></td>
+	<td>The group which owns this GroupProc.</td></tr>
+      <tr><td>void (*<b>forwardProc</b>)<br>(Group G, GroupProc P)</td>
+	<td>The procedure run on the group in the forward pass.</td></tr>
+      <tr><td>void (*<b>backwardProc</b>)<br>(Group G, GroupProc P)</td>
+	<td>The procedure run on the group in the backward pass.  This
+	  typically propagates error backward to the previous
+	  procedure.</td></tr>
+      <tr></tr>
+
+      <tr><td>real *<b>groupHistoryData</b></td>
+	<td>Information these procedures need to store for each 
+	  tick.</td></tr>
+      <tr><td>real *<b>unitData</b></td>
+	<td>Information these procedures need to store for each 
+	  unit.</td></tr>
+      <tr><td>real **<b>unitHistoryData</b></td>
+	<td>Information these procedures need to store for each tick for each
+	  unit.</td></tr>
+      <tr><td>void *<b>otherData</b></td>
+	<td>This could be used for anything but its main current use is to
+	  hold a pointer to the source group for ELMAN_CLAMP
+	  procedures.</td></tr>
+      <tr></tr>
+
+      <tr><td>GroupProc <b>next</b></td>
+	<td>The next group in the linked list.  This is NULL for the last
+	  GroupProc.</td></tr>
+      <tr><td>GroupProc <b>prev</b></td>
+	<td>The previous group in the linked list.  In the first GroupProc,
+	  this points to the last one.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Unit</td>
+	<td>Defined in network.h.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of the unit.</td></tr>
+      <tr><td>int <b>num</b></td>
+	<td>The index of the unit in the group's <i>unit</i> array.</td></tr>
+      <tr><td>mask <b>type</b></td>
+	<td>The only unit type bits so far are LESIONED and FROZEN.</td></tr>
+      <tr></tr>
+
+      <tr><td>Group <b>group</b></td>
+	<td>A pointer to the unit's parent group.</td></tr>
+      <tr><td>int <b>numBlocks</b></td>
+	<td>The number of blocks of links from contiguous sending units
+	  reaching this unit.</td></tr>
+      <tr><td>Block <b>block</b></td>
+	<td>An array of <i>block structures</i> describing the blocks of
+	  incoming links.</td></tr>
+      <tr><td>int <b>numIncoming</b></td>
+	<td>The number of links feeding the unit.  These links are actually
+	  stored in the unit.</td></tr>
+      <tr><td>Link <b>incoming</b></td>
+	<td>An array of link structures containing weights and derivatives of
+	  all of the incoming links. The block structures determine which
+	  sending units the links come from.</td></tr>
+      <tr><td>Link2 <b>incoming2</b></td>
+	<td>This contains all of the link fields other than weight and deriv.
+	  This is kept separate because it is used less often and thus won't
+	  pollute the cache.</td></tr>
+      <tr><td>int <b>numOutgoing</b></td>
+	<td>The number of links leaving the unit.  The links are stored in the
+	  receiving units.</td></tr>
+      <tr><td>UnitExt <b>ext</b></td>
+	<td>A pointer to the unit extension structure.  This is defined in
+	  extension.h and allocated in extension.c.  Programmers should try to
+	  put any extensions to the unit structure in there.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>input</b></td>
+	<td>The total input to the unit.</td></tr>
+      <tr><td>real <b>output</b></td>
+	<td>The unit's output on the current tick, also called its
+	  activation.</td></tr> 
+      <tr><td>real <b>target</b></td>
+	<td>The unit's target on the current tick if it is an output
+	  unit.</td></tr> 
+      <tr><td>real <b>externalInput</b></td>
+	<td>The input from the example event.  This is used by HARD_CLAMP,
+	  SOFT_CLAMP, and WEAK_CLAMP.</td></tr>
+      <tr><td>real <b>adjustedTarget</b></td>
+	<td>This is used in act.c when there is a <i>targetRadius</i> or 
+	  <i>zeroErrorRadius</i> around the target.</td></tr>
+      <tr><td>real <b>inputDeriv</b></td>
+	<td>The instant derivative of the error w.r.t. the unit's 
+	  input.</td></tr>
+      <tr><td>real <b>outputDeriv</b></td>
+	<td>The derivative of the error w.r.t. the unit's output.  Includes
+      both instantaneous derivs resulting from cost functions and
+      backpropagated derivs.</td></tr>
+      <tr></tr>
+      
+      <tr><td>real *<b>inputHistory</b></td>
+	<td>An array of the unit's inputs on each tick of the current 
+	  example.</td></tr>
+      <tr><td>real *<b>outputHistory</b></td>
+	<td>An array of the unit's outputs on each tick of the current 
+	  example.</td></tr>
+      <tr><td>real *<b>targetHistory</b></td>
+	<td>An array of the unit's targets on each tick of the current 
+	  example.</td></tr>
+      <tr><td>real *<b>outputDerivHistory</b></td>
+	<td>An array of the unit's instantaneous outputDerivs on each tick of
+	the current example.  This only exists for groups with cost functions.
+        The instantaneous outputDerivs include the error and output cost
+	derivs resulting from the output on a single tick, not including any
+	backpropagated derivatives.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>gain</b></td>
+	<td>The gain of this unit's output function, if it has
+	  ADAPTIVE_GAIN.</td></tr> 
+      <tr><td>real <b>gainDeriv</b></td>
+	<td>The derivative of the gain of this unit's output function, if it
+	  has ADAPTIVE_GAIN.</td></tr> 
+      <tr><td>real <b>dtScale</b></td>
+	<td>This is like the group-level <i>dtScale</i> except that it
+	  applies to just this unit in determining the unit's time
+	  constant for input or output integrating units.  The actual
+	  dt for the unit is the product of the network's <i>dt</i>,
+	  the group's <i>dtScale</i>, and the unit's
+	  <i>dtScale</i>.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>plotRow</b></td>
+	<td>The vertical position of the unit on the Unit Viewer.</td></tr>
+      <tr><td>int <b>plotCol</b></td>
+	<td>The horizontal position of the unit on the Unit Viewer.</td></tr>
+    </table>
+
+    <hr width="80%">
+
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Block</td>
+	<td>Defined in network.h.<tr></tr></tr>
+      <tr><td width="150">mask <b>type</b></td>
+	<td>The link type of the links in this block.  Types are created by
+	the user with <a href="Commands/addLinkType.html">addLinkType</a> or
+	created automatically when a projection is formed and no type is 
+	specified.  Link types are actually integers and not really bit
+	masks.  The special type ALL_LINKS (which is equal to 0) will match
+	any type.<td></tr>
+      <tr><td>int <b>numUnits</b></td>
+	<td>The number of contiguous sending units in this block.</td></tr>
+      <tr><td>Unit <b>unit</b></td>
+	<td>A pointer to the first of the contiguous sending units.</td></tr>
+      <tr><td>int <b>groupUnits</b></td>
+	<td>The number of units in sending group.  This is used in act.c
+	  because the <i>output</i> and <i>outputDeriv</i> arrays of the group
+	are contiguous.</td></tr>
+      <tr><td>real *<b>output</b></td>
+	<td>A pointer into the <i>output</i> array of the group to which the
+	  sending units belong.  The first value is the output of the first
+	  unit.
+	</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>learningRate</b></td>
+	<td>The amount used to scale the derivatives when updating the weights
+	  of links in this block.  If NaN, it will fall back to the group's
+	  and then to the network's value.</td></tr>
+      <tr><td>real <b>momentum</b></td>
+	<td>The momentum of weight updates
+	  of links in this block.  If NaN, it will fall back to the group's
+	  and then to the network's value.</td></tr>
+      <tr><td>real <b>weightDecay</b></td>
+	<td>The amount by which the weights of links in this block are scaled
+	  after they are updated.  If NaN, it will fall back to the group's
+	  and then to the network's value.</td></tr>
+      <tr><td>real <b>randMean</b></td>
+	<td>The mean of weight randomizations in this block.  If NaN, it will
+	fall back to the group's and then to the network's value.</td></tr>
+      <tr><td>real <b>randRange</b></td>
+	<td>The range of weight randomizations in this block.  If NaN, it will
+	fall back to the group's and then to the network's value.</td></tr>
+      <tr><td>real <b>min</b></td>
+	<td>If not NaN, this is the minimum weight that a link in this group
+	  can have.  Values less than this are set to this after a weight
+	  update.</td></tr>
+      <tr><td>real <b>max</b></td>
+	<td>If not NaN, this is the maximum weight that a link in this group
+	  can have.  Values greater than this are set to this after a weight
+	  update.</td></tr>
+      <tr></tr>
+
+      <tr><td>BlockExt <b>ext</b></td>
+	<td>A pointer to the block extension structure.  This is defined in
+	  extension.h and allocated in extension.c.  Programmers should try to
+	  put any extensions to the block structure in there and will need to
+	  define a copy function which will be used when blocks are 
+	  split.</td></tr>
+	</table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Link</td>
+	<td>Defined in network.h.<tr></tr></tr>
+      <tr><td width="150">real <b>weight</b></td>
+	<td>The link weight.</td></tr>
+      <tr><td>real <b>deriv</b></td>
+	<td>The accumulating derivative of the error w.r.t. the link 
+	weight.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Link2</td>
+	<td>Defined in network.h.  A companion to the Link.<tr></tr></tr>
+      <tr><td width="150">real <b>lastWeightDelta</b></td>
+	<td>The last change made to the weight.  This is used for momentum and
+	  for keeping statistics in steepest descent.</td></tr>
+      <tr><td>real <b>lastValue</b></td>
+	<td>This only exists in ADVANCED mode.  It is used in delta-bar-delta
+	  and could be used in other algorithms that need a fourth link
+	  field.</td></tr> 
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>ExampleSet</td>
+	<td>Defined in example.h.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of the example set.</td></tr>
+      <tr><td>int <b>num</b></td>
+	<td>The index of the set in the root <i>set</i> array.</td></tr>
+      <tr><td>mask <b>mode</b></td>
+	<td>The mode for selecting the next example.  Possible values are
+	  defined in type.h.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>numExamples</b></td>
+	<td>The number of examples in the set.</td></tr>
+      <tr><td>int <b>numEvents</b></td>
+	<td>The total number of events in all examples in the set.  This is
+	  just for reference.</td></tr>
+      <tr><td>ExSetExt <b>ext</b></td>
+	<td>A pointer to the example set extension structure.  This is defined
+	  in extension.h and allocated in extension.c.  Programmers should try
+	  to put any extensions to the example set structure in there.
+	</td></tr>
+      <tr></tr>
+
+      <tr><td>Example *<b>example</b></td>
+	<td>An array that stores pointers to each example in the order in
+	  which the examples are arranged in the linked list.  The linked list
+	  is kept to avoid reallocations while reading the set from a file and
+	  the <i>example</i> array is compiled once the set is complete and is
+	  used from then on.</td></tr>
+      <tr><td>Example *<b>permuted</b></td>
+	<td>An array of pointers to all examples used in the PERMUTED example
+	  set mode.</td></tr>
+      <tr><td>int <b>currentExampleNum</b></td>
+	<td>The index to the current example in either the <i>ordered</i> or
+	  <i>permuted</i> array.  If in PERMUTED mode, the
+	  <i>currentExampleNum</i> will not necessarily correspond to
+	  <i>currentExample->num</i>.</td></tr>
+      <tr><td>Example <b>currentExample</b></td>
+	<td>A pointer to the current or most recent example.</td></tr>
+      <tr><td>Example <b>firstExample</b></td>
+	<td>The first example in the linked list of examples.</td></tr>
+      <tr><td>Example <b>lastExample</b></td>
+	<td>The last example in the linked list of examples.</td></tr>
+      <tr><td>struct example <b>pipeExample</b></td>
+	<td>A single example structure used to store the current example in
+	  PIPE mode.</td></tr></b></td>
+      <tr><td>ParseRec <b>pipeParser</b></td>
+	  <td>This contains the data necessary to read the example file when
+	  running in PIPE mode.</td></tr></b></td>
+      <tr><td>flag <b>pipeLoop</b></td>
+	  <td>If this is TRUE, which is the default, example sets reading from
+	  a pipe will re-open the pipe when they reach the 
+	  end.</td></tr></b></td>
+      <tr><td>int <b>pipeExampleNum</b></td>
+	<td>If in PIPE mode, the number of examples that have been read since
+	  the pipe was last opened.</td></tr>
+      <tr></tr>
+
+      <tr><td>Tcl_Obj *<b>proc</b></td>
+	<td>Procedure that is run as soon as it is read when this set was
+	  loaded from a file.  Typically this would define procedures used
+	  by example or event commands.</td></tr>
+      <tr><td>Tcl_Obj *<b>chooseExample</b></td>
+	<td>Procedure that is called in CUSTOM example selection mode.  It
+	  should return the index of the next example.</td></tr>
+      <tr><td>real <b>maxTime</b></td>
+	<td>The default <i>maxTime</i> for any event that doesn't have one
+	  specified.</td></tr>
+      <tr><td>real <b>minTime</b></td>
+	<td>The default <i>minTime</i> for any event that doesn't have one
+	  specified.</td></tr>
+      <tr><td>real <b>graceTime</b></td>
+	<td>The default <i>graceTime</i> for any event that doesn't have one
+	  specified.</td></tr>
+      <tr><td>real <b>defaultInput</b></td>
+	<td>The default <i>defaultInput</i> for any event that doesn't have one
+	  specified.</td></tr>
+      <tr><td>real <b>activeInput</b></td>
+	<td>The default <i>activeInput</i> for any event that doesn't have one
+	  specified.</td></tr>
+      <tr><td>real <b>defaultTarget</b></td>
+	<td>The default <i>defaultTarget</i> for any event that doesn't have
+	  one specified.</td></tr>
+      <tr><td>real <b>activeTarget</b></td>
+	<td>The default <i>activeTarget</i> for any event that doesn't have one
+	  specified.</td></tr>
+      <tr><td>short <b>numGroupNames</b></td>
+	<td>The number of groups referenced by name in this example
+	set.</td></tr>
+      <tr><td>short <b>maxGroupNames</b></td>
+	<td>The number of slots currently allocated for group names in this
+	example set.</td></tr>
+      <tr><td>char **<b>groupName</b></td>
+	<td>An array of group names used in direct group references in the
+	  example set.  Keeping them in one place eliminates the need to
+	  allocate identical strings in each event.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag (*<b>loadEvent</b>)<br>(Event V);</td>
+	<td>Loads the inputs and targets for an event from an example in the 
+	  set into the network.  The default is
+	  <i>standardLoadEvent</i>.</td></tr>
+      <tr><td>flag (*<b>loadExample</b>)<br>(Example E)</td>
+	<td>Starts loading an example into the network, including loading the
+	  first event.  The default is <i>standardLoadExample</i>.</td></tr>
+      <tr><td>flag (*<b>nextExample</b>)<br>(ExampleSet S)</td>
+	<td>Chooses the next example from the set and starts loading it into
+	  the network.  The default is
+	  <i>standardLoadNextExample</i>.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Example</td>
+	<td>Defined in example.h.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of the example.</td></tr>
+      <tr><td>int <b>num</b></td>
+	<td>The index of the example in the set's <i>ordered</i> 
+	  array.</td></tr>
+      <tr><td>int <b>numEvents</b></td>
+	<td>The number of events in the example.</td></tr>
+      <tr><td>Event <b>event</b></td>
+	<td>An array of events in the example.</td></tr>
+      <tr><td>ExampleSet <b>set</b></td>
+	<td>The set containing this example.</td></tr>
+      <tr><td>Example <b>next</b></td>
+	<td>A pointer to the next example in the linked list.</td></tr>
+      <tr><td>ExampleExt <b>ext</b></td>
+	<td>A pointer to the example extension structure.  This is defined
+	  in extension.h and allocated in extension.c.  Programmers should try
+	  to put any extensions to the example structure in there.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>frequency</b></td>
+	<td>Used when selecting examples probabilistically or with 
+	  pseudo-frequencies.  The <i>frequency</i> is a value requested by the
+	  user.  The default is 1.0.  When in PROBABILISTIC mode, the absolute
+	  value doesn't matter only the value relative to that of other
+	  examples.  When using pseudo-example-frequencies, this value
+	  directly scales the error and output-unit output derivatives on this
+	  example.</td></tr>
+      <tr><td>real <b>probability</b></td>
+	<td>When in PROBABILISTIC mode, this is the probability that this
+	  example <i>or one before it</i> is selected.</td></tr>
+      <tr><td>Tcl_Obj *<b>proc</b></td>
+	<td>The command run before the first event begins.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Event</td>
+	<td>Defined in example.h.<tr></tr></tr>
+      <tr><td width="150">Range <b>input</b></td>
+	<td>This is a linked list of range specifications which define the
+	  <i>externalInput</i>s of INPUT units.</td></tr>
+      <tr><td>flag <b>sharedInputs</b></td>
+	<td>If this is TRUE, the event is sharing inputs that are owned by an
+	  earlier event.  This information is needed when the event is freed
+	  or the example set is saved.</td></tr>
+      <tr><td>Range <b>target</b></td>
+	<td>This is a linked list of range specifications which define the
+	  <i>target</i>s of OUTPUT units.</td></tr>
+      <tr><td>flag <b>sharedTargets</b></td>
+	<td>If this is TRUE, the event is sharing targets that are owned by an
+	  earlier event.  This information is needed when the event is freed
+	  or the example set is saved.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>maxTime</b></td>
+	<td>The maximum number of ticks the event will last.  If NaN, the
+	  example set's <i>maxTime</i> will be used.</td></tr>
+      <tr><td>real <b>minTime</b></td>
+	<td>The minimum number of ticks the event will last.  If NaN, the
+	  example set's <i>minTime</i> will be used.</td></tr>
+      <tr><td>real <b>graceTime</b></td>
+	<td>The number of ticks between turning on the inputs for this event
+	  and turning on the targets.  Targets will be NaN before that.  If
+	  <i>graceTime</i> is NaN, the example set's <i>graceTime</i> will be 
+	  used.</td></tr>
+      <tr><td>real <b>defaultInput</b></td>
+	<td>The input value used for inputs that don't appear in a <i>lot</i>
+	  if sparse inputs are being used.</td></tr>
+      <tr><td>real <b>activeInput</b></td>
+	<td>The input value used for the first sparse <i>lot</i> if a value is
+	  not otherwise specified.  This is only referred to when the example
+	  is read in.</td></tr>
+      <tr><td>real <b>defaultTarget</b></td>
+	<td>The target value used for outputs that don't appear in a <i>lot</i>
+	  if sparse targets are being used.</td></tr>
+      <tr><td>real <b>activeTarget</b></td>
+	<td>The target value used for the first sparse <i>lot</i> if a value is
+	  not otherwise specified.  This is only referred to when the example
+	  is read in.</td></tr>
+
+      <tr><td>Tcl_Obj *<b>proc</b></td>
+	<td>The command that is run just after the event is loaded into the 
+	  network.</td></tr>
+      <tr><td>Example <b>example</b></td>
+	<td>The example to which the event belongs.</td></tr>
+      <tr><td>EventExt <b>ext</b></td>
+	<td>A pointer to the event extension structure.  This is defined
+	  in extension.h and allocated in extension.c.  Programmers should try
+	  to put any extensions to the event structure in there.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Range</td>
+	<td>Defined in example.h.  This describes a set of inputs or targets.
+	  These can either be in a dense or a sparse encoding.<tr></tr></tr>
+      <tr><td width="150">char *<b>groupName</b></td>
+	<td>If this is NULL, the unit indices in this range refer to the whole
+	  network.  Otherwise they are only with respect to this 
+	  group.</td></tr>
+      <tr><td>int <b>numUnits</b></td>
+	<td>The number of units described by this range in either the
+	  <i>val</i> or <i>unit</i> array.</td></tr>
+      <tr><td>int <b>firstUnit</b></td>
+	<td>Used only for dense encodings.  This is the index of the first
+	  unit for which a value is specified in the <i>val</i>
+	  array.</td></tr>
+      <tr><td>real *<b>val</b></td>
+	<td>Used only for dense encodings.  These are the values
+	  (either <i>externalInput</i> or <i>target</i>) for the consecutive
+	  range of <i>numUnits</i> units starting with
+	  <i>firstUnit</i>.</td></tr>
+      <tr><td>real <b>value</b></td>
+	<td>Used only for sparse encodings.  This is the value (either
+	  <i>externalInput</i> or <i>target</i>) that will be assigned to each
+	  unit listed in the <i>unit</i> array.</td></tr>
+      <tr><td>int *<b>unit</b></td>
+	<td>Used only for sparse encodings.  An array of the indices of the
+	  units which will receive the <i>value</i>.</td></tr> 
+      <tr></tr>
+
+      <tr><td>Range <b>next</b></td>
+	<td>The next range in the linked list.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Graph</td>
+	<td>Defined in graph.h.  This maintains the state needed for a 
+	  graph.<tr></tr></tr>
+      <tr><td width="150">int <b>num</b></td>
+	<td>The graph number.</td></tr>
+      <tr></tr>
+
+      <tr><td>mask <b>updateOn</b></td>
+	<td>The event on which the graph should update itself.</td></tr>
+      <tr><td>int <b>updateEvery</b></td>
+	<td>How many of these events must occur before the graph actually
+	  updates itself.</td></tr>
+      <tr><td>int <b>x</b></td>
+	<td>A count of the number of events the graph has seen, which
+	  determines the x value of points plotted.</td></tr>
+      <tr><td>int <b>maxX</b></td>
+	<td>The maximum x value in any trace (this could be larger than x if a
+	  trace is non-active).</td></tr>
+      <tr><td>int <b>updatesSinceRedraw</b></td>
+	<td>The number of updates that have occurred since the last time the
+	  graph was redrawn from scratch.  The graph is completely redrawn
+	  every 100 updates for better efficiency.</td></tr> 
+      <tr></tr>
+
+      <tr><td>int <b>width</b></td>
+	<td>The width, in pixels, of the graph canvas.</td></tr>
+      <tr><td>int <b>height</b></td>
+	<td>The height, in pixels, of the graph canvas.</td></tr>
+      <tr><td>int <b>cols</b></td>
+	<td>The number of columns, or x values, that can fit in the graph
+	  window.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>max</b></td>
+	<td>The y value to appear at the top of the graph.</td></tr>
+      <tr><td>real <b>min</b></td>
+	<td>The y value to appear at the bottom of the graph.</td></tr>
+      <tr><td>flag <b>fixMax</b></td>
+	<td>Whether the max is fixed or based on maxVal.</td></tr>
+      <tr><td>flag <b>fixMin</b></td>
+	<td>Whether the min is fixed or based on minVal.</td></tr>
+      <tr><td>real <b>maxVal</b></td>
+	<td>The maximum y value that actually occurs in any trace in the
+	  graph.</td></tr>
+      <tr><td>real <b>minVal</b></td>
+	<td>The minimum y value that actually occurs in any trace in the
+	  graph.</td></tr>
+      <tr></tr>
+
+      <tr><td>real <b>scaleX</b></td>
+	<td>A value used in plotting an (x,y) pair in graph
+	  coordinates.</td></tr>
+      <tr><td>real <b>scaleY</b></td>
+	<td>A value used in plotting an (x,y) pair in graph
+	  coordinates.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag <b>clearOnReset</b></td>
+	<td>If true, the graph will be cleared when the network is
+	  reset.</td></tr> 
+      <tr><td>flag <b>storeOnReset</b></td>
+	<td>If true (and clearOnReset is false), the graph will be stored when
+	  the network is reset.</td></tr>
+      <tr><td>flag <b>hidden</b></td>
+	<td>Whether the graph is hidden or visible.</td></tr>
+      <tr></tr>
+
+      <tr><td>flag <b>needsRedraw</b></td>
+	<td>True if a redraw has been requested for this graph.</td></tr>
+      <tr><td>flag <b>needsPropRefresh</b></td>
+	<td>True if the graph properties window needs to be
+	refreshed.</td></tr>
+      <tr><td>flag <b>tracesChanged</b></td>
+	<td>True if a trace has been added or deleted and the traces needs to
+	be redrawn in the graph properties window.</td></tr>
+      <tr><td>flag <b>propertiesUp</b></td>
+	<td>True if the graph properties window is open.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>numTraces</b></td>
+	<td>The amount of space that has been allocated for traces in the
+	trace array.  Not all of the spots are necessarily filled.</td></tr>
+      <tr><td>Trace *<b>trace</b></td>
+	<td>An array of pointers to the traces in the graph.</td></tr>
+      <tr></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Trace</td>
+	<td>Defined in graph.h.  This maintains the state needed for a single
+	  trace in a graph.<tr></tr></tr>
+      <tr><td width="150">int <b>num</b></td>
+	<td>The number of the trace within its graph.</td></tr>
+      <tr><td>Graph <b>graph</b></td>
+	<td>The trace's parent graph.</td></tr>
+      <tr><td>char *<b>label</b></td>
+	<td>The label of the trace, only really used in exporting.</td></tr>
+      <tr><td>char *<b>object</b></td>
+	<td>The string containing either the object name or the procedure used
+	  to get values for this trace.</td></tr>
+      <tr><td>char *<b>lastObject</b></td>
+	<td>The most recent object for which this trace has been used.  When
+      this differs from the <i>object</i> field, it means the object has been
+      changed and the <i>value</i> pointer or <i>proc</i> must be
+      updated.</td></tr>
+      <tr><td>real *<b>value</b></td>
+	<td>If an object name, this points directly to said object for fast
+	  updating.</td></tr>
+      <tr><td>Tcl_Obj *<b>proc</b></td>
+	<td>If a procedure, this is the procedure whose execution provides the
+	  next value.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>numVals</b></td>
+	<td>The number of points actually used in this trace.</td></tr>
+      <tr><td>int <b>maxVals</b></td>
+	<td>The number of points allocated for this trace.</td></tr>
+      <tr><td>point *<b>val</b></td>
+	<td>The actual data, an array of (x,y) pairs.</td></tr>
+      <tr></tr>
+
+      <tr><td>char *<b>color</b></td>
+	<td>The name of the color used for this trace, usually in
+	  hex.</td></tr>
+      <tr><td>flag <b>active</b></td>
+	<td>Whether the trace is active, meaning that it will get a new value
+	  on an update.</td></tr>
+      <tr><td>flag <b>transient</b></td>
+	<td>Whether the trace is transient, meaning that it will be destroyed
+	  on a clear.</td></tr>
+      <tr><td>flag <b>visible</b></td>
+	<td>Whether the trace is visible and exportable.</td></tr>
+      <tr></tr>
+
+      <tr><td>int <b>export</b></td>
+	<td>A value used when exporting tabular data.</td></tr>
+      <tr></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Point</td>
+	<td>Defined in graph.h.  This holds a single data point in a graph
+	 trace.<tr></tr></tr>
+      <tr><td>int <b>x</b></td>
+	<td>The x coordinate of the point.</td></tr>
+      <tr><td>real <b>y</b></td>
+	<td>The y value of the point.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Algorithm</td>
+	<td>Defined in train.h.  Keeps track of weight update algorithms
+	  registered with <i>registerAlgorithm().</i><tr></tr></tr>
+      <tr><td width="150">mask <b>code</b></td>
+	<td>The bitmask identifying the algorithm.  Masks are defined
+	  in type.h and new masks must be chosen by the user.</td></tr>
+      <tr><td>char *<b>shortName</b></td>
+	<td>The short name of the algorithm, such as "momentum".  This becomes
+	  the name of the shell command for running the algorithm or the name
+	  of the algorithm passed to 
+	  <a href="Commands/train.html">train</a>.</td></tr>
+      <tr><td>char *<b>longName</b></td>
+	<td>The long name of the algorithm, such as "Momentum Descent".  Used
+	  on the graphical displays and for messages.</td></tr>
+      <tr><td>void (*<b>updateWeights</b>)<br>(flag doStats)</td>
+	<td>The command for performing weight updates with this algorithm.
+	  If <i>doStats</i> is true, the function should calculate the
+	  network's <i>weightCost</i> and <i>gradientLinearity</i> as it
+	  updates the weights.</td></tr>
+      <tr><td>Algorithm <b>next</b></td>
+	<td>The next algorithm in the <i>AlgorithmTable</i>.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>ObjInfo</td>
+	<td>Defined in object.h.  Used to build a description of one of the
+	  other structures, such as the network, a group, example set or a
+	  basic type like an int, to allow the structure to be traversed and
+	  viewed using <a href="Commands/getObject.html">getObject</a> or the
+	  Object Viewer.  This is created with the <i>newObject()</i>
+	  function.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of this type of object, such as "Network" or 
+	  "Group".</td></tr>
+      <tr><td>int <b>size</b></td>
+	<td>The number of bytes in this type of object.</td></tr>
+      <tr><td>int <b>maxDepth</b></td>
+	<td>When traversing the object tree, this is the maximum depth (number
+	  of steps to children or array elements), below the network, at which
+	  this type of object will be expanded.  This is because the object
+	  tree is actually circular in places and it would not be reasonable
+	  to follow the loops indefinitely.  This wil be -1 for primitive
+	  types (non-structures).</td></tr> 
+      <tr><td>void *(<b>getName</b>)<br>(void *object, char *name)</td>
+	<td>A function to return the name of this type of object given a
+	  pointer to the object.  The name will be written into the
+	  <i>name</i> string.  For most structures, this will be the
+	  <i>name</i> field.  For primitive types, such as an int, the type
+	  will be printed as a string.</td></tr>
+      <tr><td>void (*<b>setValue</b>)<br>(void *object, char *value)</td>
+	<td>A function for setting the value of a primitive type.  This will
+	  not be defined for structures..</td></tr>
+      <tr><td>void (*<b>setStringValue</b>)<br>(void *object, char
+	  *value)</td>
+	<td>A function for setting the value of a primitive type given a
+	  string representation of the value.  This will
+	  not be defined for structures.</td></tr>
+      <tr><td>MemInfo <b>members</b></td>
+	<td>The head of a linked list of member structures describing the
+	  fields if the object is a structure.</td></tr>
+      <tr><td>MemInfo *<b>tail</b></td>
+	<td>A pointer to the next pointer of the last member in the list to
+	  allow new members to be added to the end.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>MemInfo</td>
+	<td>Defined in object.h.  Used to describe a field of a C structure to
+	  allow the structure to be traversed and viewed using <a
+	    href="Commands/getObject.html">getObject</a> or the Object Viewer.
+	  This is created with the <i>addMember()</i> function.<tr></tr></tr>
+      <tr><td width="150">char *<b>name</b></td>
+	<td>The name of the field.  Typically this will be the same as the
+	  field name used in C, although it would not have to be.</td></tr>
+      <tr><td>int <b>type</b></td>
+	<td>This can be OBJ, OBJP, OBJA, OBJPA, OBJAA, or OBJPAA, which
+	  specifies whether this field is an object (a primitive type or an
+	  embedded structure), a pointer to an object, an array of objects, an
+	  array of pointers to objects, or a two dimensional array of objects
+	  or pointers to objects.</td></tr>
+      <tr><td>flag <b>writable</b></td>
+	<td>Whether the user can change this field from the shell.</td></tr>
+      <tr><td>int <b>offset</b></td>
+	<td>The number of bytes between the start of the parent object and the
+	  location of this field.</td></tr>
+      <tr><td>int (*<b>rows</b>)(void *)</td>
+	<td>If the field is an array, this function returns an integer giving
+	  the first dimension of the array.</td></tr>
+      <tr><td>int (*<b>cols</b>)(void *)</td>
+	<td>If the field is a 2D array, this function returns an integer
+	  giving the second dimension of the array.</td></tr>
+      <tr><td>ObjInfo <b>info</b></td>
+	<td>This is the ObjInfo structure which defines the type of object
+	  that this field is.  If this field is an array of objects or
+	  pointers to objects, ObjInfo corresponds to the objects in the
+	  array.</td></tr>
+      <tr><td>MemInfo <b>next</b></td>
+	<td>The next field in the linked list.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>String</td>
+	<td>Defined in util.h.  This holds a string that will resize
+	  itself dynamically.  These are used occasionally in Lens,
+	  usually for parsing text files.<tr></tr></tr>
+      <tr><td width="150">int <b>maxChars</b></td>
+	<td>The number of bytes allocated in <i>s</i>.</td></tr>
+      <tr><td>int <b>numChars</b></td>
+	<td>The number of characters, not counting the '\0', used in <i>s</i>.
+	</td></tr>
+      <tr><td>char *<b>s</b></td>
+	<td>The actual string.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>ParseRec</td>
+	<td>Defined in util.h.  This is used to make parsing example
+	  files easier.<tr></tr></tr>
+      <tr><td width="150">Tcl_Channel <b>channel</b></td>
+	<td>A pointer to the actual file being read.</td></tr>
+      <tr><td>char *<b>fileName</b></td>
+	<td>The name of the file being read.</td></tr>
+      <tr><td>char <b>cookie</b>[sizeof(int)]</td>
+	<td>This stores the characters that might have been in the cookie so
+	  the parser can recover from having tried to read the
+	  cookie.</td></tr>
+      <tr><td>int <b>cookiePos</b></td>
+	<td>The position within the cookie array that is currently being
+	  read.</td></tr>
+      <tr><td>flag <b>binary</b></td>
+	<td>Whether the file is in binayr format.</td></tr>
+      <tr><td>int <b>line</b></td>
+	<td>The number of the most recent line read from the file.  For binary
+	  files, this is the number of the example being parsed.</td></tr>
+      <tr><td>String <b>buf</b></td>
+	<td>A dynamic string that holds the portion of the most recently read
+	  line that has yet to be completely parsed.</td></tr>
+      <tr><td>char *<b>s</b></td>
+	<td>A pointer to the character within <i>buf->s</i> up to which the
+	  text has been parsed.</td></tr>
+    </table>
+
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>C Macros</td>
+	<td>These are the #define macros and constants that might be most
+	  useful to a programmer.  Numerous other definitions are found in
+	  system.h, type.h, act.h, and defaults.h.<tr></tr></tr>
+      <tr><td width="150"><b>TRUE</b></td>
+	<td>Should be used rather than 1 when a boolean value is 
+	  needed.</td></tr>
+      <tr><td><b>FALSE</b></td>
+	<td>Should be used rather than 0 when a boolean value is 
+	  needed.</td></tr>
+      <tr><td><b>TCL_OK</b></td>
+	<td>The boolean value to be returned when a function completes
+	  successfully.  This is equivalent to FALSE.</td></tr>
+      <tr><td><b>TCL_ERROR</b></td>
+	<td>The boolean value to be returned when a function incurred an
+	  error.  This is equivalent to TRUE.</td></tr>
+      <tr><td><b>ADVANCED</b></td>
+	<td>This will be defined by the Makefile if Lens is to be compiled in
+	  "advanced" mode, meaning that the links contain the extra
+	  <i>lastValue</i> field.</td></tr>
+      <tr><td><b>LITTLE_END</b></td>
+	<td>This is defined if the machine uses little-endian byte ordering,
+	  which is not the network standard ordering.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>HTONL</b>(x)</td>
+	<td>Converts a four-byte number (integer or real) from host byte-order
+	  to network (big endian) byte order.  The new value is 
+	  returned.</td></tr>
+      <tr><td><b>NTOHL</b>(x)</td>
+	<td>Converts a four-byte number (integer or real) from network (big
+	  endian) byte-order to host byte order.  The new value is 
+	  returned.</td></tr>
+      <tr><td><b>OFFSET</b>((void *) object, field f)</td>
+	<td>This returns the number of bytes between the start of a structure
+	  and a particular field in the object.  <i>object</i> is a pointer to
+	  a structure and <i>f</i> is the name of the field in the 
+	  object.</td></tr>
+      <tr><td><b>SAME</b>(x,y)</td>
+	<td>This should be use to compare two real numbers when there is some
+	  chance that they both are NaN.  Ordinarily (NaN == NaN) will
+	  evaluate to FALSE.  SAME(NaN, NaN), however, will be TRUE.</td></tr>
+      <tr><td><b>MIN</b>(x,y)</td>
+	<td>The minimum of two numbers, integer or real.  The function 
+	  <code>imin()</code> or <code>rmin()</code> should be used, rather
+	  than the macro <code>MIN()</code> if the arguments are complex
+	  expressions.</td></tr>
+      <tr><td><b>MAX</b>(x,y)</td>
+	<td>The maximum of two numbers, integer or real.  The function
+	  <code>imax()</code> or <code>rmax()</code> should be used, rather 
+	  than the macro <code>MAX()</code> if the arguments are complex
+	  expressions.</td></tr>
+      <tr><td><b>NO_VALUE</b></td>
+	<td>The string used to indicate that a real number should be NaN.
+	  This defaults to <code>"-"</code>.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>CROSS_ENTROPY_ERROR</b>(y, d)</td>
+	<td>If y is an output and d is a target, this computes the cross
+	  entropy error.</td></tr>
+      <tr><td><b>CROSS_ENTROPY_DERIV</b>(y, d)</td>
+	<td>If y is an output and d is a target, this computes the derivative
+	  of the cross entropy error.</td></tr>
+      <tr><td><b>DIVERGENCE_ERROR</b>(y, d)</td>
+	<td>If y is an output and d is a target, this computes the divergence
+	  error.</td></tr>
+      <tr><td><b>DIVERGENCE_DERIV</b>(y, d)</td>
+	<td>If y is an output and d is a target, this computes the derivative
+	  of the divergence error.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>FOR_EACH_LINK_FORW</b><br>(U, proc)</td>
+	<td>Loops over all the incoming links to Unit U and computes the proc
+	  for each one.  This is usually used for input functions.  The proc
+	  can make use of the L_WGT and other macros listed below.</td></tr>
+      <tr><td><b>FOR_EACH_LINK_FAST_FORW</b><br>(U, proc, unrollproc)</td>
+	<td>This is like FOR_EACH_LINK_FORW but will unroll the loop 10 times
+	  when possible for greater speed.  proc is used when running on a
+	  single link and unrollproc is used when running on ten consecutive
+	  links.  You should avoid using this unless you really know what
+	  you're doing.</td></tr>
+      <tr><td><b>FOR_EACH_LINK_BACK</b><br>(U, proc)</td>
+	<td>Loops over all the incoming links to Unit U and runs the proc
+	  for each one to backpropagate error derivates.  The proc can make
+	  use of the L_WGT, L_DRV, and other macros listed below.</td></tr>
+      <tr><td><b>FOR_EACH_LINK_FAST_BACK</b><br>(U, proc, unrollproc)</td>
+	<td>This is the unrolled version of FOR_EACH_LINK_BACK.  Again, avoid
+	  it unless you really know what you're doing.</td></tr>
+      <tr><td><b>L_WGT</b></td>
+	<td>When using one of the above macros, this is the preferred method
+	  for referencing the link weight.</td></tr>
+      <tr><td><b>L_WGT_</b>(i)</td>
+	<td>When using a _FAST_ macro, this references the i_th link
+	  weight, where i ranges from 0 to 9.</td></tr>
+      <tr><td><b>L_DRV</b></td>
+	<td>The derivative of the link.</td></tr>
+      <tr><td><b>L_DRV_</b>(i)</td>
+	<td>When using a _FAST_ macro, this is the derivative of the i_th
+	  weight.</td></tr>
+      <tr><td><b>V_OUT</b></td>
+	<td>The output of the sending unit.</td></tr>
+      <tr><td><b>V_OUT_</b>(i)</td>
+	<td>The output of the i_th sending unit for _FAST_ macros.</td></tr>
+      <tr><td><b>V_DRV</b></td>
+	<td>The output derivative of the sending unit.</td></tr>
+      <tr><td><b>V_DRV_</b>(i)</td>
+	<td>The output derivative of the i_th sending unit for _FAST_
+	  macros.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>UPDATE</b>(Group G)</td>
+	<td>Computes a groups input, output, and cost by calling
+	  computeInput(), computeOutput(), and computeCost().</td></tr> 
+      <tr><td><b>BACKPROP</b>(Group G)</td>
+	<td>Backpropagates a group's outputDeriv to its inputDeriv and then to
+	  the links and units projecting to the group by calling
+	  computeOutputBack() and computeInputBack().</td></tr>
+      <tr></tr>
+      
+      <tr><td><b>IN_BLOCK</b>(Unit U, Block B)</td>
+	<td>Evaluates to TRUE if the unit produces an outgoing link in the
+	  given block of links.</td></tr>
+      <tr><td><b>IN_GROUP</b>(Block B, Group G)</td>
+	<td>Evaluates to TRUE if the units producing the outgoing links that
+	  form the given block are in group G.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>FOR_EACH_GROUP</b>(proc)</td>
+	<td>Runs the <i>proc</i> code for each group in the network.  When it
+	  does so, the local variable <i>G</i> will be a pointer to the group
+	  and <i>g</i> will be its index.</td></tr>
+      <tr><td><b>FOR_EACH_GROUP_BACK</b>(proc)</td>
+	<td>Similar to the previous macro but loops over the groups in
+	  opposite their normal updating order.</td></tr>
+      <tr><td><b>FOR_EACH_GROUP_IN_RANGE</b><br>(first, last, proc)</td>
+	<td>Loops over the groups with indices from <i>first</i> to
+	  <i>last</i>, inclusive.</td></tr>
+      <tr><td><b>FOR_EACH_GROUP_IN_RANGE_BACK</b><br>(last, first, proc)</td>
+	<td>Loops over the groups with indices from <i>last</i> to
+	  <i>first</i>, inclusive.</td></tr>
+      <tr><td><b>FOR_EACH_GROUP_IN_LIST</b><br>(_list, _proc)</td> <td>Loops
+      over the groups whose names are listed in <i>_list</i> and executes
+      <i>_proc</i> on each.  <i>*</i> matches all groups.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>FOR_EACH_UNIT</b>(G, proc)</td>
+	<td>Runs the <i>proc</i> code for each unit in the group.  When it
+	  does so, the local variable <i>U</i> will be the current unit
+	  and <i>sU</i> should not be messed with.  This will not run the proc
+	  on LESIONED units.</td></tr>
+      <tr><td><b>FOR_EACH_UNIT2</b>(G, proc)</td>
+	<td>This is like FOR_EACH_UNIT, but it makes available the <i>u</i>
+	  variable containing the index of the current unit.</td></tr>
+      <tr><td><b>FOR_EVERY_UNIT</b>(G, proc)</td>
+	<td>The same as above but it will operate on all units, including 
+	  LESIONED ones.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>FOR_EACH_UNIT_IN_LIST</b>(_list, _proc)</td>
+	<td>If <i>_list</i> is a &lt;unit-list>, this will run <i>_proc</i> on
+	every unit in the list.  The unit will be U.</td></tr>
+      <tr><td><b>FOR_EACH_BLOCK</b>(U, proc)</td>
+	<td>This will run proc for each block in the unit.  You can use the
+            block pointer, B, or the block index u.</td></tr>
+      <tr><td><b>FOR_EACH_LINK</b>(U, proc)</td>
+	<td>This loops over the incoming array of the unit.  You can use this
+           to do something to the weights or derivatives of the
+           links.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>FOR_EACH_GRAPH</b>(proc)</td>
+	<td>Runs the <i>_proc</i> code for each graph.  When it
+	  does so, the local variable <i>G</i> will be a pointer to the 
+	  graph.</td></tr>
+      <tr><td><b>FOR_EACH_GRAPH_IN_LIST</b>(_list, _proc)</td>
+	<td>Runs the <i>_proc</i> code for each graph whose number is listed in
+	the string <i>_list</i>.</td></tr>
+      <tr><td><b>FOR_EACH_TRACE</b>(G, proc)</td>
+	<td>Runs the <i>_proc</i> code for each trace in graph G.  When it
+	  does so, the local variable <i>T</i> will be a pointer to the 
+	  trace.</td></tr>
+      <tr><td><b>FOR_EACH_TRACE_IN_LIST</b>(G, _list, _proc)</td>
+	<td>Runs the <i>_proc</i> code for each trace in G whose number is
+	listed in the string <i>_list</i>.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>FOR_EACH_STRING_IN_LIST</b>(_list, _proc)</td>
+	<td>Runs the <i>_proc</i> code for each field in the string
+	<i>_list</i>.  The String S (not a char *, but a String) will hold the
+      string when <i>_proc</i> is called.</td></tr> 
+      <tr></tr>
+
+      <tr><td><b>HISTORY_INDEX</b>(tick)</td>
+        <td>The history arrays in the units are circular.  Given the tick
+           number of the current example, this gives the index into the array
+           where data is stored for that tick.
+      <tr><td><b>SET_HISTORY</b>(Unit U,<br>real *array, int index,
+	  real value)</td>
+	 <td>This should be used to set any field in one of a unit's history
+	  arrays.  It checks to be sure the array exists and then treats it as
+	  a circular array.</td></tr>
+      <tr><td><b>GET_HISTORY</b>(Unit U,<br>real *array, int index)</td>
+	<td>This should be used to get the value of any field in one of a 
+	  unit's history arrays.  It checks to be sure the array exists and 
+	  then treats it as a circular array.  It evaluates to the value of
+	  the requested element, or NaN if the element doesn't 
+	  exist.</td></tr>
+      <tr></tr>
+
+      <tr><td><b>STORE_TO_HISTORY</b><br>
+        (G, value, array, tick)</td>
+        <td>This stores the values in the <i>value</i> field of a unit to one
+            of its history arrays.</td></tr>
+      <tr><td><b>STORE_TO_OTHER_HISTORY</b><br>
+        (G, value, H, array, tick)</td>
+        <td>This stores the values in the <i>value</i> field of the units in
+            group G to a history array in the units of group H.  The two
+            groups should have the same number of units.</td></tr>
+      <tr><td><b>RESTORE_FROM_HISTORY</b><br>
+        (G, array, tick, value)</td>
+        <td>This copies values from a history array to the <i>value</i>
+          field for each unit in G.</td></tr>
+      <tr><td><b>RESTORE_FROM_OTHER_HISTORY</b><br>
+        (G, array, tick, H, value)</td>
+        <td>This copies values from a history array in group G to the
+           <i>value</i> field of the units in group H.  The two groups should
+           have the same number of units.</td></tr>
+      <tr><td><b>SET_VALUES</b><br>
+        (G, value, val)</td>
+        <td>This sets field <i>value</i> of each unit in G to
+        <i>val</i>.</td></tr>
+      <tr><td><b>COPY_VALUES</b><br>
+        (F, valueF, T, valueT)</td>
+        <td>This copies values from field <i>valueF</i> in the units of group
+            F to field <i>valueT</i> in the units of group T.</td></tr>
+      <tr><td><b>COPY_HISTORY</b><br>
+        (F, arrayF, tickF, T, arrayT, tickT)</td>
+        <td>This copies values from one tick in a history array of group F to
+            one tick in a history array of group T.</td></tr>
+      <tr><td><b>CLEAR_HISTORY</b><br>
+        (G, tick)</td>
+        <td>This sets the output and target histories of group G for the
+            specified tick to NaN.</td></tr>
+      <tr><td><b>STORE_HISTORY</b><br>
+        (G, tick)</td>
+        <td>This stores the outputs to the outputHistory and the targets to
+            the targetHistory for the specified tick.</td></tr>
+      <tr><td><b>RUN_PROC</b><br>
+        (proc)</td>
+        <td>This is a safe way to run one of the network's procedures, such as
+            the preEpochProc.  If the proc is not set, nothing will 
+            happen.</td></tr>
+      <tr></tr>
+      <tr><td><b>UPDATE_WEIGHTS</b><br>
+        (proc)</td>
+        <td>This is used in defining weight update functions.  It takes care
+            of all of the traversal and calculating stats for the report.  The
+            proc you specify just does the weight update on a single 
+            link.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Global C Variables</td>
+	<td>This represents nearly all of the global variables shared between
+	  modules in Lens.  Other global variables of type ObjInfo containing
+	  the description of object structures are not listed here, nor are
+	  those only used within a single module.<tr></tr></tr>
+      <tr><td width="150">extern RootRec <b>Root</b></td>
+	<td>A pointer to the single root structure that contains the arrays of
+	  all networks and all example sets.  Each network has a copy of this
+	  pointer so users can access all networks and example sets.</td></tr>
+      <tr><td>extern Network <b>Net</b></td>
+	<td>By far the most-used global variable, this is a pointer to the
+	  current network.</td></tr>
+
+      <tr><td>extern char **<b>LinkTypeName</b></td>
+	<td>An array of names for the user-defined link types.</td></tr>
+
+      <tr><td>extern Algorithm <b>AlgorithmTable</b></td>
+	<td>A linked list of registered weight-update algorithms.</td></tr>
+
+      <tr><td>extern flag <b>UnitUp</b></td>
+	<td>Whether the Unit Viewer is visible.</td></tr>
+      <tr><td>extern flag <b>LinkUp</b></td>
+	<td>Whether the Link Viewer is visible.</td></tr>
+      <tr><td>extern int <b>ViewTick</b></td>
+	<td>The tick that is being viewed in the Unit Viewer.</td></tr>
+
+      <tr><td>extern int <b>ParallelState</b></td>
+	<td>Indicates whether the Lens process is acting as a client, a
+	  server, or not involved in parallel training.</td></tr>
+      <tr><td>extern int <b>ClientsWaiting</b></td>
+	<td>The number of clients waiting at a barrier for the network to
+	  release them.</td></tr>
+
+      <tr><td>extern Tcl_Interp *<b>Interp</b></td>
+	<td>A pointer to the Tcl interpreter running in the Lens process.
+	  This is often needed for creating return values or making other Tcl
+	  library calls.</td></tr>
+      <tr><td>extern char <b>Buffer</b>[ ]</td>
+	<td>A buffer used to temporarily store commands to be evaluated, 
+	  return values, or just for use as a generic temporary 
+	  storage.</td></tr>
+      <tr><td>extern flag <b>Gui</b></td>
+	<td>Indicates whether the Main Window is viewable and, thus, Lens is
+	  running in graphical mode.</td></tr>
+      <tr><td>extern flag <b>Batch</b></td>
+	<td>Indicates whether Lens is running in batch mode, and thus none of
+	  the graphical displays will ever be viewable.</td></tr>
+      <tr><td>extern flag <b>Console</b></td>
+	<td>Indicates whether the Lens console has been opened.</td></tr>
+      <tr><td>extern int <b>Verbosity</b></td>
+	<td>This controls how verbose messages are in Lens.  1 is the
+            default.  0 will turn off status messages that aren't 
+            errors.  2 may be useful at some point, but there hasn't been much
+            call for it yet.</td></tr>
+      <tr><td>extern char *<b>RootDir</b></td>
+	<td>The main Lens directory.</td></tr>
+    </table>
+
+    <hr width="80%">
+    <table width=100% border=2 cellspacing=2 cellpadding=2>
+      <tr><td align=center><h2>Global Tcl Variables</td>
+	<td>These are global variables used in the Tcl code.  In addition,
+	  there will be a global variable for each object that is set with
+	  <a href="Commands/setObject.html">setObject</a> whose name is the
+	    name of the object preceded with a period.  There are a number of
+	  other global Tcl variables not listed here.</td></tr>
+      <tr><td width="150"><b>.ADVANCED</b></td>
+	<td>Whether Lens has been compiled in "advanced" mode (allowing
+	  more complicated learning algorithms.</td></tr>
+      <tr><td><b>.BATCH</b></td>
+	<td>Whether Lens is running in (graphics disabled) batch mode.
+	</td></tr>
+      <tr><td><b>.RootDir</b></td>
+	<td>The <code>.../Lens</code> directory from which Lens is
+	  running.</td></tr>
+      <tr><td><b>.ManPage</b></td>
+	<td>The web page containing the Lens manual.</td></tr>
+      <tr><td><b>.Version</b></td>
+	<td>The current version number.</td></tr>
+      <tr><td><b>.Commands</b></td>
+	<td>A list of all of the registered Lens commands.</td></tr>
+      <tr><td><b>_Synopsis</b></td>
+	<td>An array containing a short explanation of each Lens 
+	  command.</td></tr>
+      <tr><td><b>_Aliases</b></td>
+	<td>An array containing the code to be substituted for aliased
+	  commands.</td></tr>
+      <tr><td><b>auto_path</b></td>
+	<td>The directory path used to search for commands to load 
+	  automatically.</td></tr>
+      <tr><td><b>env</b></td>
+	<td>An array containing the values of all of the shell environment
+	  variables.</td></tr>
+      <tr><td><b>.unitUp</b></td>
+	<td>A boolean indicating whether the Unit Viewer is 
+	  displayed.</td></tr>
+      <tr><td><b>.unitUpdates</b></td>
+	<td>A number indicating the rate at which the Unit Viewer is 
+	  updated.</td></tr>
+      <tr><td><b>.linkUp</b></td>
+	<td>A boolean indicating whether the Link Viewer is 
+	  displayed.</td></tr>
+      <tr><td><b>.linkUpdates</b></td>
+	<td>A number indicating the rate at which the Link Viewer is 
+	  updated.</td></tr>
+      <tr><td><b>.borderColor</b></td>
+	<td>The color of the raised ridge around window frames.</td></tr>
+      <tr><td><b>.entryNormalColor</b></td>
+	<td>The background of a normal entry box.</td></tr>
+      <tr><td><b>.entryPendingColor</b></td>
+	<td>The color of an entry containing a value that hasn't been 
+	  committed.</td></tr>
+    </table>
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 13:35:39 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

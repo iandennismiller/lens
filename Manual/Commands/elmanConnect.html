@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: elmanConnect</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>elmanConnect</font> - connects a source group to an Elman
+      context group
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    elmanConnect &lt;source-group> &lt;context-group>
+        [-reset &lt;reset-on-example> | -initOutput &lt;init-output>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This sets up the first group as the source for the second, context,
+      group.  The two groups must have the same number of units and the second
+      must have an ELMAN_CLAMP output function that has not already been
+      assigned a source group.  Once this command is invoked, when the context
+      group is updated, the output of each unit in the source group will be
+      added to the output of the corresponding unit in the context group.
+    <p>
+      The <code>-reset</code> option will set the <i>resetOnExample</i>
+      parameter of the source group.  This defaults to 1 or TRUE, which means
+      that the outputs of the source group will be reset to the group's
+      <i>initOutput</i> at the start of each example.
+    <p>
+      The <code>-initOutput</code> option sets the source group's
+      <i>initOutput</i> value.  The default depends on the output type of the
+      group, but is typically 0.5 for [0,1]-bounded groups.
+    <p>
+      The <i>resetOnExample</i> and <i>initOutput</i> values could also be set
+      directly with the <a href="setObject.html">setObject</a> command.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To make group "context1" the context layer for group "hidden1" and have
+      the unit outputs of the context layer reset to 0.1 at the start of each
+      example:
+    <pre>
+    lens> elmanConnect hidden1 context1 -r 1 -i 0.1</pre>
+    
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>, 
+    <a href="groupType.html">groupType</a>,
+    <a href="copyConnect.html">copyConnect</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Apr 12 19:23:40 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: autoPlot</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>autoPlot</font> - plots the entire network in a charming
+      format
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    autoPlot [&lt;plot-columns>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command lays out the entire network in the Unit Viewer.  It plots
+      each group from last to first as if the group were plotted using <a
+      href="plotAll.html">plotAll</a>.  Normally, a blank row is left between
+      groups.  However, Elman context groups are plotted immediately below the
+      previously plotted group and shifted to the right.  This arrangement
+      assumes that Elman layers will immediately precede their source groups
+      in the group order.
+    <p>
+      If <i>plot-columns</i> is specified, it will set the number of columns
+      used in the layout.  Otherwise, the number of columns is automatically
+      determined based on the maximum number of units in any group.
+    <p>
+      If the <i>numColumns</i> field for a group is set to something greater
+      than 0, it will override the <i>plot-columns</i> in determining how many
+      columns are used in plotting the group.  This can be used to customize
+      the layout short of specifying it entirely by hand.
+    <p>
+      Once <code>autoPlot</code> called, it will be reinvoked whenever the
+      structure of the network changes.  If any other plotting command is
+      given, automatic plotting will stop.  New networks are by default in
+      "autoPlot mode".
+
+    <h3>SEE ALSO</h3>
+    <a href="plotRow.html">plotRow</a>,
+    <a href="resetPlot.html">resetPlot</a>,
+    <a href="plotAll.html">plotAll</a>,
+    <a href="drawUnits.html">drawUnits</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:15:20 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

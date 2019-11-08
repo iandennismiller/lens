@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: changeGroupType</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>changeGroupType</font> - adds, removes, or toggles group types
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    changeGroupType &lt;group-list> [&lt;group-type> | +&lt;group-type> |
+        -&lt;group-type>]*</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command is used to selectively activate and deactivate types for a
+      group or a list of groups.
+    <p>
+      If a type is preceded by a "<code>+</code>", the type will be appended
+      to the list of types of the same class.
+      For example, a newly added output function will follow any current
+      output functions.
+    <p>
+      If a type is preceded by a "<code>-</code>", it will simply be
+      deactivated.  A type preceded by nothing will be toggled: if already
+      present, it will be removed; if not present, it will be added.
+    <p>
+      This command returns a list of the new group types of the last group
+      specified.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To add noise to the output of the groups "out1" and "out2", remove their
+      unit cost functions and toggle their <code>STANDARD_CRIT</code> criterion
+      functions:
+    <pre>
+    lens> changeGroupType "out1 out2" +OUT_NOISE -COSINE_COST STANDARD_CRIT
+    Input Type
+      DISTANCE
+    Output Type
+      LINEAR
+      OUT_NOISE
+    Group Criterion Type
+      STANDARD_CRIT
+    Bias Type
+      BIASED</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>,
+    <a href="groupType.html">groupType</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Mar 28.33:28:37 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Group Connection Procedures</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Group Connection Procedures</h1>
+    <hr>
+    <p>
+      Lens supports a number of sparse projection patterns between groups.  It
+      is likely, however, that you will want to create your own connectivity
+      patterns at some point.  
+    <p>
+      Begin by defining a new projection type.  This should be added to 
+      <a href="Src/type.h">type.h</a> (in the section on  PROJECTION TYPES).
+      For example:
+    <pre>
+    /* DOUG... */
+    #define FUNKY_PROJ  ((mask) 1 << 10)
+    /* ...DOUG */</pre>
+    <p>
+      Now write the connection procedure.  It should be similar to this:
+    <pre>
+    static flag funkyConnectGroups(Group preGroup, Group postGroup, mask linkType,
+    	  			   real strength, real range, real mean) {
+      Unit V;
+      FOR_EVERY_UNIT(preGroup, {
+        V = U;
+        FOR_EVERY_UNIT(postGroup, {
+          if (randProb() < strength)
+      	    if (connectUnits(V, U, linkType, range, mean)) return TCL_ERROR;
+        });
+      });
+      return TCL_OK;
+    }</pre>
+    <p>
+      Be sure to use FOR_EVERY_UNIT rather than FOR_EACH_UNIT unless you want
+      it to skip lesioned units.
+    <p>
+      Finally, you need to register the projection type by putting a line
+      like this in <code>userInit()</code> in <a
+      href="Src/extension.c">extension.c</a>:
+    <pre>
+    registerProjectionType("FUNKY_PROJ", FUNKY_PROJ, funkyConnectGroups);</pre>
+    <p>
+      Now you should be able to create projections of your type by calling <a
+      href="Commands/connectGroups.html">connectGroups</a> with the "-p
+      FUNKY_PROJ" option.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:54:04 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

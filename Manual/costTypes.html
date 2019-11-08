@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Group Cost Types</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Group Cost Types</h1>
+    <hr>
+    <p>
+      There are actually two very different kinds of cost functions: error
+      functions and unit output cost functions.  The error functions are based
+      on the similarity of the outputs and targets.  The unit output cost
+      functions simply charge the unit for producing certain outputs, such as
+      non-binary ones.  The error functions assess no error when the target is
+      NaN.
+
+    <h3>Error Types</h3>
+    <dl>
+      <dt>SUM_SQUARED</dt>
+      <dd>This simply takes the sum over all units of the squared difference
+	between the output and target.  This is only the default for LINEAR
+	output groups.
+      <dt>CROSS_ENTROPY</dt>
+      <dd>This is the sum over all units of:<br>
+	t log(t/o) + (1-t) log((1-t)/(1-o)),<br>
+	where <i>t</i> is the target and <i>o</i> is the output.  This can
+	become infinite if the output incorrectly reaches 0.0 or 1.0.  This
+	may happen if the training parameters are too aggressive.  Lens
+	caps the error at a very large value.  <b>CROSS_ENTROPY is the default
+	  error type</b> for most output groups.
+      <dt>DIVERGENCE</dt>
+      <dd>This is the sum over all units of:<br>
+	t log(t/o)
+	This is only stable if the target vector and output vector are each
+	normalized to sum to 1.0.  This is the default error type for SOFT_MAX
+	output groups.
+      <dt>COSINE</dt>
+      <dd>This calculates the 1.0 - the cosine of the angle between the output
+	and target vectors.  This can be used for training as well as
+	evaluation. However, training can be tricky because there is only
+	pressure for the angle of the output vector to be correct, not the
+	absolute values of the outputs. You could use a unit cost function
+	(such as LOGISTIC_COST) on the output units to encourage them to be
+	binary if that is desired.
+    </dl>
+    <h3>Target Types</h3>
+    <dl>
+      <dt>TARGET_COPY</dt>
+      <dd>The units in a group with a TARGET_COPY cost function will copy
+	their targets from some field in the corresponding units of another
+	group.  The <a href="Commands/copyConnect.html">copyConnect</a>
+	command must be used to specify which group and which field will be
+	the source of the copying.  The TARGET_COPY type should be specified
+	prior to the main error type.
+    </dl>
+
+    <h3>Output Cost Types</h3>
+      Unit output costs are error terms that penalize units for having certain
+      outputs.  For bounded units (ones whose outputs are limited to a finite 
+      range), there are five unit cost functions, all of which encourage the
+      unit to have binary output.  Non-bounded units can have one of two cost
+      functions that encourage the unit to be silent.
+      Output costs would typically only be applied to hidden layers, although
+      they may be useful on output layers as well.  They can be used with
+      simple and continuous networks, but not with Boltzmann machines.
+    <p>
+      When used on a bounded group, the cost functions will be low at the
+      extremes and will have a maximum cost of 1.0 at the
+      <i>outputCostPeak</i>, which is typically at 0.5.  
+    <dl>
+      <dt>LINEAR_COST</dt>
+      <dd>For a bounded unit this changes linearly from 1.0 at the peak to 0.0
+	at the min and max output.  For an unbounded unit, this is simply
+	equal to the absolute value of the output.
+      <dt>QUADRATIC_COST</dt>
+      <dd>For a bounded unit, this has a derivative of 0 at the extremes and
+	slopes up concavely to the peak.  For unbounded units this is equal to
+	the output squared.
+      <dt>CONV_QUAD_COST</dt>
+      <dd>This can only be used on bounded units.  It is shaped like a
+	downward-facing parabola.  The derivative is 0 at the peak.
+      <dt>LOGISTIC_COST</dt>
+      <dd>This can only be used on bounded units.  It is similar in shape to
+	the CONV_QUAD_COST but the derivative goes to infinity as it
+	approaches the extremes.  However, the derivative is capped as if the
+	output could not get closer than 1e-6 of the min or max.
+      <dt>COSINE_COST</dt>
+      <dd>This can only be used on bounded units.  It has zero derivative at
+	the min, max, and the peak.
+    </dl>
+
+      <img src="Images/cost-0.5.jpg">
+    <p>
+      The following figure shows the derivatives of the above functions:
+    <p>
+      <img src="Images/cost-deriv-0.5.jpg">
+    <p>
+      Here are the functions as they would appear with a outputCostPeak of
+      0.25.  Note that convex-quadratic and logistic are not necessarily 0.0
+      at the extremes, although no function will become negative:
+    <p>
+      <img src="Images/cost-0.25.jpg">
+    <p>
+      And the derivatives:
+    <p>
+      <img src="Images/cost-deriv-0.25.jpg">
+    <p>
+      The network's <i>outputCostStrength</i> scales the derivatives when they
+      are injected into the units' <i>outputDeriv</i> fields.  Generally a
+      value about the same order of magnitude as the learning rate should be
+      reasonable, though you may not want to activate unit costs too early in
+      training or the units will get pinned.  The network's 
+      <i>outputCostStrength</i> does not affect the <i>outputCost</i> as
+      calculated for the whole network.  It only affects the derivatives.
+    <p>
+      Groups can be given their own <i>outputCostStrength</i> and
+      <i>outputCostPeak</i> to override the network defaults.  If the group's
+      unit cost strength is different from the network's, the group's
+      contribution to the network's unit cost will be scaled by their ratio.
+      In this way, if the cost of some groups is more important than that of
+      others, it will be reflected in the <i>outputCost</i>.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 23:02:30 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: time</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>time</font> - runs a command and returns the time elapsed
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    time &lt;command> [-iterations &lt;iterations>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This is similar but not identical to the standard Tcl <code>time</code>
+      procedure.  It will run the specified command for certain number of
+      iterations and return the time elapsed.  The default number of
+      iterations is 1.  Unlike the Tcl procedure, the time reported is the 
+      total for all iterations, not the time per iteration.
+    <p>
+      Four time values are reported.  <i>active</i> is the time elapsed while
+      the process was being executed and when the system was executing on
+      behalf of the process.  <i>user</i> and <i>system</i> break this down
+      into the two components.  <i>real</i> is the real time elapsed.  All
+      times are in seconds.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To time 10 iterations of the <code>train</code> command (each doing 200
+      updates):
+    <pre>
+    lens> time {train 200} -i 10
+    ...
+    0.720 active  0.620 user  0.100 system  2.740 real</pre>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 18:30:18 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

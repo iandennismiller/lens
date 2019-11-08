@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: deltaBarDelta</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>deltaBarDelta</font> - trains the network using delta-bar-delta
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    deltaBarDelta [&lt;num-updates>] [-report &lt;report-interval> | -setOnly]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This is a shortcut for training the network using delta-bar-delta.  The
+      arguments are similar to those for <a href="train.html">train</a>.  The
+      momentum term is taken from the network's <i>momentum</i> parameter.
+      Other parameters of importance are the network's <i>rateIncrement</i> and
+      <i>rateDecrement</i>.
+    <p>
+      In this algorithm, each link stores its own learning rate in its
+      <i>lastValue</i> field.  This is multiplied by the default learning rate
+      (which is taken from the first one of the block's, group's, or network's
+      <i>learningRate</i> fields that is not NaN).  If the link weight takes
+      consecutive steps in the same direction, the link's rate is incremented
+      by <i>rateIncrement</i>.  If the weight step changes direction, the rate
+      is multiplied by <i>rateDecrement</i> to scale it back.  Thus,
+      <i>rateDecrement</i> is not, strictly speaking, a decrement.
+    <p>
+      If the -setOnly flag is used, no training will occur.  However, the
+      network's numUpdates, reportInterval, and default algorithm will be set.
+      This can be used to set the default training behavior in an
+      initialization script prior to actually training.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To train for 1000 epochs, printing reports every 100:
+    <pre>
+    lens> deltaBarDelta 1000 -r 100</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="train.html">train</a>,
+    <a href="steepest.html">steepest</a>,
+    <a href="momentum.html">momentum</a>,
+    <a href="dougsMomentum.html">dougsMomentum</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 12:37:33 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

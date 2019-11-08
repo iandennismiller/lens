@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: randInt</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>randInt</font> - returns a random integer in a given range
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    randInt [[&lt;min>] &lt;max>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This returns a random integer.  With no arguments, the number will be
+      either 0 or 1 with equal chance.  With one argument, the number will be
+      in the range [0, <i>max</i>).  With two arguments, the number will be in
+      the range [<i>min</i>, <i>max</i>).
+    <p>
+      This uses the same generator that Lens uses for its internal random
+      integers.  Therefore, calling this will affect the next value used
+      when selecting examples probabilistically or in other discrete
+      randomized procedures.
+
+    <h3>SEE ALSO</h3>
+    <a href="rand.html">rand</a>,
+    <a href="seed.html">seed</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:41:38 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

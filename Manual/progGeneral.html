@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: General Coding Issues</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: General Coding Issues</h1>
+    <hr>
+    <h2>C Modules</h3>
+    <p>
+      Although Lens is primarily object-oriented in its design, in that
+      networks and example sets are natural represented as object hierarchies,
+      the code does not conform religiously to object-oriented principles.
+      Both for expediency and efficiency, the internal fields of an object are
+      visible and modifiable by any module that includes the header file
+      defining the object.
+    <p>
+      One of the overriding principles that has been found to be useful in
+      designing Lens is that of layered structure.  The default behavior
+      should be that desired by most users, but users also ought to be able to
+      modify that behavior at any of a number of levels.
+    <p>
+      One example of this is the way the mean and range of the distribution
+      used for weight randomizations is specified.  Fields for these
+      parameters exist at the network, group, and block level.  When a weight
+      is randomized, the values at the block level are first checked.  If
+      those don't exist (have the value NaN), those at the group level are
+      checked.  If those don't exist, the network's values are used.  Most
+      users want the same values for the entire network, so initially all but
+      the network's values are set to NaN and all of the weights can be
+      affected by simply changing the network's values.  More advanced users
+      can specify the values at the level of a group or a link type (the block
+      level) to get increasingly fine-grained control.
+    <p>
+      A similar example occurs in weight freezing.  Weights can be frozen at
+      the level of the network, a group, unit, or block.  By freezing the
+      network, all weights can be immediately frozen and need not even be
+      traversed during weight updates.  Otherwise, the user may freeze or thaw
+      weights at any level down to the block.
+    <p>
+      The most important use of levels is in the design of the network updating
+      and backpropagation commands.  The network structure contains
+      pointers to functions used for training the network at the level of an
+      entire session, a batch, an example, or a tick.  Each function
+      tends to repeatedly use the function pointer for the function at the
+      next level down the hierarchy.  Therefore, a function can be replaced at
+      any level to modify the call stack.
+    <p>
+      When altering the behavior of the network, the simplest change is to
+      replace the functions that operate on each tick.  The more complicated
+      functions at higher levels can be retained intact.  In general, the more
+      complex a user's modification, the higher up the default call stack must
+      be intercepted and the more code the user will need to copy and modify.
+    <p>
+      So the key in making modifications is to determine the level at which
+      the modification will be the easiest and will fit into the existing code
+      most seamlessly.  The use of function pointers, rather than hard-coded
+      functions, means that Lens can often be modified without making changes
+      to any of the source code files other than extension.c.
+
+    <h3>Variable Types</h3>
+    <p>
+      The basic types most commonly used in Lens are the <code>char</code>,
+      <code>int</code>, <code>real</code>, <code>flag</code>, and
+      <code>mask</code>.  A "real" is a floating point number which is usually
+      a 4-byte float, but could be an 8-byte double if compiled with the
+      -DDOUBLE_REAL flag.  To work properly in that case, <code>real</code>
+      should be used for all floating point numbers.
+    <p>
+      A <code>flag</code> is a boolean value.  It is actually equivalent to an
+      unsigned int.  Chars are not used because of the need to link these
+      values to Tcl variables and Tcl doesn't recognize the char.  A
+      <code>flag</code> should be used rather than another type if the value
+      really is supposed to be either true (non-zero) or false (zero), or
+      TCL_OK (0) or TCL_ERROR (1).  The macros TRUE and FALSE, rather than 1
+      and 0, should be used for boolean constants.
+    <p>
+      A <code>mask</code> is an unsigned <code>int</code> used to hold a bit
+      mask, where each bit is a distinct boolean value.  Typically
+      <code>mask</code>s are used for the type field of networks, groups, and
+      other structures.  Most of the type bits used in the <code>mask</code>s
+      are defined in <a href="Src/type.h">type.h</a>.
+    <p>
+      If you are comparing two real numbers and there is some chance that they
+      both are NaN (and you would like them to be considered equal in that
+      case), use the SAME(x,y) macro rather than (x == y).
+
+      
+    <h3>Return Values and Error Messages</h3>
+    <p>
+      All C functions that are to be registered as Tcl commands must return
+      either TCL_OK, or TCL_ERROR.  TCL_OK evaluates to false and TCL_ERROR to
+      true.  Accompanying the return value is a return message, which is
+      stored in the Tcl interpreter.  More about this is said in the section
+      on creating a <a href="progShell.html">new shell command</a>.
+    <p>
+      Any function that has some chance of incurring an error should return an
+      error code and have a return type of <code>flag</code>.  The first
+      function to detect the error should fill in the error message.  Ideally,
+      the TCL_ERROR return value will be passed up the call stack until the
+      initial C function returns and the shell prints out the error message,
+      or whatever is appropriate at the time.  Therefore, it is important for
+      user-defined functions to catch the error values generated by other
+      functions they call and to immediately return TCL_ERROR if an error was
+      detected.  Otherwise, errors may occur silently, which will be very
+      frustrating for later users.
+    <p>
+      New error messages are typically generated with the warning() command,
+      as in:
+      <pre>
+    return warning("%s: index %d is out of range", argv[0], i);</pre>
+    warning() will set the return message in the interpreter and return
+    TCL_ERROR.
+    <p>
+      To exit cleanly with a message, result() should be used rather than
+      warning().  append() will add more to the end of the message stored in
+      the interpreter.  error() will print a message to standard error (rather
+      than store it in the interpreter) and return TCL_ERROR.  This is
+      normally used within a function that was not invoked by the interpreter,
+      such as during initialization.  fatalError() is similar to error() but
+      it will kill the Lens process.  Only use this when something really bad
+      happens.
+
+
+    <h3>Variable and Function Names</h3>
+    <p>
+      The Lens standard for function names is for the name to be in lower case
+      except the first letter of each word following the first, as in
+      "netForAllOtherGroups()".  Macros (anything #defined) should be in all
+      upper-case with underscores between words.
+    <p>
+      Each word of a global variable should start with an upper case letter,
+      but the rest is lowercase, as in "LinkTypeName".
+    <p>
+      Most local variables follow the same style of naming as functions,
+      although few will be more than one word.  Additionally, single-character
+      upper-case variables are commonly used for pointers to a particular type
+      of structure.  Here are some of the typical names:
+      <pre>
+    Network    N;
+    Group      G, H;
+    Unit       U, V;
+    Block      B;
+    Link       L;
+    ExampleSet S;
+    Example    E;
+    Event      V, W;</pre>
+    <p>
+      Any function that is not used outside of the module in which it was
+      defined should be declared <code>static</code>.  This will prevent other
+      modules from using the function, which will make the code easier to read
+      and modify.  It will also provide a hint to the compiler that could make
+      calls to that function faster.  Any function that is not declared
+      static should be given an appropriate declaration in the corresponding
+      <code>.h</code> file.
+
+
+    <h3>Traversing Arrays</h3>
+    <p>
+      Some arrays used in the Lens structures, such as the <code>group</code>
+      array, are arrays of pointers to structures.  Others, such as the
+      <code>unit</code> array within a group or the link array within a unit 
+      are arrays of structures arranged sequentially in memory.  However, 
+      because traversing sub-structures is such a big part of network code,
+      special macros have been written to concisely handle most sorts of
+      traversal.  These are located in network.h.  For example, instead of:
+    <pre>
+    int g;
+    Group G;
+    for (g = 0; g < Net->numGroups; g++) {
+      G = Net->group[g];
+      foo(G);
+    }</pre>
+    you can simply do:
+    <pre>
+    FOR_EACH_GROUP(foo(G));</pre>
+    or
+    <pre>
+    FOR_EACH_GROUP({
+      foo(G);
+    });</pre>
+    <p>
+      There is no need to declare the G and g variables as they are declared
+      locally by the macro.  To traverse all the non-lesioned units in the
+      network, you'd do:
+    <pre>
+    FOR_EACH_GROUP(FOR_EACH_UNIT(G, foo(U)));</pre>
+
+    Using macros is better than writing traversal functions because it is
+    faster and the procedure, foo() in this case, can be an arbitrary piece of
+    code rather than a function of fixed type.  Also, with macros the
+    underlying data structures can be changed without changing most of the
+    code traversing those structures.
+
+    When using macros, you should be aware of what local variables are
+    declared in the macro.  You should not change the value of any of these
+    variables because you could break the macro.
+
+    <h3>Registering Types</h3>
+    <p>
+      Typically, when you create a new type of something, be it a network,
+      group, weight update algorithm, command, or whatever, you will write
+      some functions associated with that type.  Lens provides a number of
+      commands that allow you to register the type.  This will associate the
+      name of the type with the functions that define it.  Then you can use
+      the type just like it is a built-in Lens type.
+    <p>
+      All that was pretty vague and probably didn't make much sense, but it
+      will be clear when you read the sections on how to create something of
+      each of these types in the "How to Create..." section of the manual.
+
+    <h3>Group Types</h3>
+    <p>
+      Built-in group types are declared in type.h.  Default types and type
+      conflicts are resolved in type.c.  The group types are registered in
+      act.c using the registerGroupType() function.  It's good to know this
+      things if you are trying to understand the Lens code.
+
+    <h3>History Arrays</h3>
+    <p>
+      Each unit contains a history array for its inputs, outputs, targets,
+      and outputDerivs.  Depending on the unit's type, some of
+      these arrays may not be allocated, in which case they will be set to
+      NULL.  Otherwise, the arrays will have length equal to the
+      <i>historyLength</i> field in the network and in the unit.  The length
+      of the histories can be changed by the user with the <a
+	href="Commands/setTime.html">setTime</a> command.
+    <p>
+      When setting or retrieving a value in a history array, the array is
+      treated as a circular buffer.  The index should always be taken modulo
+      the <i>historyLength</i>.  This will be done automatically if you always
+      set values in these arrays with the <code>SET_HISTORY()</code> macro and
+      retrieve values with the <code>GET_HISTORY()</code> macro, both defined
+      in network.h.  These macros will also check to be sure the array exists.
+    <p>
+      <code>SET_HISTORY()</code> takes four arguments: the unit, the name of
+      the history array, the index, and the new value.
+      <code>GET_HISTORY()</code> takes three arguments: the unit, the name of
+      the history array, and the index and will evaluate to the value stored
+      in the array at the given index (modulo <i>historyLength</i>) or NaN is
+      the array doesn't exist.  Thus, instead of doing:
+    <pre>
+    U->outputHistory[Net->currentTick] = U->output;</pre>
+    which will not work, you should do:
+    <pre>
+    SET_HISTORY(U, outputHistory, Net->currentTick, U->output);</pre>
+
+    When you write your own code, you can use the extraneous history arrays,
+    like targets for non-output units, to store whatever values you want.  A
+    number of macros are provided in network.h for transfering values from
+    units to history arrays of the same group or a different group and back
+    again.
+
+    <h3>Allocation</h3>
+    <p>
+      Rather than calling <code>malloc()</code>, <code>calloc()</code>, and
+      <code>realloc()</code> directly, all memory allocation should be done
+      with <code>safeMalloc(), <code>safeCalloc()</code>, and
+      <code>safeRealloc()</code>, which are defined in util.c.  These will
+      perform some error checking and, if a memory error occurs, shut down the
+      program with an error message.  Ok, so they aren't very safe, but at
+      least they tell you where the error occurred.
+    <p>
+      They take the same arguments as the standard functions with the
+      exception of an additional label for the variable being allocated.  This
+      label will be used in any messages that are produced to aid in tracking
+      down the error.  The standard label is "functionName:variableName", as
+      in "initNetworkExtension:N->ext".
+
+    <h3>Advanced Lens</h3>
+    <p>
+      Any code that relies on the existence of the <i>lastValue</i> field
+      within each link should be surrounded by the following statements:
+    <pre>
+    #ifdef ADVANCED
+    ...
+    #endif /* ADVANCED */</pre>
+    This will prevent them from being compiled into the standard version of
+    Lens.  This generally affects only the definition and registration of
+    weight update algorithms.
+
+    <h3>Making Changes</h3>
+    <p>
+      As mentioned, you should try to contain your changes as much as possible
+      to the extension module.  However, on occasion you may need to make
+      changes to other files, type.h in particular.  In this case, you should
+      clearly mark any alterations to the code so that you can move the
+      alteration to the new version if the original file changes.  The method
+      I use to mark the code is to surround any change with the following
+      comments:
+    <pre>
+    /* DOUG... */
+    <i>new code</i>
+    /* ...DOUG */</pre>
+    
+
+    <h2>Tcl Modules</h2>
+    <p>
+      The Tcl code is interpreted, meaning that it is not compiled in advance
+      but just used on the fly.  This is frustrating since it means that most
+      errors, including something simple like a misspelled variable, will go
+      undetected until it is too late.  The advantage to interpreted code is
+      that development is faster.  The code can be modified and 
+      re-<a href="Commands/source.html">source</a>d immediately without
+      restarting Lens.
+    <p>
+      In order to avoid conflicts in naming functions and variables, the 
+      built-in Lens Tcl code will precede all function names and global
+      variables with a period and all global arrays with an underscore.
+      As long as the user does not define or change variables that begin with
+      a period or underscore, there should be no problem.  Recall that global
+      Tcl variables cannot be accessed from within a Tcl procedure unless they
+      are declared <a
+	href="http://dev.scriptics.com/man/tcl8.3/TclCmd/global.htm">global</a>.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:52:25 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

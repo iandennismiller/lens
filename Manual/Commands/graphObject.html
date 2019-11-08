@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: graphObject</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>graphObject</font> - opens a graph of the value of an
+      object or command
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    graphObject [&lt;object-list>] [-updates &lt;update-rate>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This opens a graph and creates a trace for each object or command in the
+      object list.  It returns the graph's number.  This is a shortcut for
+      what could be done with the <a href="graph.html">graph</a> and 
+      <a href="trace.html">trace</a> commands.
+    <p>
+      The "objects" can either be the name of a real-valued network object,
+      like <code>error</code> or <code>group(3).unit(2).output</code> or they
+      can be Tcl commands that return numbers, like <code>expr log([getObj
+      error])</code>.  If no object is specified, <code>error</code> is the
+      default.
+    <p>
+      If -updates is given, it determines the frequency with which the
+      graph will update its values.  Recognized values are <code>NEVER, TICKS,
+      EVENTS, EXAMPLES, WEIGHT_UPDATES, PROGRESS_REPORTS,
+      TRAINING_AND_TESTING,</code> and <code>USER_SIGNALS</code>.  You only
+      need to specify a unique prefix of the full name.  The default is
+      <code>PROGRESS_REPORTS</code>.
+    <p>
+      You can read more about graphs in the <a href="../graphs.html">Graphs
+	section</a> of the main manual.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To graph the output of units out:0 to out:2 every tick:
+    <pre>
+    lens> graphObject "out:0.output out:1.output out:2.output" -u TICK</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="graph.html">graph</a>,
+    <a href="trace.html">trace</a>,
+    <a href="exportGraph.html">exportGraph</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 10:52:38 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

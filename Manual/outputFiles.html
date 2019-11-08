@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Activation Output Files</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: Activation Output Files</h1>
+    <hr>
+    <p>
+      Activation files are used for recording the outputs and targets
+      of the network during training or testing.  The network's performance
+      can then be evaluated with a separate program.  These files could also
+      be used to help generate examples on the fly based on the network's
+      current performance.
+    <p>
+      The command <a
+      href="Commands/openNetOutputFile.html">openNetOutputFile</a> begins the
+      writing of an activation output file.  Each time the network processes
+      an example, the values will be written to the file.  This continues
+      until <a href="Commands/closeNetOutputFile.html">closeNetOutputFile</a>
+      is called.
+    <p>
+      Only groups with the WRITE_OUTPUTS type will have their outputs written
+      to the file.  If the group also is of type OUTPUT, its targets will be
+      written as well.  By default, only OUTPUT groups are given the
+      WRITE_OUTPUTS type.
+    <p>
+      Output files may be written in text or binary format.  Because these
+      involve floating point numbers, the binary format will tend to be
+      smaller.  It will also be faster to parse later on, if speed is an
+      issue.  Using compression will reduce the size difference.
+    <p>   
+      The Network's <code>writeExample()</code> function pointer is used to
+      write the outputs for the current example.  The behavior of the default
+      function,  
+      <code>standardWriteExample()</code>, is described below.  If you want to
+      customize the output file format, you can write your own C function to
+      replace <code>standardWriteExample()</code> and then set the network's
+      <code>writeExample()</code> pointer to your function.  This should be
+      done in extension.h.
+
+    <h3>Text Format</h3>
+    The text format is as follows.  The format specification is described in
+    the <a href="exampleFiles.html">Example Files</a> page.
+    <pre>
+    <font color=blue>for each example:</font>
+      <font color=red>&lt;I total-updates> &lt;I example-number>
+      &lt;I ticks-on-example> &lt;I num-groups></font>
+      <font color=blue>for each tick on the example:</font>
+        <font color=red>&lt;I tick-number> &lt;I event-number></font>
+	<font color=blue>for each WRITE_OUTPUTS group:</font>
+          <font color=red>&lt;I num-units> &lt;B targets?></font>
+	  <font color=blue>for each unit:</font>
+            <font color=red>&lt;R output-value></font> &lt;R target-value></pre>
+    <p>
+      <code>total-updates</code> is the total weight updates the network has
+      had so far.  This can be used to detect when the network has been reset.
+      <code>example-number</code> is the index of the example in the set.
+      This will be 0 for piped example sets.
+      <code>ticks-on-example</code> is the number of ticks that will follow.
+      <code>num-groups</code> is the number of groups with the WRITE_OUTPUTS
+      type and thus the number of groups whose values will be written for each
+      tick.  The <code>event-number</code> is the event that was going on
+      during the tick.  This may be important for later analysis and in
+      matching inputs with the recorded outputs.  Note that this file format
+      is not compatible with the example set format.
+    <p>
+      Note that target values occur for each unit in an OUTPUT group, but not
+      for other groups.  The <code>targets?</code> value is 1 if targets will
+	  be appearing for the group.
+	  
+    <p>
+      Also note that the output and target values are taken from the
+      outputHistory and targetHistory arrays.  Feedforward and simple
+      recurrent networks will not record values into those arrays by default.
+      You must give a group the USE_OUTPUT_HIST and USE_TARGET_HIST types to
+      force it to store values in those arrays.  Otherwise, the values written
+      to the output file will not be accurate.  Also, the history arrays must
+      be at least as long as the maximum number of ticks in each example, or
+      the values won't be correct.  See the <a
+      href="Commands/setTime.html">setTime</a> command to learn more about
+      this.
+      
+    <h3>Binary Format</h3> 
+    <p>
+      The binary format is exactly the same as the text format, except that
+      the fields are written in binary (in network byte ordering, which may be
+      different from your machine's byte ordering).  There is no extra space
+      between fields.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 20 17:24:09 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

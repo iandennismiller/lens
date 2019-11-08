@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: logic.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: logic.in</h1>
+    <hr>
+    <p>
+      In this problem, the network learns to solve simple boolean formulae.
+      These formula have three variables, each of which occurs once.
+      The variables can be true or false, they can be negated, and the second
+      variable can either be grouped with the first or the third.
+    <p>
+      The names of the examples should make clear what formula is being
+      represented.  The input encoding is as follows:
+    <pre>
+0) 0 if the parentheses are on the left, 1 if on the right
+1) 1 if variable A is negated
+2) Variable A
+3) The operator between A and B (0=or 1=and)
+4) 1 if variable B is negated
+5) Variable B
+6) The operator between B and C (0=or 1=and)
+7) 1 if variable B is negated
+8) Variable C</pre>
+    <p>
+      One might think that having parenthesization and negation would throw
+      the network for a loop, but it is actually surprisingly good at solving
+      these problems.  You should find that it learns quickly and generalizes
+      well to the testing set.
+    <p>
+      You may want to experiment with the network to see if you can get really
+      perfect test-set generalization.
+    <p>
+      The example <a href="logic2.html">logic2.in</a> has a much more
+      difficult boolean formula problem that uses a simple recurrent network.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 16:26:11 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: sendEval</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>sendEval</font> - executes a command on the server or on one or all clients
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    sendEval &lt;command> [&lt;client>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This is used to cause either the server or the clients to execute a 
+      command.  This is a general form of communication between clients and
+      the server.
+    <p>
+      If invoked on a client, the specified command will be executed on the
+      server.  If invoked on the server, the command will be executed on each
+      client, unless a client number is specified in which case it will be
+      executed only on that client.  Client numbers can be found by using the
+      <a href="clientInfo.html">clientInfo</a> command.
+    <p>
+      <code>sendEval</code> does not wait for the remote command to finish
+      executing and does not return anything.  If you would like the server to
+      request information from a client, the server should use
+      <code>sendEval</code> to tell the client to use <code>sendEval</code>
+      again to send the information back to the server.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      If invoked in the server, this will cause all clients to run the script
+      "buildNetwork.in":
+    <pre>
+    lens> sendEval {source buildNetwork.in}</pre>
+
+    <p>
+      If invoked in the server, this will cause every client to print <i>their
+      own</i> process id:
+    <pre>
+    lens> sendEval {puts [pid]}</pre>
+
+    <p>
+      If invoked in the server, this will cause every client to print <i>the
+      server's</i> process id:
+    <pre>
+    lens> sendEval "puts [pid]"</pre>
+
+    <p>
+      If invoked in a client, this will cause all clients, including the
+      sender, to exit:
+    <pre>
+    lens> sendEval {sendEval exit}</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="sendObject.html">sendObject</a>,
+    <a href="clientInfo.html">clientInfo</a>,
+    <a href="startServer.html">startServer</a>,
+    <a href="startClient.html">startClient</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:23:51 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

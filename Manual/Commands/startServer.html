@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: startServer</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>startServer</font> - makes the current process a parallel training server
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    startServer [&lt;port>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command makes the current process a server for parallel training.
+      It will then accept connections from clients and will be able to invoke
+      commands on the clients and control parallel training.
+    <p>
+      If <i>port</i> is specified, it sets the port to be used when listening
+      for new clients.  Values between 2001 and 6999 are often free.
+      Otherwise, a random free port will be selected.  This command always
+      returns the port number used.  It is important to save this value so
+      clients can use it when connecting.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To start the server with a random port and save the port in the variable
+      "serverPort":
+    <pre>
+    lens> set serverPort [startServer]</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="stopServer.html">stopServer</a>,
+    <a href="startClient.html">startClient</a>,
+    <a href="sendEval.html">sendEval</a>,
+    <a href="sendObject.html">sendObject</a>,
+    <a href="clientInfo.html">clientInfo</a>,
+    <a href="trainParallel.html">trainParallel</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:20:53 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

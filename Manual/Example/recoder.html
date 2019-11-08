@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: recoder.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: recoder.in</h1>
+    <hr>
+    <p>
+      In this example, the network must solve an auto-encoder task.  However,
+      there are 16 units in the input and output there is a very narrow
+      constriction of just two units in between.  But the network has at its
+      disposal two recurrent layers, one before and one after the constriction.
+    <p>
+      Can the network learn to serialize the message it must convey and encode
+      it as a sequence of symbols?
+    <p>
+      There are clear parallels between this task and the problem of creating
+      a spoken language to convey complex ideas through the constriction of
+      our vocal tract and auditory system.
+    <p>
+      Unfortunately, this task seems to be very difficult for the network.  It
+      tends to produce a single stable pattern at the constriction and tries to
+      get as much information out of it as possible.  I have tried many
+      different manipulations to encourage it to develop a temporally
+      changing code, without much success.
+    <p>
+      Maybe you'll have better luck.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 17 18:41:15 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

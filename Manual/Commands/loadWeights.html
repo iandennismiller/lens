@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: loadWeights</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>loadWeights</font> - loads the link weights and other
+      values from a file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    loadWeights &lt;file-name> [-noFrozen | -onlyFrozen]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This reads weights (and possibly other values) for every link in the
+      network from a special file written with <a
+      href="saveWeights.html">saveWeights</a>.  The file will not be loaded if
+      it doesn't contain the same number of links as the current network.
+      However, subtle differences in architecture will not be detected by this
+      check.  When using networks with randomized structures, it is important
+      to have recorded the random seed used when building the network so the
+      same architecture can be reconstructed later.  Otherwise, previously
+      stored weight files might be useless.
+    <p>
+      This command will detect if the file contains link weight deltas or
+      <i>lastValue</i>s as well as weights and will load all of the values
+      in the file.
+    <p>
+      If <i>-noFrozen</i> is specified, values will only be loaded into
+      non-frozen links.  If <i>-onlyFrozen</i> is specified, values will only
+      be loaded into frozen links.  The number of links into which weights are
+      being loaded must match the number of links stored in the file.  This
+      check will be made before anything is loaded.
+    <p>
+      If the file name has the extension .gz, .bz, .bz2, or .Z, it
+      will automatically be decompressed.  This extension may be
+      omitted when specifying the file name.
+    <p>
+      Unless weights are only loaded to frozen links, the network's
+      <i>totalUpdates</i> counter will be set to the value stored in the weight
+      file, as this should indicate the number of updates that have been
+      performed on the non-frozen weights.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To load the weights from the compressed file greatNet.wt.gz:
+    <pre>
+    lens> loadWeights greatNet.wt</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="saveWeights.html">saveWeights</a>,
+    <a href="loadXerionWeights.html">loadXerionWeights</a>,
+    <a href="connectGroups.html">connectGroups</a>,
+    <a href="getSeed.html">getSeed</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Mar 21 01:29:34 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

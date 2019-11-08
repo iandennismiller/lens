@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: encoder.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: encoder.in</h1>
+    <hr>
+    <p>
+      One thing networks are fairly good at is compressing representations.
+      This is the classic encoder task, in which the network must map its
+      input to its output through a constriction.  This forces the network to
+      use a compressed representation of the pattern at its hidden layer.
+    <p>
+      The default network built here is an 8-3-8 encoder.  The input and
+      output has one of eight bits on.  Because there are three hidden units,
+      the network can assign a binary code to each of the patterns and easily
+      solve the problem.
+    <p>
+      Train the network until the error is nice and low.  Did it learn to use
+      a binary code?  You may find that it uses mostly binary patterns with
+      some 0.5's.  You could force it to use binary patterns by giving the
+      hidden layer a unit output cost type, like LOGISTIC_COST.  You can do
+      this with:
+      <pre>
+lens> groupType hidden +LOGISTIC_COST</pre>
+    <p>
+      Try a cost strength of 0.1.  Does that give you binary hidden units?  If
+      not, increase the cost strength.  At some point, it will mess up the
+      learning.  You might also try using smaller initial weights because the
+      units can get pinned early with large initial weights and a strong cost
+      function.
+    <p>
+      I didn't have much success using an output cost function to encourage
+      binary representations.  So here's another trick: increase the gain of
+      the hidden group to 2.  You can do this with:
+      <pre>
+lens> setObj hidden.gain 2</pre>
+    <p>
+      The gain is the inverse of temperature.  It determines how steep the
+      logistic function is.  A higher gain will lead to a steeper function
+      which encourages binary outputs because it is hard to maintain a middle
+      value.
+    <p>
+      Now lets try something harder.  Run "buildEncoder 2" to create an 8-2-8
+      encoder (see how you can define procedures that do things like build
+      networks with certain parameters?).  With only two hidden units, the
+      network can't solve the problem with a binary pattern.
+    <p>
+      Can it solve the problem anyway?  What sort of representations does it
+      form?  Now try giving the hidden units a ternary activation function.
+      This is like a logistic function with a plateau around 0.  You can do
+      this with:
+    <pre>
+lens> groupType hidden TERNARY</pre>
+    <p>
+      Also set the gain to 2 and the ternaryShift to 1 or 2.  This makes the
+      central plateau narrower and the transitions sharper.  Now you may see
+      the network using cleaner combinations of -1, 0, and 1 at the hidden
+      layer.
+    <p>
+      Finally, change the output group to SOFT_MAX like this:
+    <pre>
+lens> groupType output OUTPUT SOFT_MAX</pre>
+    <p>
+      This normalizes the outputs to a sum of 1.  It makes the task much
+      easier to learn.  Now you should see nice, clean ternary hidden unit
+      patterns.  You may also see really large weights because the SOFT_MAX
+      function encourages that.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 23:02:21 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

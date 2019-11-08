@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: verbosity</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>verbosity</font> - check or set how verbose Lens is (mostly during training)
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    verbosity [&lt;level>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This sets how verbose Lens is.  1 is the default level.  A level of 0
+      will prevent status messages from being printed while training and at
+      certain other times.  This can be useful when <a
+	href="train.html">train</a> is called repeatedly.
+    <p>
+      With no argument, this just returns the current level.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To prevent most messages from printing:
+    <pre>
+    lens> verbosity 0</pre>
+
+    <h3>SEE ALSO</h3> <a href="train.html">train</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Aug 27 14:35:33 EDT 1999
+<!-- hhmts end -->
+  </body>
+</html>

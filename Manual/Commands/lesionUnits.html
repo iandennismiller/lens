@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: lesionUnits</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>lesionUnits</font> - inactivates a percentage of the units
+      in a group
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    lesionUnits (&lt;group-list> &lt;proportion> | &lt;unit-list>)</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With a group list and <i>proportion</i> specified this will lesion each
+      unit in the groups with probability <i>100 x proportion</i>.  It is not
+      guaranteed that exactly <i>(100 x proportion)%</i> of the units will be
+      affected.
+    <p>
+      With a unit list specified, it just lesions those units.
+    <p>
+      A lesioned unit will have 0 output and outputDeriv.  All other values
+      and value histories will be NaN.  It will not compute its input or
+      output or their reverses during forward and backward passes.  Lesioned
+      output units will not contribute to the error.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To lesion approximately half the units in the "hidden" group:
+    <pre>
+    lens> lesionUnits hidden 0.5</pre>
+
+    <p>
+      To lesion the unit "output:0":
+    <pre>
+    lens> lesionUnits output:0</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="healUnits.html">healUnits</a>,
+    <a href="lesionLinks.html">lesionLinks</a>,
+    <a href="noiseType.html">noiseType</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Feb 28 21:34:55 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

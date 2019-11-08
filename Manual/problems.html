@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Common Problems</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Miscellanea: Common Problems</h1>
+    <hr>
+    <h3>Examples or Events Not Running To Completion</h3>
+    <p>
+      When running a network that uses more than one tick per example, it
+      appears common to encounter problems with examples or events not running
+      as long as you expect them to.  If this happens, the first thing to do
+      is to check the network's <i>timeIntervals</i> and
+      <i>ticksPerInterval</i>.  The product of these is the maximum number
+      of ticks the network will run on any example, <i>regardless of the number
+      of events in the example</i>.
+    <p>
+      If that is not the solution, then it should be the case that every event
+      in the example is being run for at least its <i>minTime</i>.  If this
+      isn't happening, check the <i>minTime</i> fields in the example set and
+      in the events to make sure that your example file was being parsed as
+      you expected.  Also check the <i>trainGroupCrit</i> and
+      <i>testGroupCrit</i> values in the network
+      and the output groups to be sure they are low enough.  Note that if the
+      event uses NaN targets, the group criteria will automatically be
+      met if you are using the STANDARD_CRIT function so the event will
+      only last as long as its <i>minTime</i>.
+
+    <h3>Display Problems/Batch Mode</h3> 
+    <p>
+      Even if you are running with the <code>-nogui</code> option, you must
+      have a valid DISPLAY environment variable and your machine must be
+      allowed to control that display, as determined by the <code>xhost</code>
+      command.  If you wish to run without using a display,
+      <code>-batch</code> should be used rather than <code>-nogui</code>.
+    <p>
+      Any command that deals with the display will not be available in batch
+      mode. If executed, these commands will return a message, but not with an
+      error code.  Therefore, scripts that use them should continue.  Some Tcl
+      commands (actually Tk commands), such as <a
+      href="http://dev.scriptics.com/man/tcl8.3/TkCmd/option.htm">option</a>,
+      will not available in batch mode.  These may return errors which could
+      damage your scripts.  If you want to put some code in a script that
+      should not be executed in batch mode, you can access the
+      <code>.BATCH</code> Tcl variable to protect it, as in the following:
+    <pre>
+    if {${.BATCH}} {
+      <i>do graphical stuff</i>
+    }</pre>
+
+    <h3>Locked Shell</h3>
+    <p>
+      If you hit certain control keys, such as <code>End</code>, "<code>Page
+      Down</code>", or an arrow key at the Lens shell prompt, you may see
+      symbols such as this: "<code>^[[F^[[6~</code>".  If you then hit
+      <code>Enter</code>, the shell will enter the secondary prompt,
+      <code>></code>, seemingly never to return.
+    <p>
+      Actually, what has happened is that the control keys have the same
+      effect as an open square brace.  The shell thinks you are working on a
+      command substitution and is waiting for you to close those braces before
+      it will consider the command complete.  Try typing "<code>]</code>"
+      followed by <code>Enter</code> several times until the main prompt
+      returns.
+
+    <h3>Problems Reading from a Pipe</h3>
+    <p>
+      If you are reading from a pipe, typically while loading examples, and
+      problems occur when the pipe closes or Lens exits, <a
+	href="pipe.html">try this solution</a>.
+
+    <h3>Periodic Events</h3>
+    <p>
+      Let's say you were to unleash the following command in your shell:
+    <pre>
+    proc count i {
+        puts $i
+        after 1000 "count [incr i]"
+    }
+    count 0</pre>
+    <p>
+      Go ahead, try it.  It's fun.  You might actually use a similar periodic
+      command to automatically save the weights in your network at certain
+      time intervals.  Now how would you stop it?  One low-tech solution is to
+      remove the <code>count</code> command using "<code>rename count
+      {}</code>" or even just changing the name.  The next time it is called
+      the loop will die.
+
+    <h3>Viewing Code in the Browser</h3>
+    <p>
+      Some web browsers may not recognize files ending in ".tcl" or ".in" as
+      code files and will not display those files inline.  This can usually be
+      fixed in the Preferences or Options by telling the browser that ".tcl"
+      and ".in" files should be treated as text.
+    <p>
+      For example, in Netscape 4.0x, this can be done by opening the 
+      "Edit/Preferences..." dialog.  Now click on the category
+      "Navigator/Applications".  Highlight "Plain Text" in the box on the
+      right and press "Edit".  Now add "c,h,tcl,in" to the list of suffixes to
+      be treated as text, if they are not already there.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 00:02:19 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

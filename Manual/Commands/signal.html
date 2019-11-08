@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: ?</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>signal</font> - raises a signal in the current process
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    signal [&lt;code>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This raises a signal in the current process.  With no arguments it
+      prints a list of useful signals.  Otherwise, the first argument can be
+      the name of a signal or the numerical value, which range from 1-31 on
+      most machines.
+    <p>
+      Recognized signal names are:
+    <dl>
+      <dt>INT<dd> interrupts ongoing work or does a soft quit, the same as
+	Ctrl-C.
+      <dt>USR1<dd> runs the sigUSR1Proc
+      <dt>USR2<dd> runs the sigUSR1Proc
+      <dt>QUIT, KILL, ABRT, ALRM, TERM<dd>
+	at the moment these all kill the process, but some could be used for
+	other purposes in the future.
+    </dl>
+    <h3>EXAMPLES</h3>
+    <p>
+      To send a soft interrupt signal:
+    <pre>
+    lens> signal INT</pre>
+    or
+    <pre>
+    lens> signal 2</pre>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Oct 26 18:20:42 EST 1998
+<!-- hhmts end -->
+  </body>
+</html>

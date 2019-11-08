@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Shell Commands</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Shell Commands</h1>
+    <hr>
+    <p>
+      Creating a new shell command is relatively easy.  This is done by
+      defining a special type of C function, called a stub, and then
+      registering that function with the Tcl interpreter.  When the function
+      is registered, it is assigned a command name.  When that command is
+      invoked in the shell, the interpreter will call the C function and pass
+      it whatever arguments were provided.
+    <p>
+      To create a new command, begin by copying the sample stub, in <a
+      href="Src/extension.c">extension.c</a>, called <code>C_foo()</code>.
+      The sample is duplicated below.  A C stub is a C function of the type
+      <code>int (*)(TCL_CMDARGS)</code>.  It is conventional in Lens to name
+      all C stubs C_ followed by the name of the command that will be created
+      in the shell when the command is registered.
+    <pre>
+    int C_foo(TCL_CMDARGS) {
+      char *usage = "foo &lt;bar>";
+      if (argc == 2 && !strcmp(argv[1], "-h"))
+        return commandHelp(argv[0]);
+      if (argc != 2) return usageError(argv[0], usage);
+      if (!Net) return warning("%s: no current network", argv[0]);
+      
+      return TCL_OK;
+    }</pre>
+    <p>
+      TCL_CMDARGS is a macro defined in <a href="Src/command.h">command.h</a>.
+      The standard arguments include a Tcl interpreter, <i>interp</i>, which
+      is the same as the global interpreter, <i>Interp</i>.  This will be
+      needed for most of the Tcl library function calls.  It is better to use
+      the local one where possible.  The other important arguments are
+      <i>argc</i> and <i>argv</i>.  These are similar to the default arguments
+      passed to main except that they contain the arguments to the command.
+      argv[0] will be the name of the command.
+    <p>
+      The command must return a boolean value: either TCL_OK if everything is
+      fine or TCL_ERROR if something goes wrong.  The return message in either
+      case is actually stored in the interpreter before returning.  This can
+      be done easily with the result(), append(), warning(), or usageError()
+      commands.
+    <p>
+      The sample stub first defines a usage string.  If any error in usage is
+      detected, this can be passed to usageError() to create an appropriate
+      error message.  The standard behavior for all Lens commands is to
+      display their manual page if the first argument is "-h".
+      Therefore, the function immediately checks for this case and calls
+      commandHelp() with the command name if "-h" is found.  Creating help
+      pages for your command is explained below.
+    <p>
+      Then it is customary to check that the number of arguments is within the
+      legal range and produce a usage error if not.  Finally, most commands
+      are dangerous if there is no network, so that check is made.
+    <p>
+      The body of the command should then follow.  If the command is quite
+      simple, it could all be contained in the stub.  If it is more than a few
+      lines, however, it is good practice to put most of the meaningful
+      behavior of the command in a separate function and only use the stub to
+      parse the arguments.  Some commands that may be helpful in parsing
+      arguments are the atoi() library function, which converts a string to an
+      integer, and the Lens ator() function, defined in util.c, that converts
+      a string to a real, interpreting "-" as NaN.
+    <p>
+      If your command is complex, you may want to borrow the argument parsing
+      code from a similar Lens command and modify it.  For example, any
+      command that accepts a <i>&lt;group-list></i> argument uses a special
+      macro to parse the list.
+
+    <h3>Registering the Command</h3>
+      The final step in creating a shell command is registering the stub with
+      the shell.  If the command is to be invoked by the user, this should be
+      done with registerCommand(), as in:
+    <pre>
+    registerCommand(C_foo, "foo", "this command does some stuff");</pre>
+    <p>
+      You should place the call to registerCommand inside the
+      <code>userInit()</code> function in extension.c.  This will be called
+      when Lens starts up.  The first argument to registerCommand is the C
+      stub.  The second is the name that the command is to have in the shell.
+      The third is the synopsis of the command that will be seen when the <a
+      href="Commands/help.html">help</a> command is used.  Registering a NULL
+      function with an empty name and synopsis will create a blank line in the
+      list produced by <a href="Commands/help.html">help</a>.
+    <p>
+      If the command is not to be invoked by the user but only by some hidden
+      Tcl code, it should be created with createCommand(), as in:
+    <pre>
+    createCommand(C_foo, ".foo");</pre>
+    In this case there is no synopsis and it is customary to start the command
+    name with a period so users (probably you yourself) will have less chance
+    of overwriting it by accident.
+
+    <h3>Writing a Manual Page</h3>
+    <p>
+      If your command may be used by other people or has a non-trivial usage
+      that you could forget, you may want to create a help page for the
+      command.  Help pages are originally html files, such as this one for <a
+      href="Commands/addNet.html">addNet</a>.  So you should start by copying
+      the source from one of the other pages in the Lens manual and modifying
+      it.
+    <p>
+      The file should have the same name as your command with .html tacked on
+      the end.  Then all you have to do is bring up the page in Netscape and
+      save it as text using "File/Save As...".  Put the text file (which
+      should have the extension .txt) in the UserCommands/ sub-directory of
+      your personal Lens/ directory.  And then Lens should be able to find it.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 22:58:31 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

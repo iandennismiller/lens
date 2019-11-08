@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: resetPlot</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>resetPlot</font> - resets the plot layout
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    resetPlot [&lt;plot-columns>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command clears all unit layout information used in drawing the
+      network in the Unit Viewer.  The next call to <a
+	href="plotRow.html">plotRow</a> or <a href="plotAll.html">plotAll</a>
+      will position the specified units in the upper-most row of the display.
+    <p>
+      Specifying <i>plot-columns</i> will set the network's <i>plotCols</i>
+      field, which determines the desired width, in cells, of each row of
+      network layout.  Otherwise, the previous value of <i>plotCols</i> is
+      retained.  The initial default is 10.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To clear all plot information and prepare to layout a plot 20 cells wide:
+    <pre>
+    lens> resetPlot 20</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="plotRow.html">plotRow</a>,
+    <a href="plotAll.html">plotAll</a>,
+    <a href="drawUnits.html">drawUnits</a>,
+    <a href="autoPlot.html">autoPlot</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:16:51 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

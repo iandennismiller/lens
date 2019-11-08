@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Object Viewer</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Graphical Displays: Object Viewer</h1>
+    <hr>
+    <p>
+      The Object Viewer provides a way to view and alter the contents of the C
+      structures representing the network and the example sets.  The entry
+      below the button bar is the name of the <a
+      href="objects.html">object</a> being viewed.  This will be empty for the
+      current network.  However, if there is no current network, the
+      <i>root</i> structure is the top of the object tree.  This is explained
+      a bit more in the section on <a href="objects.html">objects</a>.
+    <p>
+      Typing a new object path and pressing <code>Enter</code> will go to that
+      object. 
+      Alternately, you may click on the buttons for sub-objects or use the
+      pull-down menus for arrays of sub-objects to traverse the network tree.
+      The information displayed in the Object Viewer is not automatically
+      updated, except in rare cases for values that also appear on the main
+      window.
+    <p>
+      The buttons at the top of the display have the following effects:
+      <dl>
+
+      <dt><img src="Src/Images/up3.xbm"> 
+      <dd>Jumps to the current network (or the root if there is no current
+	network).
+	
+      <dt><img src="Src/Images/up2.xbm"> 
+      <dd>Jumps to the parent of the currently displayed object.  If the path
+	is <code>group(3).unit(2)</code> it will change to
+	<code>group(3)</code>.
+
+      <dt><img src="Src/Images/up.xbm">
+      <dd>Jumps to the immediate 
+	parent of the currently displayed object.  This has the same effect as 
+	the previous
+	button unless the object is an element of an array, in which case the
+	actual array will be loaded.  Thus, <code>group(3).unit(2)</code> will
+	become <code>group(3).unit</code>.
+
+      <dt><img src="Src/Images/left.xbm"> 
+      <dd>If the object is an element of an array, this goes to the previous
+      element.  Thus, <code>group(3).unit(2)</code> will become
+      <code>group(3).unit(1)</code>.
+
+      <dt><img src="Src/Images/right.xbm"> 
+      <dd>If the object is an element of an array, this goes to the next
+	element.  Thus, <code>group(3).unit(2)</code> will become
+	<code>group(3).unit(3)</code>.
+
+      <dt><img src="Src/Images/reload.xbm">
+      <dd>Reloads the current object.  This is frequently necessary as the
+	Object Viewer does not automatically update itself.
+    </dl>
+    <p>
+      Some fields in the network are write-protected, but many can be changed.
+      To do this, just click in the entry box for the field, edit the value,
+      and press <code>Enter</code>.  The changes won't take effect until
+      <code>Enter</code> is pressed.  <code>Tab</code> will advance to the
+      next entry.
+    <p>
+      The Object Viewer may be resized vertically.  There can be multiple
+      Object Viewers open at once, allowing you to view different parts of the
+      network simultaneously.
+    <p>
+      The layout of the Object Viewer may not be quite right depending on the
+      font that you use and the resolution of your display.  This can be fixed
+      in the <a href="customization.html">.lensrc</a> file.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Mar  2 00:11:56 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

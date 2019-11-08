@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: setLinkValues</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>setLinkValues</font> - sets parameters for all links of a given type
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    setLinkValues &lt;parameter> &lt;value> [-group &lt;group-list> |
+        -unit &lt;unit-list> | -type &lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command sets the value of a parameter in the link block structures
+      for all links of the specified type.  If no type is specified, all links
+      will be affected.
+    <p>
+      If a group list or unit list is given, only links into those groups or
+      units are affected.  Otherwise, all links of the appropriate type are
+      affected.
+    <p>
+      The <i>parameter</i> field should be the name of a real-valued parameter
+      within the block structure.  These include <code>learningRate</code>, 
+      <code>momentum</code>, <code>weightDecay</code>, <code>randMean</code>,
+      <code>randRange</code>, <code>min</code>, and <code>max</code>.
+      <i>value</i> is the value for that parameter.
+    <p>
+      Using a dash ("-") rather than a real value will indicate that the
+      group's value for that parameter should be used.  If the group's value
+      is also NaN then the network-wide value will be used.  Otherwise, the
+      values specified here will override the group and network defaults.
+    <p>
+      This command does not change the network or group default values.
+      To do that, just do something like 
+      "<code>setObj learningRate &lt;value></code>" or
+      "<code>setObj group(3).learningRate &lt;value></code>".
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To give all bias links to groups "hidden" and "output" a learning rate
+      of 0.01: 
+    <pre>
+    lens> setLinkValues learningRate 0.01 -g {hidden output} -type bias</pre>
+    <p>
+      To more or less permanently shut off all links of type "dead links":
+    <pre>
+    lens> setLinkValues randMean  0 -t "dead links"
+    lens> setLinkValues randRange 0 -t "dead links"
+    lens> randWeights -t "dead links"
+    lens> freezeWeights -t "dead links"</pre>
+    <p>
+      To make the entire network use the group or network default momentum:
+    <pre>
+    lens> setLinkValues momentum -</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="randWeights.html">randWeights</a>,
+    <a href="freezeWeights.html">freezeWeights</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 14 15:34:12 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

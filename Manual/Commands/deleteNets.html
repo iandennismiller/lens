@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: deleteNets</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>deleteNets</font> - deletes a list of networks or the
+      active network
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    deleteNets [&lt;network-list>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With no arguments, this deletes the active network, leaving no network
+      active.  If the network list is <code>*</code>, all networks will be
+      deleted.  Otherwise it deletes those networks listed.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To delete networks netA and netB:
+    <pre>
+    lens> deleteNets {netA netB}</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="deleteGroups.html">deleteGroups</a>,
+    <a href="addNet.html">addNet</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Feb 25 19:14:36 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

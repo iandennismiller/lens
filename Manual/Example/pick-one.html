@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: pick-one.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: pick-one.in</h1>
+    <hr>
+    <p>
+      This is a task in which the output is completely determined by the first
+      bit of the input.  Sound easy?  Unfortunately, there are 999 other
+      distractor inputs.  And the network only has 26 patterns on which it can
+      train.
+    <p>
+      While it is very easy for the network to nail the training patterns, it
+      doesn't always do so well on the 4 testing patterns.  Open the Link
+      Viewer to see what has happened to the weights.
+    <p>
+      Is it reasonable to expect the network to learn this simple rule?
+      With 1000 inputs and only 26 patterns, there are many simple rules that
+      can explain the output.  The network might learn to rely on a
+      combination of a few different bits that together explain the answer.
+      With only 26 patterns, who's to say which rule is the best one?
+    <p>
+      So if we really want the network to reach the right solution, we are
+      going to have to give it some a priori (well, actually sort of a
+      posteriori in this case) bias to favor the simple pick-one rule.
+    <p>
+      The first thing you might think of is using weight decay.  However, this
+      penalizes weights in proportion to how large they are.  That means the
+      largest weight is penalized the most.  What we'd really like is for the
+      weight from the first unit to grow large and for the rest to die off.
+      Weight decay is counteracting this, to some extent.
+    <p>
+      A more effective solution in this case is to constrain the network to
+      only consider a certain class of solutions.  In particular, only those
+      solutions with positive weights from the inputs.
+    <p>
+      We can force the weights from the input layer to be positive with the
+      command:
+<pre>
+lens> setLinkValue min 0 -t input</pre>
+    <p>
+      However, we should also change the weight initialization so that it
+      doesn't produce initially negative weights.  We can do that like this:
+<pre>
+lens> setLinkValue randMean  0.1 -t input
+lens> setLinkValue randRange 0.1 -t input
+lens> resetNet</pre>
+    <p>
+      Now when you train, all of the input-to-output weights will be positive.
+      If a weight falls to 0, it will remain at 0 forever, and thus be
+      effectively pruned.  Try training again.  With any luck, all the weights
+      have shrunk toward 0 except those from the first input and the bias.
+      Now does it get the testing patterns right?
+    <p>
+      Assuming your answer was "yes", is there a moral to this?  I suppose it
+      is that neural networks cannot solve every sort of problem right out of
+      the box.  Your role as designer is sometimes to lead the network to a
+      good solution by applying the right biases.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Thu Nov 16 14:32:45 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

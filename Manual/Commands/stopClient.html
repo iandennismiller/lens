@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: stopClient</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>stopClient</font> - closes the connection with the server
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    stopClient</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This closes the connection to the server.  It will return an error if 
+      the current process is not acting as a client.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To make sure the current process is not acting as a client (and to avoid
+      causing an error):
+    <pre>
+    lens> catch stopClient</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="startClient.html">startClient</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:22:22 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

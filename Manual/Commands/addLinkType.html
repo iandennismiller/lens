@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: addLinkType</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>addLinkType</font> - creates a new link type
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    addLinkType [&lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With no argument, this returns a list of currently defined link types.
+      Otherwise, this creates a new link type of the given name.  Link types
+      serve as handles to particular sets of links.  Using types, one can
+      selectively randomize, freeze, or delete certain links without affecting
+      others.  Types also allow the creation of multiple links between two
+      units.  Only one link of a particular type may exist from one unit to
+      another.  However, there could be multiple links provided they have
+      distinct types.
+    <p>
+      A link can only have one type.  It is not possible to logically "or"
+      types together when specifying a set of links.  A link is given a type
+      when it is created.  Most commands that operate on links will accept a
+      type name that will limit its effect to only links of that type.  If no
+      type is specified for such a function it will operate on every link,
+      regardless of type.
+    <p>
+      The only predefined link type is "bias".  Bias links that are
+      automatically created when a group is added are of this type.  If no
+      type is specified when a connection is formed using <a
+      href="connectGroups.html">connectGroups</a>, <a
+      href="connectGroupToUnits.html">connectGroupToUnits</a>, or <a
+      href="connectUnits.html">connectUnits</a>, the default behavior is to
+      give the links a type with the same name as the sending group.  This
+      type will be created if necessary.  If a different type name is
+      specified when a connection is formed, it too will be created if
+      necessary.  Therefore, there is no real reason for this command to exist
+      except for printing out the list of link types.
+    <p>
+      There can be up to 256 types defined concurrently.  It would not be
+      reasonable to give every link in the network its own type.  If the type
+      is already registered, <code>addLinkType</code> does not report an error.
+      
+    <h3>EXAMPLES</h3>
+    <p>
+      To create a new type called "my links":
+    <pre>
+    lens> addLinkType "my links"</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="deleteLinkType.html">deleteLinkType</a>,
+    <a href="connectGroups.html">connectGroups</a>,
+    <a href="connectGroupToUnits.html">connectGroupToUnits</a>,
+    <a href="connectUnits.html">connectUnits</a>,
+    <a href="randWeights.html">randWeights</a>,
+    <a href="freezeWeights.html">freezeWeights</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:11:43 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

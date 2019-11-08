@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: viewConsole</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>viewConsole</font> - opens the shell console
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    viewConsole</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This opens the graphical shell console.  It doesn't work if Lens was
+      originally started in batch mode.  This can also be invoked from the
+      <b>Window/View Console</b> menu button on the main display.  This
+      command is generally used to regain the console window after it has been
+      closed.
+    <p>
+      If you close both the main window and the console window, you will no
+      longer have control of your Lens process.  Fortunately, you can regain
+      control by sending it the USR2 signal using <code>kill</code> because
+      the default <i>sigUSR2Proc</i> opens the main window.  If you changed
+      that, you are basically S.O.L.
+
+    <h3>SEE ALSO</h3>
+    <a href="view.html">view</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8 01:56:39 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

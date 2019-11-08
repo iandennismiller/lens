@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: seed</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>seed</font> - seeds the random number generator
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    seed [&lt;seed-value>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command seeds the random number generators used for randomizing
+      weights, injecting noise, lesioning, created sparse connectivity,
+      selecting examples, and other processes.  It returns the seed value used.
+    <p>
+      If a <i>seed-value</i> is specified, it is used as the seed.  Otherwise,
+      the seed is generated based on the current time and the process ID.
+      It is extremely unlikely that this will result in identical seeds on
+      multiple runs.
+    <p>
+      The simulator is automatically time-seeded when it starts.  It is a good
+      idea to seed the generator (and store the seed value) immediately before
+      doing anything, such as sparsely connecting groups or lesioning the
+      network, that you may want to exactly repeat later.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To seed with time and store the seed value for later use:
+    <pre>
+    lens> set seedVal [seed]
+    2399818.36</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="getSeed.html">getSeed</a>,
+    <a href="pid.html">pid</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Jun  8.33:41:38 EDT 1998
+<!-- hhmts end -->
+  </body>
+</html>

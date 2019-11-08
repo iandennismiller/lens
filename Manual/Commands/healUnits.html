@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: healUnits</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>healUnits</font> - restores all lesioned units in a group
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    healUnits [(&lt;group-list> &lt;proportion> | &lt;unit-list>)]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With no arguments, this will restore all lesioned units in the network.
+      With just a unit-list, it will restore the given units.  Otherwise, it
+      will restore the given proportion of lesioned units in the given groups.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To heal all lesioned units in group "output":
+    <pre>
+    lens> healUnits output 1.0</pre>
+    <p>
+      To heal just units "output:3" and "output:5":
+    <pre>
+    lens> healUnits {output:3 output:5}</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="lesionUnits.html">lesionUnits</a>,
+    <a href="lesionLinks.html">lesionLinks</a>,
+    <a href="noiseType.html">noiseType</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Sun Feb 28 21:36:07 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

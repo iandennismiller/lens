@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: setObject</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>setObject</font> - sets the value of an object field
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    setObject &lt;object> [&lt;value>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      Lens makes many of the network's and example sets' underlying C
+      structures accessible to the user's Tcl shell interface.  While normal
+      Tcl variables are changed using the <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/set.htm">set</a>
+      command and dereferenced using <code>$</code>, fields of internal Lens
+      objects are set using the setObject command and retrieved using <a
+      href="getObject.html">getObject</a>.
+    <p>
+      Objects, sub-objects, and their fields are referenced using a notation
+      similar to C.  The fields of the current network are referred to
+      directly.  For example "<code>learningRate</code>" is the network's
+      learning rate.  Fields of child objects are referenced with the name of
+      the child object, followed by a period and the name of the field.  For
+      example, the number of examples in the current training set (which is a
+      child object of the current network), is referred to with
+      "<code>trainingSet.exampleNum</code>".
+    <p>
+      As in Tcl, elements of arrays are referenced using the array name
+      followed by the element number in parentheses, e.g.
+      "<code>group(3).unit(99).outputHistory(2)</code>".  It is also possible
+      to use square brackets instead of parentheses, more in keeping with C.
+      However, this is less convenient because Tcl interprets anything in
+      square brackets as a command to be executed.  The brackets must be
+      "escaped" to prevent this.  References such as:
+    <pre>
+    group\[$i\].unit\[[expr $j - 2]\].output</pre>
+    <p>
+      are more easily written as:
+    <pre>
+    group($i).unit([expr $j - 2]).output</pre>
+    <p>
+      Elements in two dimensional arrays should be accessed using
+      "<code>(i,j)</code>" format rather than "<code>[i][j]</code>", although
+      "<code>(i)(j)</code>" is acceptable.
+    <p>
+      The <code>setObject</code> command takes an object name and an optional
+      value.  With no value, <code>setObject</code> simply calls <a
+      href="getObject.html">getObject</a>, returning the current value of the
+      field or object.  If a value is given, the field will be set to the
+      specified value and the value returned.
+    <p>
+      Only simple fields, such as integers, reals, flags (booleans), masks
+      (integers treated as bitmasks), strings, and Tcl commands, may be set.
+      Container objects may not be set, nor may certain fields, such as the
+      number of groups in the network, that are write-protected.
+    <p>
+      As a shortcut, you can access networks, groups, units, and example sets
+      directly by name.  If the name contains a ".", it will be interpreted as
+      a field separator and this will not work.  Therefore, it is recommended
+      that networks, groups, units, and example sets don't use ".".
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To set the weight of one of the links to 1.0:
+    <pre>
+    lens> setObject group(2).unit(9).incoming(3).weight 1.2340
+    1.234</pre>
+      Or if <code>group(2)</code> were named "hidden", you could probably do:
+    <pre>
+    lens> setObject hidden:9.incoming(3).weight 1.2340
+    1.234</pre>
+
+    To retrieve that value:
+    <pre>
+    lens> setObj hidden:9.incoming(3).weight
+    1.234</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="getObject.html">getObject</a>,
+    <a href="path.html">path</a>,
+    <a href="viewObject.html">viewObject</a>,
+    <a href="graphObject.html">graphObject</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:14:41 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

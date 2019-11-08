@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: rand10x40.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: rand10x40.in</h1>
+    <hr>
+    <p>
+      This is a fairly simple feed-forward mapping task.  There are 40
+      examples, each requiring the network to map from a random input to a
+      random output.  Although this could be solved with a standard
+      feed-forward network, we have used a continuous network here to get you
+      acquainted with them.
+    <p>
+      A continuous network generally has units that integrate their outputs
+      over time, and thus adapt gradually to changes in their input.  We have
+      created a continuous network in this case by giving it the type
+      CONTINUOUS.
+    <p>
+      When the network was created, we also specified that the network can run
+      for at most 4.0 time intervals.  You should think of a time interval as
+      a unit of real time, like a second.  So the network can process an
+      example for at most four seconds.  However, when we simulate the
+      network, we can't actually run it continually like an analog system.  We
+      have to simulate it in discrete steps.  Ideally, our grain size is small
+      enough that we get a good approximation to the true continuous behavior.
+    <p>
+      The discrete steps at which we simulate the network are called
+      <i>ticks</i>.  When we defined the network, we specified that there
+      should be 5 ticks per time interval.  Thus, if we think of a time
+      interval as representing a second, then we are simulating the network at
+      a grain size of 200 milliseconds.
+    <p>
+      By default, the groups in a continuous network are given the OUT_INTEGR
+      type.  This integrates the units' outputs over time using the following
+      formula:
+    <pre>
+    output += dt * (instantOutput - output);</pre>
+    <p>
+      The instant output is the output that the unit would have if we just
+      computed its input and output without integrating.  The integration
+      function exchanges a certain percentage of this instant output for a
+      percentage of the old output.  The percentage is given by dt.  If dt is
+      small, the network will adapt slowly to new input.  If dt is 1, the
+      integrator will have no effect.
+    <p>
+      By default, the dt is set to the inverse of the number of ticks per time
+      interval.  In our case, dt will default to 0.2.  You can change it if
+      you would like the units to adapt more or less quickly.  Each group also
+      has a dtScale parameter which is multiplied by the network's dt to
+      compute the actual dt used by the group.  In this way, you can have one
+      group that adapts at a different rate than the others, but still be able
+      to adjust the dt of the whole system by just changing the network's
+      value.
+    <p>
+      Once the network is constructed, it is possible to change the maximum
+      number of intervals or the ticks per time interval using the <a
+      href="../Commands/setTime.html">setTime</a> command.  This will
+      recalculate dt for you.  If you want a different dt, you will have to
+      change dt again afterwards, or use the -dtfixed parameter with setTime.
+    <p>
+      The Input group in this network will not be given a default integrator,
+      because it is an INPUT group.  For the Hidden group, we specified an
+      IN_INTEGR, or input integrator.  This is similar to the output
+      integrator but does the integration on the input.  Because we specified
+      this, an output integrator will not be added.  But we did not specify an
+      integrator for the Output group, so it defaults to OUT_INTEGR.
+    <p>
+      Open the Unit Viewer and step through some examples.  You can use the
+      arrow buttons in the upper right to step through the ticks on the
+      current example.  Make sure you are looking at the training set and that
+      the training set is set1.  Don't worry about set2 yet.
+    <p>
+      You should notice a few things.  On the initial tick, there are no
+      inputs or targets.  All of the units of groups with type
+      RESET_ON_EXAMPLE, which is the default, are set to their default values.
+      This is normal in a continuous network.  For the next interval, or five
+      ticks, there are inputs but no targets.  This is because we have set the
+      default graceTime of the example set to 1.0.  The grace time is the
+      delay, in time intervals, between input presentation and target
+      presentation.  It is frequently used in training continuous networks
+      because it gives the network a chance to reach its targets before it is
+      penalized.
+    <p>
+      On the next tick, 1:1 in event time or 1:2 in example time, the targets
+      appear and they remain on.   The examples will last at least 1.0
+      intervals, as determined by the minTime, and no more than 4.0 intervals,
+      as determined by either the network's timeIntervals value or the example
+      set's maxTime parameter.
+    <p>
+      Now open a graph of the error and train the network.
+      You should see that it masters the task.  Step through the examples
+      again.  Does it get the right outputs?  Does it start heading in the
+      righ direction even before the targets have appeared?
+    <p>
+      Now open a graph of the output of the first output unit,
+      Output:0.output, and have it update every tick.  Click on some
+      examples.  This shows you a profile of the unit activations.  Since this
+      is a simple task, they should be pretty smooth and monotone.  Try
+      changing the network's dt.  You should see the curves change.
+    <p>
+      Now let's turn to set2.  This one has slightly more complicated
+      examples.  In this case, the examples have two events.  The first is the
+      same as before, but it only lasts 2 intervals.  The next event has the
+      same targets but removes the input.  Can the network maintain its
+      activations when the inputs disappear?  You will probably find that it
+      can't.  Now try training the network some more using set2.  If you
+      haven't reset the network since training on set1, the error will jump up
+      a bit and then quickly fall away again.  Now the network should be
+      pretty good at maintaining its activations.
+    <p>
+      Take a look at the example file for set2, rand10x40b.ex, and see if you
+      understand how it was specified.  You may need to refer to the manual
+      section on <a href="../exampleFiles.html">example files</a>.
+    <p>
+      As is the default in a continuous network, the Output group has been
+      given the STANDARD_CRIT criterion function.  During testing, if every
+      unit's output is within the testGroupCrit of its target at the end of
+      each event, the example is considered correct.  Try testing the
+      network.  At the end it tells you the percentage of examples for which
+      the criterion was reached.  If the network has been trained well, you
+      should find that the network gets most examples correct with a
+      testGroupCrit of 0.1 and all correct within a range of 0.2.
+    <p>
+      The output criterion is also used in continuous networks for deciding
+      when to go on to the next event.  If the event has gone past its
+      minTime and all output units are within the trainGroupCrit of their
+      targets, the network will immediately go on to the next event.  Try
+      setting the trainGroupCrit to 0.1.
+    <p>
+      Now click on an example in set2.  Step through the example.  You should
+      see that as soon as all of the output units are within 0.1 of their
+      target (and the event has lasted for its minTime), the next event
+      begins.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 21 15:25:08 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

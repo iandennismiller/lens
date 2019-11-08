@@ -1,0 +1,399 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Rules of Thumb</title>
+  </head>
+  
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Rules of Thumb</h1>
+    <hr>
+    <p>
+      Training neural networks is said to be more of an art than a science.
+      While this claim could be made of many fields of science, it is true
+      that there is no clear formula for successful network modeling.  A good
+      modeler is able to diagnose problems with the network and understand
+      which changes can be made to try to resolve those problems.  But it is
+      also important that your initial parameter choices are in the right
+      ballpark or the process of making incremental improvements may never
+      succeed.
+    <p>
+      The purpose of this guide is to convey some of the things I have learned
+      about training networks over the years.  However, it is important to
+      remember that there are no absolutes.  What may be an appropriate
+      parameter choice for most networks could be terribly wrong for your
+      network.  I have found many of the traditional rules of thumb, like
+      using very small initial weights, to depend on certain assumptions that
+      are not always valid.  You may find the same to be true of my
+      suggestions.
+
+    <h3>Weight Update Algorithms</h3>
+    <p>
+      Lens includes four main weight update algorithms: steepest descent,
+      momentum descent, Doug's momentum, and delta-bar-delta.  Doug's momentum
+      is probably the best overall method, which is why it is the default.
+      The problem with steepest and momentum descent is that they are too
+      aggressive at the outset of training and one must use a special initial
+      learning rate and momentum to prevent outrageous weight changes.  The
+      reason is as follows.
+    <p>
+      The philosophy behind the backpropagation algorithm is that a small step
+      should be taken in weight space in the direction of steepest error
+      gradient.  That is, if one were reverse hill-climbing, one would take a
+      step down the steepest part of the slope.  But, in practice, the
+      steepest descent algorithm doesn't just take a step in the direction of
+      steepest descent, it takes a step whose horizontal distance is
+      proportional to the slope.  It is as if, when the mountain is steeper,
+      you reach your leg out even farther.  This doesn't really make sense.
+      If the mountain is steeper, a constant-size step will already take us
+      farther downhill.  To be safe, we might even want to take smaller steps
+      when the gradient is steep.
+    <p>
+      This results in particular problems early in training.  A randomized
+      network usually has a huge error and a very steep gradient.  Taking a
+      step whose size is proportion to that gradient, unless it is scaled by a
+      very small learning rate, will take you over the valley and probably the
+      next ten mountains as well.  This is even worse when momentum is used
+      because the momentum from those huge first steps is hard to counteract.
+      Therefore, when training with steepest or momentum descent, it is often
+      necessary to start with a small learning rate and no momentum, and then
+      increase these parameters once learning stabilizes.
+    <p>
+      The Doug's momentum method makes a simple change that helps alleviate
+      these problems.  Rather than having a weight step whose length is
+      proportional to the product of the gradient and the learning rate, the
+      length of the gradient is factored out.  As long as the length of the
+      gradient is greater than 1, the size of the weight step (prior to
+      momentum) will just be equal to the learning rate.  If the gradient is
+      less than 1, which usually only occurs once the network is nearing a
+      minimum, the size of the step is scaled by the gradient, as in normal
+      momentum descent.  Otherwise the network will never settle into a
+      minimum and will perpetually bounce around.
+    <p>
+      Because Doug's momentum bounds the weight step, there is no need to use
+      a special learning rate or momentum early on.  However, you may still
+      need to gradually reduce the learning rate as training goes on.
+    <p>
+      The delta-bar-delta algorithm maintains an individual learning rate for
+      each link.  As long as the link weight keeps heading in the same
+      direction from one change to the next, its rate increases.  If the
+      direction of the weight change flips, the learning rate is cut back.
+      Delta-bar-delta can be very effective in problems with smooth error
+      surfaces.  However, if you are not using batch learning or you are
+      trying to solve a complex problem, delta-bar-delta can be quite bad as
+      the weight changes are constantly switching directions.
+    <p>
+      When using DBD, I generally find a rate increment of 0.1 and a decrement
+      of 0.9 to be pretty good.  The main learning rate, which scales the
+      links' values, should be set to the high end for the type of error
+      measure you have (0.1-1.0 for squared error, 0.001 for cross-entropy or
+      divergence).  Again, train for the first little bit with no momentum and
+      then turn it up to 0.9-0.95.
+    <p>
+      In general, though, I seem to get the best results with Doug's Momentum,
+      especially with large networks on complicated tasks.
+
+    <h3>Batch Size</h3>
+    <p>
+      Unless you have some principled bias against batch learning, it is
+      probably best to train in full batch mode when you have 500 or fewer
+      examples.  Full batch mode is nice because the error surface is
+      consistent from batch to batch.  You can therefore use complex update
+      algorithms like delta-bar-delta and it is easier to assess the progress
+      of the network.  If the error starts jumping around during batch
+      training, you know it is because of aggressive training and not because
+      of a changing environment.
+    <p>
+      However, batches that are too large can be inefficient.  Too much time
+      is spent gathering derivatives between weight updates.  At the other
+      extreme is online learning, which changes the weights after every
+      example.  In this case, too much time is generally spent performing
+      weight updates and the error surface will be changing radically from one
+      update to the next.
+    <p>
+      Somewhere between these extremes is the optimal batch size.  I find that
+      good batch sizes are often between 10 and 200 examples.  This depends
+      largely on the diversity of your example set.  Batches should be large
+      enough that their statistics are fairly representative of one another.
+      That is, the network's ability on one batch should be a good predictor
+      of its performance on another batch.  A simple and repetitive training
+      set may deserve smaller batches than a complex and diverse one.
+    <p>
+      One problem when not using full batches is that the error naturally
+      jumps around from one batch to the next.  This can be good because it is
+      a natural sort of noise that can help get the network through local
+      minima.  On the other hand, it may also be hard to distinguish this
+      normal variation from spikes in the error curve caused by overly
+      aggressive training.  You may need to rely on periodic testing to
+      determine if the network is continuing to make progress.
+    <p>
+      When not using full batches, be sure to put the training set in
+      PERMUTED, PROBABILISTIC, or RANDOMIZED mode so you don't train on the
+      exact same batches each time.
+
+    <h3>Momentum</h3>
+    <p>
+      Momentum causes a portion of the previous weight change to be added into
+      the current step.  When using a momentum of 0.9, the effective learning
+      rate can grow to 10 times the actual rate if the direction of weight
+      changes is consistent.  In general, momentum is quite useful.  As
+      mentioned earlier, using momentum is dangerous at the start of training
+      with ordinary momentum descent, but not with Doug's Momentum.
+    <p>
+      Momentum is particularly important when using small batches because it
+      allows derivatives to be integrated across batches.  The smaller the
+      batch size, the greater the momentum you may want to use.  Remember that
+      the effect of momentum is basically proportional to the inverse of the
+      difference between 1 and the momentum value.  So a change from 0.9 to
+      0.95 is as significant as a change from 0.8 to 0.9 or 0.6 to 0.8.
+    <p>
+      The useful range of momentums is about 0.3 to 0.95.  Below 0.3 the
+      momentum plays an insignificant role.  Going above 0.95 is probably not
+      a good idea.  When you have a choice between using momentum and a higher
+      learning rate, I generally find it is better to use momentum, as long as
+      it doesn't get too high.  Overall, I have found a momentum
+      of 0.9 to be ideal under a wide variety of circumstances, so that is
+      definitely a good initial choice.
+
+    <h3>Learning Rate and Error Functions</h3>
+    <p>
+      The learning rate is perhaps the most obvious parameter, and is indeed
+      the one that you will need to pay the most attention to.  Although a
+      simple network can be trained effectively with a constant learning rate,
+      most networks can only be trained well by adjusting the rate as the
+      network trains.
+    <p>
+      The magnitude of the initial learning rate depends on the error function
+      and weight update algorithm.  If you are using sum squared error and
+      momentum, steepest, or delta-bar-delta, typical learning rates are in
+      the range 0.001 to 1.0.  0.01 is a good starting point.  With Doug's
+      momentum, you can use much larger learning rates, typically starting at
+      0.1.
+    <p>
+      Cross entropy is generally better than sum-squared error for networks
+      with logistic output units.  The related divergence function should be
+      used for groups with normalized soft-max outputs.  Because the error can
+      grow exponentially large with these functions, networks that seriously
+      miss their targets are punished severely.  However, these functions
+      should not be used with linear output units or when targets are not in
+      the range [0,1].
+    <p>
+      When using cross entropy or divergence with one of the three
+      non-normalized weight update algorithms, you will need a very small
+      learning rate because of the large derivatives that can result.  I find
+      the useful range to be about 0.0001 to 0.001.  0.0005 is a good place to
+      start and is generally what I have found to be the best on a wide range
+      of problems.  Again, Doug's momentum is not affected by the magnitude of
+      the derivative so you can start with a learning rate around 0.1.
+    <p>
+      You are generally going to need to decrease the rate as training
+      progresses.  There was some old conventional wisdom that the learning
+      rate should be <i>increased</i> as training progresses.  I think that
+      was because of the early instability of momentum descent.  When using
+      momentum descent, you will want to start with a low rate (or just no
+      momentum) for a short time.  From then on you will gradually decrease
+      the rate.  With Doug's momentum, you can just start with the highest
+      rate and then gradually lower it.
+    <p>   
+      If you want to train aggressively, you might compare several initial
+      learning rates and select the optimal one.  Perform about 1/10 of the
+      intended training and choose the rate/momentum combination that leads to
+      the lowest error.  Then re-train with that rate and monitor the error.  
+      If the error levels out, begins to increase, or has detectable spikes,
+      the rate is too large, so cut it in half.  This will usually continue
+      until the rate is roughly 1/20 of its initial value.  If training is
+      only making very slow, steady progress and the Gradient Linearity is
+      high, your rate may be too low.
+    <p>
+      With some networks, especially those using small batches, I have found
+      that there is a big improvement if you do a little training at the end
+      with a very low learning rate, about 1/10 of the previous rate.  So you
+      might start with a rate of 0.1, eventually you will decrease it to 0.05,
+      0.02, 0.01, and 0.005.  Finally, cut the rate to 0.0005 and do a little
+      more training.  With many networks this will help it nestle into a
+      narrow minimum and thus results in a relatively large improvement in
+      performance.  However, you only want to do that at the end of training.
+
+
+    <h3>Initial Weights</h3>
+    <p>
+      The magnitude of the initial random weights is not something people
+      think about too much, but it can have a critical effect on the success
+      of the network.  The conventional wisdom has always been that very small
+      initial weights (+/-0.001 or smaller) are best because logistic units
+      will be at the most sensitive parts of their sigmoid.  It was feared
+      that larger weights would pin units on the flat part of their sigmoids
+      where derivatives are very small.
+    <p>
+      However, there is a cost involved in using small initial weights.  Error
+      backprogated across a link is scaled by the weight of that link.  Thus,
+      small initial weights can also lead to very small derivatives reaching
+      early links in a multi-layer network.  Conceptually, if all hidden units
+      have roughly the same activation on all examples, information will not
+      propagate effectively from the input layer to the output layer.  A
+      change in the input pattern may have very little effect on the output
+      unit activations.  As a result, error cannot be attributed to early
+      weights and learning will be slow.
+    <p>
+      Thus, you must choose an initial weight range that balances the problem
+      of pinned units with the problem of inactive units due to tiny weights.
+      A good rule of thumb for groups with sigmoidal units is that the
+      distribution of activation values across units and across examples
+      should be evenly distributed in the range [0,1].  Or, perhaps a bit
+      better, the distribution should be slightly rounded in the middle, with
+      fewer extreme values.
+    <p>
+      Therefore, the size of the initial weights into a unit should depend on
+      the number of links into the unit.  The more inputs, the smaller the
+      weights on those inputs should be.  Thus, you may want different
+      randRange values for each group.  The randRange value should be based on
+      how many links there are into a group and the expected activation level
+      of the units feeding those links.  If we assume that the activation on
+      all units feeding the group is fixed at 1.0 and the units have a
+      logistic activation function with a gain of 1.0, the following table
+      gives the appropriate range of initial weights:
+    <p>
+      <table border=2 align=center> 
+      <tr align=center><td>Number of Inputs
+      <td>Init Rand Range
+      <tr align=center><td>5<td>1.2
+      <tr align=center><td>10<td>0.90
+      <tr align=center><td>20<td>0.60
+      <tr align=center><td>40<td>0.45
+      <tr align=center><td>60<td>0.35
+      <tr align=center><td>80<td>0.30
+      <tr align=center><td>100<td>0.25
+      <tr align=center><td>150<td>0.20
+      <tr align=center><td>200<td>0.18
+      <tr align=center><td>500<td>0.12
+      </table>
+    <p>
+      As you can see from the table, the optimal weight randomization range is
+      still fairly high, even with 200 inputs.  The magnitude does not
+      decrease much when jumping from 100 to 200 inputs.  Note that these
+      values are based on having sending units with activations of 1.0.  In
+      practice, the sending units will either be from an input group or a
+      hidden layer.  If they are from an input group, then you should estimate
+      the number of inputs that will be active, on average, when choosing the
+      randRange.  If there will be about 10 inputs active, you might choose a
+      randRange of 0.9 for the input-to-hidden projection.  If the projection
+      is coming from a hidden layer, you might estimate that the activations
+      of units in the hidden layer will be evenly distributed in the range
+      [0,1].  Therefore, this is effectively like having half as many units
+      with activations of 1.0.  So if there are 80 hidden units feeding the
+      output layer, the randRange of the hidden-to-output projection should be
+      around 0.45.
+    <p>
+      If you are not too interested in finely tuning the initial random
+      weights, here is a simple rule of thumb.  Use a value of 1.0 for
+      networks with fewer than 50 units, 0.2 for networks with more than 200
+      units, and 0.5 otherwise.
+
+    <h3>Improving Generalization</h3>
+    <p> 
+      When given a finite training set, neural networks are particularly
+      subject to the problem of over-training.  Once the network seems able to
+      learn the training set adequately, you will need to start worrying about
+      improving its generalization.  It is usually suggested that this can be
+      done by either reducing the size of the network by eliminating hidden
+      units or by using weight decay to encourage small weights.  Actually,
+      these techniques are conflicting and are only appropriate for 
+      <i>different types of networks</i>.  This point is rarely understood,
+      which can lead to confusion.
+    <p>
+      One class of network is used to solve logical, rule based problems.
+      These include tasks such as solving boolean formulas, decision-tree
+      based classification, or learning finite state machines.  I will call
+      these <i>class A</i> networks.  Essentially, whenever the optimal
+      behavior can be explained by a few simple rules, you have a class A
+      task.  Ideally, the network will learn just those rules necessary to
+      solve the task.  
+    <p>
+      In this case, you can usually encourage this by giving the network just
+      enough hidden units to solve the task, but allow the weights to grow as
+      large as they please.  Such a task might require that the activation of
+      one unit completely override the behavior of the rest of the network,
+      which can only be done with large weights.  You may also want to
+      encourage the hidden units to use binary (close to 0 or 1) activations.
+      This is discussed further below.
+    <p>
+      <i>Class B</i> tasks, on the other hand, cannot be characterized by a
+      short rule.  These are fuzzy problems that involve basing decisions on a
+      range of accumulated weak evidence.  They are the sort of natural task
+      that people and networks are pretty good at, but symbolic machine
+      learning methods are not.  The handwritten digits problem is a good
+      example of this.
+    <p>
+      With a class B task, you will probably obtain better generalization by
+      using <i>more</i> hidden units but by trying to keep the weights small
+      with weight decay.  This will discourage the network from solving the
+      training examples by activating just a few hidden units for each example
+      that drive the outputs to their correct value.  If the network did that,
+      it would probably result in poor generalization.  You may also want to
+      introduce noise in either the input unit activations or in all unit
+      activations.  This prevents the network from memorizing irrelevant
+      details of particular training examples.
+    <p>
+      When using weight decay, remember that a little goes a long way.  A
+      typical value is about 0.0001.  You will need to experiment with weight
+      decay to find the value that leads to the best validation-set
+      performance.  Of course, if you do that you should have another testing
+      set to assess the true generalization performance.  I'm still not
+      certain if it is better to use weight decay right from the start or to
+      introduce it later in training.  You may want to use it right from the
+      start just because it is simpler to do so.
+    <p>
+      In practice, most real-world problems probably have a mixture of class A
+      and B properties.  Language-related tasks are generally of this form.
+      In this case, it isn't clear how you will obtain the best
+      generalization.  But hopefully you now have a better idea of how to go
+      about experimenting.
+
+    <h3>Encouraging Binary Representations</h3>
+    <p>
+      There are several reasons why you might want to encourage hidden units
+      to use binary (close to 0 or 1) representations.  If you have a class A
+      task, binary representations can lead to greater generalization and can
+      make the operation of the network easier to understand.  You may be
+      using the hidden representation as targets for another network, as in a
+      recursive auto-associative machine (RAAM), in which case having binary
+      targets is often easier.  Also, binary activations make the units more
+      resistant to noise.
+    <p>
+      There are several ways to encourage binary representations.  The most
+      direct is to use a unit output cost function, like LOGISTIC_COST or
+      COSINE_COST.  These add a term to the error function that penalizes
+      non-binary units.  That is certainly one option, but is not always the
+      best one.  If applied too early or too strongly, this can interfere with
+      the ability of the network to develop good representations by preventing
+      it from gradually shifting hidden units from an off to an on state
+      during training.
+    <p>
+      Increasing the gain of the units is often a better option.  A higher
+      gain results in a sharper sigmoid.  Thus, a smaller input can drive the
+      unit's activation farther from 0.5.  Gain is often more effective than
+      a cost function.  Again, you may want to increase the gain only later in
+      training.  Remember that a small change in gain can have a big effect on
+      the network.  Late in training, the gain should only be changed in small
+      increments and the network allowed to re-train between changes.
+    <p>
+      Finally, an indirect way to encourage binary representations is by using
+      noise.  If noise is added to a unit's input, it will be hard for the
+      unit to maintain a consistent activation in its sensitive middle range.
+      The network will not be able to find good solutions that involve
+      non-binary units, because those units are more sensitive to the noise.
+      Thus, the network will tend to prefer more stable, binary patterns.
+    <p>
+      You can measure the degree to which the units in a group are adopting
+      binary values using the <a href="Commands/polarity.html">polarity</a>
+      command.
+
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Tue Nov 28.31:14:00 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

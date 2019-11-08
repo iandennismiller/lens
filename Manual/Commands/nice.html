@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: nice</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>nice</font> - increments or returns the process's priority
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    nice [&lt;priority-increment>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      With no argument this returns the current process's priority.  0 is the
+      maximum priority and 19 is the minimum.  Given a non-negative integer,
+      it will increase the priority value by that amount.
+    <p>
+      If you always want your Lens processes to run niced, put a call to it in
+      your <a href="../customization.html">.lensrc</a> file.  However, this is
+      no longer really necessary since Lens will automatically renice itself
+      to 10 if it is actively chewing cycles (not idle) for 10 minutes.  This
+      lets short interactive process be very responsive while long jobs will
+      be nice.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To be nice:
+    <pre>
+    lens> nice 10
+    10</pre>
+    <p>
+      To be really swell:
+    <pre>
+    lens> nice 20
+    19</pre>
+    <h3>SEE ALSO</h3>
+    <a href="http://dev.scriptics.com/man/tcl8.3/TclCmd/pid.htm">pid</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Mar  1 18:26:27 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

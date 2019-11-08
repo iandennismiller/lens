@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Deterministic Boltzmann Machines</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Deterministic Boltzmann Machines</h1>
+    <hr>
+    <p>
+      Deterministic Boltzmann machines (DBMs) are typically fully
+      interconnected networks that are trained using a two-phase settling
+      process and a form of Hebbian weight updating.  The input to a unit is
+      the dot product of its incoming weights and the activations of the
+      sending units.  The units use a logistic transfer function (with an
+      adjustable gain) and are output-integrating, meaning that the outputs
+      change gradually over time.  Groups in a DBM will use the IN_BOLTZ input
+      function and the OUT_BOLTZ output function by default.
+    <p>
+      Training on each example event in a DBM occurs in two phases.  At the
+      start of the <i>positive</i> phase, both the input units and the output
+      units are clamped to the inputs and targets, respectively, and the other
+      units are reset to their <i>initOutput</i>s.  Then the non-clamped units
+      are allowed to settle for a given period of time or until the
+      activations are no longer changing significantly.  Usually the gain will
+      be annealed with an exponential upward decay during the settling
+      process.  Initially there is high temperature (low gain), gradually
+      settling to a lower temperature (high gain).
+    <p>
+      In the <i>negative</i> phase, the inputs remain clamped but the outputs
+      are allowed to freely update.  At the start of the negative phase, the
+      activations of all of the units other than the inputs are shifted
+      towards their <i>initOutput</i>.  Early in training, the outputs may not
+      be shifted at all, and would thus remain the same as they were at the
+      end of the positive phase.  Gradually, the normalization could be made
+      stronger until the units are completely reset to the <i>initOutput</i>
+      at the start of the negative phase.  During testing, only the negative
+      phase is run.
+    <p>
+      During training, each weight is updated in a Hebbian fashion according
+      to the products of the outputs of the preceding and following units.
+      The weight change will be proportional to the difference between the
+      product at the end of the positive phase and the product at the end of
+      the negative phase.  Lens does not enforce the constraint that links in
+      opposing directions between two units have the same weights, although
+      they will receive the same changes so they will tend towards the same
+      value if there is weight decay or will maintain a fixed offset
+      otherwise.
+    <p>
+      Here is a sample file for creating a DBM, the full version of which is
+      located in the <a href="Example/boltz.html">boltz.in</a> example:
+    <pre>
+    addNet Boltz-big -i 4 -t 5 BOLTZMANN
+    addGroup input 20 INPUT
+    addGroup hidden 10
+    addGroup output 3 OUTPUT
+    connectGroups input  hidden -bi
+    connectGroups hidden hidden
+    connectGroups hidden output -bi
+    connectGroups output output
+    
+    loadExamples digits.ex
+    setObj digits.maxTime   3.0
+    setObj digits.graceTime 1.0
+    setObj digits.minTime   0.0
+    
+    setObj trainGroupCrit  0.001
+    setObj testGroupCrit   0.001
+    setObj clampStrength   1.0
+    setObj initGain        0.1
+    setObj finalGain       1.0
+    setObj annealTime      1.0</pre>
+    <p>
+      The network is given the <code>BOLTZMANN</code> type on creation.  When
+      adding groups, it is not necessary to given any types other than
+      <code>INPUT</code> and <code>OUTPUT</code>, as the group input and output
+      functions will default to the standard Boltzmann functions, which use
+      dot product inputs and a time-integrated logistic transfer function.
+    <p>
+      A group should be of type INPUT if it will ever be assigned inputs in an
+      example.  A group should be of type OUTPUT if it will ever be assigned
+      targets.  It is not necessary to provide inputs or targets to every
+      input or output unit on every event.  If a unit has no inputs or targets
+      specified, it will freely update like any other unit.
+    <p>
+      It is possible to give a group both <code>INPUT</code> and
+      <code>OUTPUT</code> types.  This may be useful if some units in the
+      group are to act as inputs on some events and as targets on others.  If
+      a unit in such a group is given both an input and a target in an event,
+      the unit will be clamped to the input.
+    <p>
+      An OUTPUT group can be given an error function and the default error
+      function is CROSS_ENTROPY.  However, the error procedure doesn't affect
+      the training.  It is only used in assessing the difference between the
+      actual and target outputs at the end of the negative phase.
+    <p>
+      It is customary to make most projections in a Boltzmann group
+      bidirectional.  This can be done more easily with the <code>-bi</code>
+      flag to <a href="Commands/connectGroups.html">connectGroups</a>.  Note
+      that this will be equivalent to calling connectGroups twice with the two
+      groups names reversed.  There will be no special relationship between
+      corresponding links in the forward and backward projections.
+    <p>
+      As mentioned above, when training the DBM, two settling phases are
+      performed on each event.  In the positive phase, any unit with an input
+      specified is clamped to that value and any unit with a target specified
+      is clamped to that value.  All other units are reset to their group's
+      <i>initOutput</i>, or the network's value if the group's is NaN.  The
+      gain, used in the logistic function, is initialized to the network's
+      <i>initGain</i>.  
+    <p>
+      On each tick, all the units in the network will be updated
+      synchronously: first all calculating their inputs and then all
+      calculating their outputs.  After each tick, the gain will decay
+      exponentially towards the <i>finalGain</i> (usually this involves
+      increasing the gain).  The half-life of the decay (in time intervals) is
+      determined by the <i>annealTime</i>.
+    <p>
+      The positive phase ends at the end of the event's <i>graceTime</i>.  The
+      positive phase can end earlier, provided it is past the <i>minTime</i>
+      and the network has settled.  The network is considered to have settled
+      when the change in the activation of every unit on the last update is
+      less than the group's or network's <i>trainGroupCrit</i> (during
+      training) or <i>testGroupCrit</i> (during testing).  If all units are
+      clamped during the positive phase, then it will only last for one tick,
+      or the <i>minTime</i> is reached if that is longer.
+    <p>
+      At the start of the negative phase, the units with external inputs
+      remain clamped but the units that only have targets are unclamped and
+      the activations of all non-clamped units are reset towards the group's
+      <i>initOutput</i>.  The new value of one of these units will be weighted
+      average of its current value and the <i>initOutput</i>.  The weighting
+      of the <i>initOutput</i> is determined by the network's
+      <i>clampStrength</i> parameter.  A value of 0.0 will cause no change.
+      1.0 will cause the activations to be set to the <i>initOutput</i>.  0.5
+      would move the activations halfway to the <i>initOutput</i>.
+    <p>
+      Essentially, the outputs are being WEAK_CLAMPed by the
+      <i>initOutput</i>.  One may wish to begin training with a very low
+      <i>clampStrength</i> value and then gradually increase it to 1.0.  There
+      is no automatic mechanism for doing this increase so the user may want
+      to use a <a href="training.html">preEpochProc</a> function to adjust the
+      <i>clampStrength</i> as it trains.  However, just leaving the
+      <i>clampStrength</i> at 1.0 might be optimal for many networks.
+    <p>
+      The gain annealing starts over with the negative phase and settling
+      proceeds as in the positive phase, although the output units will not be
+      clamped.  The negative phase ends if the time since the end of the
+      positive phase reaches <i>maxTime - graceTime</i> (that is, the
+      difference between <i>maxTime</i> and <i>graceTime</i>).  Thus, the
+      event's <i>maxTime</i> still indicates the total time the event will
+      ever last and the <i>graceTime</i> is the total time the positive phase
+      can last.  The difference is the total time the negative phase can last.
+      The negative phase will also stop if the network has settled, but not
+      before the <i>minTime</i> has elapsed since the start of the negative
+      phase.
+    <p>
+      During testing, only the negative phase is run.  At the start, the
+      inputs will be clamped and the other units will be reset to their
+      <i>initOutput</i>.  In this case, the settling process lasts no more
+      than <i>maxTime - graceTime</i>, the same as for the negative phase
+      during training.  Again, the gain will be annealed and settling will
+      stop once the <i>minTime</i> is reached and activation changes are all
+      less than the <i>testGroupCrit</i>.
+    <p>
+      Because DBMs typically use a large number of time intervals per example
+      or ticks per interval, the history arrays allocated in each unit will
+      tend to be very large and could use a significant amount of space.
+      These arrays are not used in DBMs except for storing values to display
+      in the <a href="unitViewer.html">Unit Viewer</a>.  Therefore, you may
+      want to eliminate these arrays by setting the <i>historyLength</i> to 0
+      or some other small value.  This can be done with the <a
+      href="Commands/setTime.html">setTime</a> command.
+    <p>
+      Finally, for most networks, the default behavior when selecting an
+      example in the <a href="unitViewer.html">Unit Viewer</a> or when calling
+      <a href="Commands/doExample.html">doExample</a> is to run the example
+      testing procedures on that example.  However, the default behavior for
+      DBMs is to run the training procedures because this may be what the user
+      prefers to see in the <a href="unitViewer.html">Unit Viewer</a>.  Note
+      that this won't actually affect the weight updates unless training is
+      going on when the example is run.  The testing procedures can be run
+      instead of the training ones by calling <a
+	href="Commands/doExample.html">doExample</a> with the appropriate
+      parameters or by using the "Procedure" pull-down menu in the <a
+	href="unitViewer.html">Unit Viewer</a>. 
+    <p>
+      When training a Boltzmann machine, it is important that the gain 
+      annealing isn't too rapid and that the finalGain isn't too high.
+      Otherwise, the network can become unstable.  On the other hand, if the
+      gain remains low for too long, the network will have difficulty driving
+      units to extreme values.  You will need to experiment to find a good
+      balance.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 22 18.31:44 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

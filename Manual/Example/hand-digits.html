@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: hand-digits.in</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="../index.html"><img src="../Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Examples: hand-digits.in</h1>
+    <hr>
+    <p>
+      This is a very cool task.  It uses a database of 3,823 examples taken
+      from real people's handwriting, with 1,797 examples held out for
+      testing.  As you can see by looking in the Unit Viewer, the data is
+      pretty noisy.  Nevertheless, the network can learn to recognize the
+      digits pretty well.
+    <p>
+      The 10 output units correspond to the 10 digits.  The output group has a
+      SOFT_MAX constraint, so the output will sum to 1.  You can interpret
+      that as the probability, according to the network, that each of the
+      digits is the intended one.
+    <p>
+      Sure the network can do well on the training set, but the question is
+      how well it does on the testing set.
+    <p>
+      To help answer this, the output group has a MAX_CRIT criterion.  This
+      will be true if the correct digit has the highest activation (and is
+      within the testGroupCrit of the correct value).  If you run "test" on
+      the testing set, the last thing it tells you is the percentage of
+      testing examples it got correct.  If you set the testGroupCrit to 0.5,
+      then it will only mark an example correct if the activation of the
+      network's choice is above 0.5.
+    <p>
+      You will probably get about 95% correct on the testing set out of the
+      box.  Try judging the examples by eye.  Can you recognize digits as well
+      as the network?  
+    <p>
+      Try improving on the network's 95% performance.  Maybe with a weight
+      decay in the neighborhood of 0.001.  If that doesn't help, you might try
+      reducing the number of hidden units.  It's the conventional wisdom that
+      a smaller network leads to better generalization.
+    <p>
+      You may find, however, that neither of these things help
+      generalization.  Now trying increasing the number of hidden units to 15
+      or 20.  Did generalization performance improve?  How about combining more
+      hidden units with weight decay?  I managed to get 98% accuracy on the
+      test set at one point, but I'm not telling how.  Ok, I don't remember
+      how.  Can you beat 98%?
+    <p>
+      Sometimes you can get better generalization performance by using more
+      hidden units and weight decay to keep the weights small.  That is often
+      true on "fuzzy" tasks like this, but probably won't be true for logical
+      sorts of problems where you want the network to compute a discrete
+      function.
+    <p>
+      Are the problems you're interested in more often fuzzy or logical?
+      Fuzzy logic?  No, no.  That's for people who don't know how to use
+      neural nets.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@cs.cmu.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 21:28:37 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

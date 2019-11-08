@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: How To Create Example Loading Commands</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: How To Create Example Loading Commands</h1>
+    <hr>
+    <p>
+      If you have created a new type of network, you may need to override the
+      standard functions for loading examples and example events into the
+      network.  You do this by defining a new example or event loading function
+      and setting the example set's <i>loadEvent</i> or <i>loadExample</i>
+      function pointer to your new function.  The function should be placed in
+      extension.h.  You will probably want to define a shell command which
+      will actually set the <i>loadEvent</i> or <i>loadExample</i> pointer
+      to your own function.
+    <p>
+      Another thing you may want to customize is the order in which examples
+      are selected during training or testing.  This is done by creating a new
+      example selection type.  Add the new type to the EXAMPLE SELECTION TYPES
+      section of type.h, as in:
+      <pre>
+    /* DOUG... */
+    #define MY_EX_MODE   ((mask) 1 << 12)
+    /* ...DOUG */</pre>
+    Now write an example selection command and put it in extension.c.  It
+    should be similar to this:
+    <pre>
+    static flag myLoadNextExample(ExampleSet S) {
+      S->currentExampleNum = randInt(S->numExamples);
+      return S->loadExample(S->example[S->currentExampleNum]);
+    }</pre>
+    <p>
+      Finally, register the example selection type by putting a line like this
+      in <code>userInit()</code> in <a href="Src/extension.c">extension.c</a>:
+    <pre>
+    registerExampleModeType("MY_EX_MODE", MY_EX_MODE, myLoadNextExample);</pre>
+    <p>
+      Now you can call <a
+	href="Commands/exampleSetMode.html">exampleSetMode</a> with the mode
+      "MY_EX_MODE" and examples will be selected using your function.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 23:46:15 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

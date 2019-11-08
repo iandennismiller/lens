@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Using Lens as a Library</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Programmer's Guide: Using Lens as a Library</h1>
+    <hr>
+    <p>
+      Because of its scripting language and the ability to extend it with C
+      code, many applications could be built using Lens as a base.  However,
+      some users may prefer to incorporate neural networks into an existing
+      C application.  This can be accomplished quite easily with the Lens
+      libraries.
+    <h3>Compiling the Library</h3>
+    <p>
+      To compile the Lens libraries, simply do "<code>make liblens</code>" or
+      "<code>make libalens</code>" for a standard or advanced version,
+      respectively.  This will create a static library in your Bin directory
+      with a name like liblens2.3.a or libalens2.3.a.
+
+    <h3>Using the Library</h3>
+    <p>
+      The basic interface to the Lens library is contained in the lens.h file
+      in the source directory.  It looks like this:
+<hr width="80%">
+<pre>
+#ifndef LENS_H
+#define LENS_H
+
+#include "system.h"
+extern flag startLens(char *progName, flag batchMode);
+extern flag lens(char *fmt, ...);
+
+#endif /* LENS_H */</pre><hr width="80%">
+    <p>
+      The interface consists of two simple functions.  startLens() is used to
+      get Lens going.  The first argument should be the name of your
+      application (its argv[0]) and the second should be true if you want to
+      start Lens in batch mode or false if you want graphics.
+    <p>
+      The lens() command simply evaluates a Lens shell command.  It is used
+      like printf so you can build up a command using a format and a list of
+      arguments.  Or you could just pass it a static string.
+    <p>
+      Here is a simple C file that uses the Lens library:
+<hr width="80%">
+<pre>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;lens.h>
+
+int main(int argc, char *argv[]) {
+  char line[1024];
+  if (startLens(argv[0], 1)) {
+    fprintf(stderr, "Lens Failed\n");
+    exit(1);
+  }
+  lens("source ../Examples/digits.in");
+  while (fgets(line, 1024, stdin)) lens(line);
+  return 0;
+}</pre><hr width="80%">
+    <p>
+      It starts Lens in batch mode, sources the digits example, and then
+      passes anything you type to the Lens interpreter.  Here is the Makefile
+      used to compile it:
+
+<hr width="80%">
+<pre>
+LENS_SRC= ${LENSDIR}/Src
+LENS_BIN= ${LENSDIR}/Bin/${HOSTTYPE}
+LIBS= -L${LENS_BIN} -llens2.3 -ltk8.3 -ltcl8.3 -lm -lX11
+
+tlens: tlens.c Makefile
+	gcc -Wall -o tlens -I ${LENS_SRC} tlens.c ${LIBS}
+</pre><hr width="80%">
+    <p>
+      Note that after including the Lens library you also need to include
+      the tk, tcl, math, and X11 libraries.
+
+    <h3>The Tcl Interpreter</h3>
+    <p>
+      The Lens command really just passes anything you give it to the Tcl
+      interpreter called Interp (a declaration of which is found in unit.h).
+    <p>
+      If an error occurs while processing a command, an error message will be
+      printed to stderr and the TCL_ERROR code (1) will be returned.
+      Otherwise the TCL_OK code (0) will be returned.
+    <p>
+      You can access the return value of the command you executed (note that
+      in Tcl the return value is different from the return code) by calling
+      Tcl_GetStringResult(Interp).  You will need to include the tcl.h library
+      before you can do that, however.  There are lots of other neat things
+      you can do in C with the Tcl interpreter that are described in the
+      <a href="http://dev.scriptics.com/man/tcl8.3/index.htm">Tcl/Tk
+	manual</a>.
+    <p>
+      When Lens runs as a stand-alone application in non-batch mode, it runs
+      in a loop that updates the displays and looks for incoming messages
+      whenever it is idle.  If you use Lens as a library, whether or not it is
+      in batch mode, it will not try to "stay awake".  It will just do
+      whatever you tell it to do and then return control to you.  If you want
+      Lens to take care of pending screen updates and events, you should call
+      lens("update");.  If you want to do this perpetually, you will need a
+      loop that periodically calls <a
+	href="http://dev.scriptics.com/man/tcl8.3/TclCmd/update.htm">update</a>.
+
+    <h3>Accessing Lens Structures</h3>
+    <p>
+      For efficiency or convenience, you may want to directly reference the C
+      data structures or functions in Lens.  This is fine, provided you take
+      responsibility for your own seg faults.  To access the structures, just
+      include the necessary Lens header files, like network.h.  You can find
+      out all about the <a href="progStructures.html">structures here</a>.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 13 13:57:53 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

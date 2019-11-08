@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Script Files</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: Script Files</h1>
+    <hr>
+    <p>
+      Lens script files are just standard Tcl script files.  It is customary
+      to give a Tcl script file the extension ".tcl".  It is more or less
+      customary to end Lens script files used primarily for build networks
+      with the extension ".in".  If the Lens script file doesn't create a
+      network, I would use the ".tcl" extension.  If you use extensions other
+      than these, you may want to change the default file filter used by the
+      file browser for script files by editing the <a
+	href="customization.html">.lensrc</a> file.
+    <p>
+      A script is run using the <a href="Commands/source.html">source</a>
+      command.  The behavior of this command in Lens is slightly different
+      than that of the standard Tcl command.  In Lens, the current directory
+      will be changed to the directory containing the script file while the
+      script is being executed and then changed back at the end.  This makes
+      it possible to use relative references to files accessed within the
+      script.  For example, a network building script might contain the
+      command:
+    <pre>
+    loadExamples foo.ex</pre>
+    <p>
+      Assuming that foo.ex is located in the same directory as the script,
+      this will only work properly if the current directory becomes that
+      directory while the script is executing.
+    <p>
+      Using <a
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/return.htm">return</a>
+      within the top level of a script will cause the script to end.  However,
+      if return is called within a procedure invoked during the script, only
+      that procedure will end.  Using <code>return -code return</code>,
+      rather than just <code>return</code> will cause the current script to
+      exit, even if it is executed within a procedure.  This will not cause
+      parent scripts to exit, however.  To do that as well, use <code>return
+	-code error</code> or just <a 
+      href="http://dev.scriptics.com/man/tcl8.3/TclCmd/error.htm">error</a>.
+    <p>
+      Arguments cannot be passed to a script as in other languages.  If you
+      would like to run a script with arguments, you might instead define a
+      procedure inside the script and put your code inside the body of the
+      procedure.  You could then source the script to define the procedure and
+      then call the procedure with its arguments.
+    <p>
+      You can avoid sourcing the script containing the procedure by using the
+      <a href="Commands/index.html">index</a> command to create a
+      <code>.tclIndex</code> file.  The <code>.tclIndex</code> file is a
+      record of all the procedures defined in all the script files in the
+      directory. If a procedure is executed that has not been defined and the
+      procedure is 
+      listed in a <code>.tclIndex</code> somewhere in your <a
+      href="customization.html"><code>auto_path</code></a>, its file will be
+      sourced and then the procedure executed.
+    <p>
+      In order for a procedure to be registered by <a
+      href="Commands/index.html">index</a>, it must be defined in a file whose
+      name ends with ".tcl" or ".in".  If you write a new procedure, you must
+      run <a href="Commands/index.html">index</a> again before it will be
+      accessible.  If you change a procedure after it has been loaded in the
+      interpreter, you must re-source its file by hand to get the new version.
+    <p>
+      Rather than creating a new script file for each procedure you may want
+      to just create a single ".tcl" file in your project directory that
+      contains definitions of all the procedures you will use.  Then you will
+      have less clutter and the file need only be read once so procedures will
+      execute more quickly.  You may also want to add a directory to your <a
+	href="customization.html"><code>auto_path</code></a> containing scripts
+      that define procedures you use on several projects.
+<p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Fri Nov 10 18:28:07 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

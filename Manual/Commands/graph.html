@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: graph</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>graph</font> - creates, deletes, or manipulates graphs
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    graph [create | list] | [delete | refresh | update | store | clear | 
+        hide | show] &lt;graph-list></pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command performs several different operations on graphs.  They are
+      as follows:
+    <p>
+      "<code>graph create</code>" creates a new graph and returns its name,
+      which is an integer index into the <i>root.graph()</i> array.  The new
+      graph has no trace
+    <p>
+      "<code>graph list</code>" returns a list of the numbers of all of the
+      graphs.
+    <p>
+      "<code>graph delete &lt;graph-list></code>" destroys all of the graphs
+      whose numbers are listed.  <code>*</code> refers to all graphs.
+    <p>
+      "<code>graph refresh &lt;graph-list></code>" redraws one or more graphs.
+      This may be necessary if you have directly changed a parameter for the
+      graph using <a href="setObject.html">setObject</a> or the Object Viewer.
+    <p>
+      "<code>graph update &lt;graph-list></code>" causes the active traces in
+      the graph(s) to update themselves.  This adds an additional point to the
+      trace using the current value of the object or command that the trace is
+      tracking.  If the graph's <i>updateEvery</i> field is greater than 1,
+      then an update may not actually occur every time this is called.  If a
+      graph has been configured to update NEVER, it won't be updated by this
+      command.
+    <p>
+      "<code>graph store &lt;graph-list></code>" causes the graphs in
+      the list to store themselves.  This creates an inactive and transient
+      copy of the active traces, and then clears the active traces.
+    <p>
+      "<code>graph clear &lt;graph-list></code>" causes the graphs in
+      the list to clear themselves.  This deletes the transient traces and
+      clears the active traces.
+    <p>
+      "<code>graph hide &lt;graph-list></code>" hides the graphs in
+      the list.  A graph that is hidden continue to update itself, but there
+      is no graphical window so the graph updates are much faster.
+    <p>
+      "<code>graph show &lt;graph-list></code>" shows all of the hidden 
+      graphs, creating windows for them.  In BATCH mode, this does nothing.
+    <p>
+      You can read more about graphs in the <a href="../graphs.html">Graphs
+	section</a> of the main manual.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To create a graph, add a trace to it, change its columns to 500 and
+    redraw it, do:
+    <pre>
+    lens> set g [graph create]
+    lens> trace create $g error
+    lens> setObject graph($g).cols 500
+    lens> graph refresh $g</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="graphObject.html">graphObject</a>,
+    <a href="trace.html">trace</a>,
+    <a href="exportGraph.html">exportGraph</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 10:52:38 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

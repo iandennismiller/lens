@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Training Standard Networks</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Training Standard Networks</h1>
+    <hr>
+    <p>
+      A network is made ready for training with the <a
+      href="Commands/resetNet.html">resetNet</a> command or by pressing the
+      "Reset Network" button on the Main Window.  This will randomize all
+      non-frozen weights, clear weight update direction information, reset
+      unit outputs to the <i>initOutput</i> and other unit fields to
+      appropriate values, and set the network's <i>totalUpdates</i>,
+      <i>error</i>, and several other values to zero.
+    <p>
+      Training is performed primarily using the <a
+      href="Commands/train.html">train</a> command.  Most of the training
+      parameters must be set before-hand either using the entries in the Main
+      Window and Object Viewer or with <a
+      href="Commands/setObject.html">setObject</a>.  The parameters to
+      <code>train</code> can optionally set the number of weight updates, the
+      report interval, and the algorithm.  If any of these values are left
+      out, the previous value is reused.  Training can also be done using the
+      algorithm-specific commands <a
+      href="Commands/steepest.html">steepest</a>, <a
+      href="Commands/momentum.html">momentum</a>, <a
+      href="Commands/dougsMomentum.html">dougsMomentum</a>, and <a
+      href="Commands/deltaBarDelta.html">deltaBarDelta</a>.  These basically
+      just call the generic <code>train</code> command with a flag for the
+      particular algorithm.  <b>dougsMomentum is the default algorithm</b> and
+      the default learning rate is set accordingly.  Smaller learning rates
+      may be needed with other algorithms.
+    <p>
+      Training consists of repeatedly performing forward and backward passes
+      on a <i>batch</i> of examples, accumulating link derivatives, and then
+      updating the link weights based on the derivatives and the training
+      algorithm.  The <i>batchSize</i> is the number of examples processed
+      between weight updates.  A <i>batchSize</i> of 0 indicates full batches,
+      which will have the same number of examples as the training set, however
+      large that may be.  The <i>reportInterval</i> determines the number of
+      weight updates that occur between progress reports.  This should be kept
+      large enough that reports don't occur annoyingly often.
+
+    <h3>Example Selection</h3>
+    <p>
+      Within a batch, examples are chosen based on the example set's selection
+      mode.  This can be ORDERED, RANDOMIZED, PERMUTED, PROBABILISTIC, PIPE,
+      or CUSTOM.  The selection mode is set when the example set is loaded and
+      can be changed with the <a
+      href="Commands/exampleSetMode.html">exampleSetMode</a> command.  ORDERED
+      mode, which is the default, runs through examples in the order in which
+      they were loaded from the example file.  RANDOMIZED mode selects
+      examples at random with equal probabilities and with replacement.
+      PERMUTED mode selects examples at random with equal probabilities but
+      without replacement.  Thus, each example will be presented once before
+      any are repeated.
+    <p>
+      PROBABILISTIC mode selects examples based on their given
+      <i>frequency</i>.  Frequency values specified in the example file will
+      be normalized over 
+      all examples and this distribution used for selection.  If example sets
+      are concatenated, the distribution will be recalculated based on the
+      specified frequencies.  The default frequency for an example is 1.0.  If
+      the network's <i>pseudoExampleFreq</i> flag is on, pseudo
+      example-frequencies will be used.  This does not affect the rate at
+      which examples are presented but will scale the error (and output unit
+      error derivatives) on each example by the its <i>frequency</i>.
+    <p>
+      PIPE mode is used for example sets that do not have the examples stored
+      but read each example from an open pipe as it is needed.  This is useful
+      if you want randomly generated examples or examples generated based on
+      the performance of the network or other factors.  It is also useful if
+      the example set is too large to load completely into memory.  The
+      example set has a flag <i>pipeLoop</i> that determines what happens when
+      the pipe is exhausted.  If <i>pipeLoop</i> is TRUE, the default, it will
+      be reopened when the end is reached.  Otherwise, the pipe will close and
+      attempting to use the example set will cause an error.  An example of
+      reading and writing to an example-generating pipe is given in the
+      description of the <a href="Example/xor.html">XOR network</a>.
+    <p>
+      CUSTOM mode allows you to write a procedure that generates the index of
+      the next example.  When it's time to choose the next example, the
+      example set's <i>chooseExample</i> procedure will be called.  This
+      should return an integer between 0 and one less than the number of
+      examples, inclusive.
+
+      
+    <h3>Progress Reports</h3>
+    <p>
+      If the <i>reportInterval</i> is 0, no progress reports will be produced.
+      Otherwise, progress reports are generated following the first and last
+      weight updates of training and after each <i>reportInterval</i>.  A
+      series of progress report looks like the following:
+    <pre>
+    __Update____Error___UnitCost__Wgt.Cost__Grad.Lin__TimeUsed__TimeLeft__
+          1)   339.271   9845.37   63.6118      -           0s    2m 27s
+         40)   222.877   7869.83   67.6063   0.91978       14s    2m  9s
+         80)   218.415   669.471   255.497   0.13872       27s    1m 53s
+        120)   182.575   1275.39   366.961   0.10128       41s    1m 38s
+        160)   155.519   1207.68   511.822   0.08328       55s    1m 24s
+        200)   127.880   1344.23   699.051   0.08551    1m 10s    1m 10s
+        240)   105.500   1339.00   889.689   0.00279    1m 24s       57s
+        280)   93.6190   1294.91   1020.21  -0.12509    1m 39s       43s
+        320)   87.4166   1251.86   1093.53  -0.22272    1m 54s       29s
+        360)   83.6865   1230.53   1138.31  -0.33909    2m 10s       15s
+        400)   81.8992   1228.21   1152.46  -0.46680    2m 25s        0s</pre>
+    <p>
+      The first column is the total number of weight updates that have been
+      performed on the network across all training runs.  It is taken from the
+      network's <i>numUpdates</i> field.  The second is the overall network
+      error on the last batch of training, not accumulated across all batches
+      since the last report.
+    <p>
+      The third column is the <i>unitCost</i>, which is summed over all groups
+      that have a <a href="costTypes.html">unit output cost function</a> and
+      is a measure of how binary the units are. 
+    <p>
+      The fourth column is the <i>weightCost</i> which is the sum of the
+      squared weight values.  It will almost invariably increase unless you
+      have some <i>weightDecay</i> going.  The weight cost and gradient
+      linearity are only calculated on updates for which they will be reported.
+    <p>
+      The fifth column is the <i>Gradient Linearity</i>.  This is a measure of
+      how consistent the gradient descent trajectory is and is equal to the
+      negative of the cosine of the angle between the most recent link weight
+      error derivative vector and the link weight delta vector (the amount
+      each weight changed) from the weight update preceding that.  A value of
+      1.0 indicates that the network is on a steady course, but the learning
+      rate may be a bit slow.  A negative value means you may be popping
+      around randomly and might need to lower the learning rate.  On the other
+      hand, it may mean that you are just sitting in a local minimum and that
+      raising the learning rate might jump you out and send the <i>Gradient
+      Linearity</i> up towards 1.0 again.
+    <p>
+      The <i>TimeUsed</i> is relatively self-explanatory.  The <i>TimeLeft</i>
+      is an estimate of the training time remaining.  It is based on the
+      time-averaged rate at which training is progressing.  If the load on the
+      machine changes or you slow the simulator down by starting a graph or
+      something, the time estimate will adapt over a few reports.  The first
+      couple of estimates are likely to be inaccurate, particularly on a
+      shared machine.
+
+    <h3>Stopping Criteria</h3>
+    <p>
+      Training continues until one of four things happens: <i>numUpdates</i>
+      weight updates are performed, the overall accumulated <i>error</i> on a
+      batch of examples is less than or equal to the network's
+      <i>criterion</i> value, the <i>group criterion</i> is reached on a
+      batch, or the user stops training by pressing "Stop Training" or by
+      causing an interrupt signal. 
+    <p>
+      The group criterion is met when the <i>groupCriterionReached()</i> is
+      true for every group at the end of every event in every example in the
+      batch.  Each group has its own <i>groupCriterionReached()</i> function.
+      The standard group criterion function is true during training if the
+      output of every 
+      unit is within its group's <i>trainGroupCrit</i> of the target (or
+      within the <i>testGroupCrit</i> during testing).  If the
+      group's <i>trainGroupCrit</i> is NaN, the network's value will be used.
+      Clearly, this standard function is only relevant for output groups.
+      It will be the default for output groups of continuous networks.  Other
+      networks have no <i>groupCriterionReached()</i> by default.  If no
+      groups have a criterion function, the group criterion will never be
+      reached for the network.
+
+    <h3>Parameters</h3>
+    <p>
+      The following network-level parameters are used in training. These and
+      other parameters may be changed in the middle of training.
+
+    <dl>
+      <dt><i>learningRate</i>
+	<dd>Scales the weight deltas (changes).  It is used in all algorithms.
+      <dt><i>momentum</i>
+	<dd>Determines the contribution of the previous weight delta to the
+	new weight delta.  It is used in momentum descent and delta-bar-delta.
+	<dt><i>adaptiveGainRate</i>
+	<dd>For groups with the ADAPTIVE_GAIN type, this determines the
+	learning rate of the units' gains.  It can be overridden at the group
+	level.
+      <dt><i>weightDecay</i>
+	<dd>This fraction of each weight is subtracted from the weight on
+	every update.  This is used in all algorithms.
+      <dt><i>outputCostStrength</i>
+      <dd>This scales the contribution of the output cost functions to the
+	overall outputCost.  The output cost functions are normally used to
+	encourage units to have binary outputs.
+      <dt><i>outputCostPeak</i>
+      <dd>This affects the shape of the output cost functions.  It is the unit
+	output value that is most penalized.
+      <dt><i>targetRadius</i>
+	<dd>Unlike the previous parameters, this is used during processing of a
+	batch rather than during weight updates following a batch.  If an 
+	output unit's activation is within this range of the target, there will
+	be no error.  This is done by effectively adjusting the target to be
+	the same as the activation.  If the activation is farther from the
+	target than this distance, the effective target will be this much
+	closer to the activation.
+      <dt><i>zeroErrorRadius</i>
+	<dd>This is slightly different than <i>targetRadius</i>.  If the
+	output unit's activation and target are within this range, there will
+	be no error.  But if the activation is farther from the target than
+	this distance, the effective target will not move.  Thus, there will
+	be a discontinuity in the error function at this distance from the
+	target.  <i>targetRadius</i> and <i>zeroErrorRadius</i> could
+	reasonably be used together if the <i>zeroErrorRadius</i> is larger.
+      <dt><i>rateIncrement</i>
+	<dd>Determines the increment of a link's individual learning rate in
+	delta-bar-delta if its current error derivative and previous delta
+	have opposite sign (which is good).
+      <dt><i>rateDecrement</i>
+	<dd>Determines the scaling back of a link's individual learning rate
+	in delta-bar-delta if its current error derivative and previous delta
+	have the same sign (which is bad).
+      <dt><i>trainGroupCrit</i>
+	<dd>This is used during training to decide if the groups'
+	<i>groupCriterionReached()</i> functions have achieved criterion.
+      <dt><i>testGroupCrit</i>
+	<dd>This is used during testing to decide if the groups'
+	<i>groupCriterionReached()</i> functions have achieved criterion.
+    </dl>
+
+    <h3>Algorithms</h3>
+    <p>
+      The process of accumulating error derivatives over a batch of examples
+      is the same for all training algorithms.  The algorithm only affects the
+      updating of weights given their error derivatives.  The weight update
+      equations for each link, L, using <b>steepest</b> descent are as follows:
+    <pre>
+    L->lastWeightDelta = -learningRate * L->deriv;
+    if (weightDecay > 0.0) L->lastWeightDelta -= weightDecay * L->weight;
+    L->weight += L->lastWeightDelta;</pre>
+    <p>
+      <code>lastWeightDelta</code>, as used here, actually means the current
+      weight delta.  Under <b>momentum</b> descent the equations are:
+      <pre>
+    L->lastWeightDelta = -learningRate * L->deriv + momentum * L->lastWeightDelta;
+    if (weightDecay > 0.0) L->lastWeightDelta -= weightDecay * L->weight;
+    L->weight += L->lastWeightDelta;</pre>
+    <p>
+      <b>dougsMomentum</b> is exactly like <i>momentum</i> with the exception
+      that the pre-momentum weight step vector is bounded so that its length
+      cannot exceed 1.0. After the momentum is added, the length of the
+      resulting weight change vector can grow as high as <i>1 /
+      momentum</i>. This change allows stable behavior with much higher
+      initial learning rates, resulting in less need to adjust the learning
+      rate as training progresses.  It is usually safe to start training with
+      high momentum in <b>dougsMomentum</b>, but not in standard momentum
+      descent. 
+    <p>
+      <b>deltaBarDelta</b> maintains individual learning rates for each
+      weight.  These increase when consecutive weight changes are heading in
+      the same direction and decrease otherwise.  This tends to be very good
+      at simple problems but not quite as good at complex ones where the
+      weight changes often switch direction, causing the learning rates to
+      become very small.  The link learning rate is stored in the
+      <code>lastValue</code> field of the link:
+    <pre>
+    if (sameSign(L->deriv, L->lastWeightDelta))
+      L->lastValue *= rateDecrement;
+    else
+      L->lastValue += rateIncrement;
+    L->lastWeightDelta = -L->lastValue * L->deriv + momentum * L->lastWeightDelta;
+    if (weightDecay > 0.0) L->lastWeightDelta -= weightDecay * L->weight;
+    L->weight += L->lastWeightDelta;</pre>
+
+    <h3>Testing</h3>
+    <p>
+      The <a href="Commands/test.html">test</a> command is used to test the
+      network.  It will reset the testing set and then run a forward pass for
+      each example in the set, accumulating the overall network <i>error</i>.
+      If there is no testing set, the training set will be used.  The order of
+      the examples is determined by the example set mode of the testing set.
+      If the mode is ORDERED or PERMUTED, each example will be presented
+      exactly once.  Otherwise, as many examples will be presented as there are
+      examples in the set, but they will be chosen randomly.
+    <p>
+      The commands <a
+      href="Commands/openNetOutputFile.html">openNetOutputFile</a> and <a
+      href="Commands/closeNetOutputFile.html">closeNetOutputFile</a> control
+      the writing of examples and targets to a file during training and
+      testing.  This can be used to record the network's performance for
+      analysis by an external program.
+
+    <h3>Network Procs</h3>
+    <p>
+      The network contains a number of procedure hooks that can be used to
+      customize the behavior of the network without writing any C code.  
+      Each is a user-defined procedure that is executed at a particular time
+      during training or testing of the network.  They are as follows:
+    <ul>
+      <li> preEpochProc
+      <li> postEpochProc
+      <li> postUpdateProc
+      <li> preExampleProc
+      <li> postExampleProc
+      <li> preExampleBackProc
+      <li> preEventProc
+      <li> postEventProc
+      <li> preTickProc
+      <li> postTickProc
+      <li> preTickBackProc
+    </ul>
+    <p>
+      Although the names are pretty self-explanatory, these are described a
+      bit more in the <a href="progStructures.html">structures section</a>.
+    <p>
+      If you wanted to network to print out the error after each example, you
+      could do:
+    <pre>
+    lens> setObj postExampleProc {puts [getObj error]}</pre>
+    <p>
+      You can also do special things by specifying example or event procs in
+      the <a href="exampleFiles.html">example set</a>.  Whether you use the
+      network procs or the example set procs depends on whether the proc is
+      more logically associated with the environment or the network.
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 20 18:39:37 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

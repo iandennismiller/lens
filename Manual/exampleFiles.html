@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Example Files</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Files: Example Files</h1>
+    <hr>
+    <p>
+      Example files may be written in either text or binary format.  The text
+      format is rather complex, yet flexible.  The binary format is simpler,
+      but producing it involves complexities such as translating between
+      machine and network byte ordering.  However, binary files have the
+      advantage that they are much faster to load.  The difference can be
+      significant for large files with tens of thousands of examples.  They
+      will also tend to be smaller if the file contains many high-precision
+      floating point values. 
+      Ordinarily you would not write binary files yourself.  Rather, you would
+      write text files, load them into Lens, and then save them in binary
+      format.
+    <p>
+      It is customary to give text example files the extension ".ex"
+      and binary example files the extension ".bex".  When loading a
+      file, it is not necessary to specify whether it is binary or
+      text.  Binary files will be identified because they begin with a
+      magic cookie.  When saving files, you might as well always add
+      .gz or .bz2 to the name so the file will automatically be
+      compressed.  Decompression adds negligible time to the loading
+      process.  When loading, leave off the .gz or .bz2 and the file
+      will be loaded correctly whether or not it is compressed.
+    <p>
+      Rather than loading sets all at once, it is possible to open example
+      sets in <a href="Commands/loadExamples.html">PIPE</a> mode which means
+      that each example is read from an open file or pipe as it is needed and
+      is discarded when the next example is read.  If the piped examples are
+      in text format, there must be a newline after each example.  The line
+      break is not
+      necessary for example files loaded all at once.  If a program is
+      generating examples on the fly, it may be necessary to flush the output
+      after each example to avoid starvation.  Example files running in pipe
+      mode will loop by default, meaning that once the pipe is exhausted, it
+      will be reopened automatically.
+    <p>
+      Before reading further, you may want to familiarize yourself with
+      concepts of <a href="time.html">time</a> and example <a
+      href="time.html">events</a> in Lens, although you may not need to concern
+      yourself too much with this if you are just writing simple example files
+      for feed-forward networks with one set of inputs and one set of targets
+      per example.  If the 
+      training set selects examples in <a
+      href="Commands/exampleSetMode.html">ORDERED</a> mode (which means that
+      examples are presented to the network during training in the order in
+      which they were read from the example file), having more than one event
+      per example or making each event a different example may be basically
+      equivalent for most networks.  However, multiple events per example
+      should be used if that is the logical organization of the example set.
+      Additionally, if you are using any example selection strategy other than
+      ORDERED, you must use multiple events per example if those events need
+      to occur in sequence.
+
+
+      
+    <h3>Text Format</h3>
+    <p>
+      The text example file format was substantially altered for Lens version
+      2.0, although most earlier formats can still be loaded.  Note that it
+      is no longer necessary to specify the number of input and output units
+      in the header.  Those values will be ignored if they do appear.  In
+      fact, it is no longer necessary to even have a set header.
+    <p>
+      The file format is shown below.  As in C code, whitespace only matters
+      when leaving it out would cause ambiguity or cause two numbers or
+      strings to run together.  Extra whitespace generally does not matter
+      (although it is a good idea to follow each example with a line break).
+      Any line beginning with a hash mark ("<code>#</code>") will be treated
+      as a comment and ignored.  In the format specification, elements in
+      angled brackets denote values of specific types.  <code>&lt;I ></code>
+      denotes an integer, <code>&lt;R ></code> denotes a real number,
+      <code>&lt;B ></code> denotes a boolean (0 or 1) value, and
+      <code>&lt;S ></code> denotes a string.  The string should be surrounded
+      by quotes, brackets, parentheses, or curly braces if it contains any
+      whitespace.  A dash ("<code>-</code>") can be used in place of a real
+      number to indicate a NaN, which is often used for parameter values or to
+      inactivate inputs or targets.
+    <p>
+      All fields are optional unless they are in <font color=red>red</font>.
+      Words and punctuation in <b>bold</b> should appear in the file as
+      written.  Text in <font color=blue>blue</font> is just explanatory and
+      does not appear.  If two or more things are in blue square brackets
+      separated by pipes ("<font color=blue><code>|</code></font>"), then one
+      or the other must appear.  If something is in parentheses, it can be
+      repeated 0 or more times.  If two or more things are in parentheses and
+      are separated by pipes ("<code>|</code>"), then you can repeatedly
+      choose from among the alternatives.  For example, <code><font
+      color=blue>(</font>a <font color=blue>|</font> b <font
+      color=blue>|</font> c<font color=blue>)</font></code> would match a
+      sequence of zero of more characters, where each character is either
+      <code>a</code>, <code>b</code>, or <code>c</code>.  There can't be any
+      space between a field identifier and the colon.
+      
+    <pre>
+    <b>proc:</b>  &lt;S set-proc>
+    <b>max:</b>   &lt;R set-maxTime>
+    <b>min:</b>   &lt;R set-minTime>
+    <b>grace:</b> &lt;R set-graceTime>
+    <b>defI:</b>  &lt;R set-defaultInput>
+    <b>actI:</b>  &lt;R set-activeInput>
+    <b>defT:</b>  &lt;R set-defaultTarget>
+    <b>actT:</b>  &lt;R set-activeTarget>
+    <b>;</b>
+     
+    <font color=blue>for each example:</font>
+      <b>name:</b>   &lt;S example-name>
+      <b>proc:</b>   &lt;S example-proc>
+      <b>freq:</b>   &lt;R example-frequency>
+      <font color=red>&lt;I example-numEvents></font>   <font color=blue>this can be left out if it is 1</font>
+    
+      <font color=blue>for each list of events:</font>
+        <b>[</b><font
+      color=blue>(</font>&lt;I event> <font color=blue>|</font> &lt;I event><b>-</b>&lt;I event> <font color=blue>|</font> <b>*</b><font color=blue>)</font>
+          <b>proc:</b>  &lt;S event-proc>
+          <b>max:</b>   &lt;R event-maxTime>
+          <b>min:</b>   &lt;R event-minTime>
+          <b>grace:</b> &lt;R event-graceTime>
+          <b>defI:</b>  &lt;R event-defaultInput>
+          <b>actI:</b>  &lt;R event-activeInput>
+          <b>defT:</b>  &lt;R event-defaultTarget>
+          <b>actT:</b>  &lt;R event-activeTarget>
+        <b>]</b>
+    
+        <font color=blue>(</font><b>I:</b><font color=blue>|</font><b>i:</b><font color=blue>|</font><b>T:</b><font color=blue>|</font><b>t:</b><font color=blue>|</font><b>B:</b><font color=blue>|</font><b>b:</b><font color=blue>|) (
+          dense range:</font>  <b>(</b>&lt;S group-name> &lt;I first-unit><b>)</b> <font color=blue>(</font>&lt;R input-value><font color=blue>) |
+          sparse range:</font> <b>{</b>&lt;S group-name> &lt;R input-value><b>}</b> <font color=blue>[</font><b>*</b> <font color=blue>| (</font>&lt;I unit> <font color=blue>|</font> &lt;I unit>-&lt;I unit><font color=blue>)]
+        )</font>
+      <b><font color=red>;</font></b></pre>
+
+    <h4>Example Set Header</h4>
+    <p>
+      The example set header consists of a number of optional fields,
+      which may appear in any order.  The <code><b>proc:</b></code> is a
+      procedure that is executed before the rest of the set is loaded.
+      Typically, this will define some procedures (or source a script file
+      defining procedures) that will be used by procs belonging to examples or
+      events in the set.
+    <p>
+      The header may also specify the <i>maxTime</i>, <i>minTime</i>,
+      <i>graceTime</i>, <i>defaultInput</i>, <i>activeInput</i>,
+      <i>defaultTarget</i>, and <i>activeTarget</i> fields of the example set.
+      The <i>...Time</i> values are used for any event that does not specify
+      its own non-NaN values.  The <i>defaultInput</i> and
+      <i>defaultTarget</i> values are used for any unit that does not have
+      a value specified on a particular event.  The <i>activeInput</i> and
+      <i>activeTarget</i> are the default values used when a unit is named in
+      a sparse representation, which is <a href="#sparse">explained below</a>.
+    <p>
+      The set header need not end with a semicolon.  In fact, there could be
+      no set header at all, which will typically be the case.  However, a
+      semicolon can be used to avoid ambiguity.  For example, if the first
+      example has a <code><b>proc:</b></code> specification at the start of
+      its header, you must do:
+    <pre>
+    ;
+    proc: ...</pre>
+    <p>
+      rather than:
+    <pre>
+    proc: ...</pre>
+    Otherwise, the <code><b>proc:</b></code> will be interpreted as an example
+    set procedure rather than the first example's procedure.
+
+    <h4>Example Header</h4>
+    <p>
+      Each example begins with a header consisting of a few optional
+      specifications, which can appear in any order.  The most important one
+      is the number of events in the example.  If this does not appear, it is
+      assumed to be 1.  Otherwise, it is mandatory.  
+<p>
+      <code><b>name:</b></code>
+      defines the label that will be used for the example.  If no name is
+      given, the example will be labeled by its index, starting with 0.
+      Remember that strings containing whitespace should be surrounded by
+      curly braces.
+    <p>
+      <code><b>proc:</b></code> defines a command that will be run when the
+      example is first loaded.  You might use this to cause the network to do
+      something special before this example.
+    <p>
+      <code><b>freq:</b></code> sets the frequency of example presentation
+      that will be used when selecting examples in <a
+      href="Commands/exampleSetMode.html"><code>PROBABILISTIC</code></a> mode
+      or when using pseudo-example frequencies, which simply scale the error
+      and output derivatives by the example frequency.  The default frequency
+      is 1.0.  Frequencies need not be normalized to a sum of 1.0.  That will
+      be done automatically if <code>PROBABILISTIC</code> mode is used.  You
+      can turn on pseudo-frequencies by setting the network's
+      <i>pseudoExampleFreq</i> field to 1.
+
+    <h4>Event Lists</h4>
+    <p>
+      Following the example header are the event specifications.  Because they
+      are quite flexible, these can be a bit confusing.  There are three main
+      sections that may appear in an event specification: <i>event lists</i>,
+      inputs, and targets.
+    <p>
+      The <i>event list</i> is used to set parameters for the events and
+      activates certain events so that the next inputs and targets will be
+      applied to those events.  Because multiple events can appear in the
+      event list, it is possible to cause events to share input or target
+      representations without duplicating the representation in the example
+      file or in memory.
+    <p>
+      The event list is enclosed in square brackets.  The list is either a
+      series of event numbers and ranges of event numbers or an asterisk,
+      which stands for all events.  There should just be whitespace between
+      elements of the list.  If the list is empty, it is equivalent to having
+      an asterisk.  Following the event list can be a number of optional
+      parameter settings, which can appear in any order.  These settings will
+      only affect the events in the list.  For example, this sets the
+      <i>maxTime</i> and <i>minTime</i> of events 0, 3, 4, 5, 6, and 9:
+    <pre>
+    [0 3-6 9 max:3.5 min:1]</pre>
+    Either of these set the default sparse inputs for all events to -1.0:
+    <pre>
+    [* defI:-1]
+    [defI:-1]</pre>
+    <p>
+      The first set of inputs and the first set of targets following an event
+      list will be applied to those events.  You may not specify more than one
+      set of inputs or more than one set of targets for an event.  If a set of
+      inputs is specified that is not immediately following an event list, it
+      will be applied to the event <i>following the highest numbered event
+      that already has inputs</i>.  A similar rule applies for
+      targets. Consider this example:
+    <pre>
+    6
+    [0-2 4]
+    I: 0 1 0
+    I: 1 0 1
+    T: 1 0
+    ;</pre>
+    <p>
+      The inputs <code>0 1 0</code> will be applied to events 0, 1, 2, and 4,
+      because these inputs immediately follow the event list.  The next
+      inputs, <code>1 0 1</code>, cannot also be applied to those events so
+      they will be applied to event 5.  The targets, however, will apply to
+      the active events, 0-2 and 4, because targets have not yet been
+      specified for those events.  In this example, event 3 won't have any
+      inputs or targets and event 5 won't have targets.
+    <p>
+      You can give inputs and targets to each event in order by simply listing
+      them either in blocks or intermingled:
+    <pre>
+    I: 1 0 0
+    I: 0 1 0
+    I: 0 0 1
+    T: 0 1
+    T: 1 0
+    T: 1 1</pre>
+    or:
+    <pre>
+    I: 1 0 0
+    T: 0 1
+    I: 0 1 0
+    T: 1 0
+    I: 0 0 1
+    T: 1 1</pre>
+    <p>
+      Note, though, that if you had activated a list of events to set some
+      parameters, you will need to active event 0 before you can list the
+      inputs and targets for each event in order.  Otherwise, the first ones
+      will apply to the active events and the others may cause errors.  For
+      example, you may need to do this:
+    <pre>
+    [max: 3]
+    <font color=red>[0]</font>
+    I: 1 0 0
+    I: 0 1 0
+    T: 0 1
+    T: 1 1</pre>
+    <p>
+
+    <h4>Inputs and Targets</h4>
+    <p>
+      A set of inputs is introduced by either <code><b>I:</code></b> or
+      <code><b>i:</code></b>.  Following this is a series of one or more
+      <i>ranges</i>.  A range can either use a dense encoding, which specifies
+      values for a consecutive block of units, or a sparse encoding, which
+      specifies a single value and then a list of unit numbers.  When an event
+      is loaded into the network, first the <i>externalInput</i> of each INPUT
+      unit is set to the event's <i>defaultInput</i> and the <i>target</i> of
+      each OUTPUT unit is set to the event's <i>defaultTarget</i>.  Then each
+      of the ranges is applied to change the inputs or targets for some or all
+      of the units.  Typically the default values will be 0.0, although the
+      user may wish to set them to NaN (-).  A unit with a NaN target will be
+      ignored when error is computed.  A HARD_CLAMP unit with a NaN
+      externalInput will attempt to calculate its input using the standard
+      input combining and transfer methods.  If the unit has no
+      input combining or transfer method or no inputs and the externalInput is
+      NaN, it will probably have an output of 0.
+
+    <h5>Dense Encoding</h5>
+    <p>
+      The dense encoding is preceded by a set of parentheses.  Within the
+      parentheses may be an optional <i>group name</i> and/or an optional
+      <i>first unit</i> index, in either order.  If the group name is
+      specified, only units in that group will be affected and the unit
+      indices will be relative to the start of that group.  Note that any
+      network that uses the example must have a group with that exact name.
+      If the group name must contain whitespace, it may be surrounded by
+      quotation marks, brackets or parentheses.  If a group is not specified,
+      then unit indices will be relative to the entire network, counting from
+      the first unit in the first INPUT group to the last unit in the last
+      INPUT group.  The first unit index is the index (relative to either the
+      group or the network) of the first unit for which an externalInput value
+      will be specified.
+    <p>
+      Following the parentheses is a list of real values, which will be the
+      inputs to the consecutive block of input units including and following
+      the starting unit.  There is no need to specify in advance how many
+      values will be in this list and there is no need to terminate it with
+      any punctuation (unless it is the last thing in the example).  This
+      defaults to 0.  For example:
+    <pre>
+    I: (input2 3) 0.1 0.2 0.3 (2) 0.4</pre>
+    <p>
+      will set the externalInputs to units input2:3, input2:4 and input2:5 to
+      0.1, 0.2, and 0.3, respectively.  The next range then sets the
+      externalInput to the third input unit in the network to 0.4.  If you do
+      not wish to put a group name or first unit in the parentheses, you may
+      leave them off <i>if they are immediately following an</i>
+      <code><b>I:</code></b>.  For example, these two lines are equivalent:
+    <pre>
+    I: () 2 3
+    I: 2 3</pre>
+    <p>
+      The dense encoding for targets is just like that for inputs, except that
+      a <code><b>T:</code></b> introduces it.  If a <code><b>B:</code></b> is
+      used, it means <i>both</i> inputs and targets.  It is equivalent to
+      using <code><b>I:</code></b> and then repeating the whole thing again
+      with a <code><b>T:</code></b>.  The <code><b>B:</code></b> can be very
+      useful for auto-encoder and prediction tasks.  It will save space both
+      in the example file and in memory when the set is loaded.
+
+      <a name=sparse>
+    <h5>Sparse Encoding</h5>
+    <p>
+      The sparse range is introduced by a set of curly braces,
+      <code>{}</code>, rather than parentheses.  Within the curly braces may
+      be an optional group name, as for the dense encoding, and/or an
+      externalInput value.  If the input value is not specified it will
+      default to the event's <i>activeInput</i>.  However, if two or more
+      events are sharing inputs (because they were listed in an event list),
+      the activeInput value of the first event will apply to all of them,
+      regardless of the other events' activeInput values.
+    <p>
+      Following the curly braces is either a * or a list of unit numbers and
+      unit ranges.  The * will cause all units in the group (or in the network
+      if a group is not given) to have the specified externalInput value.
+      Otherwise, only those units whose indices are listed will receive the
+      input.  This example will set the externalInput of units 0, 4, 5, and
+      6 to 1.0, and the externalInput for units 1, 2 and 3 to -1.0:
+    <pre>
+    I: {1.0} 0 2 4-6 {-1.0} 1-3</pre>
+    <p>
+      If you do not wish to put a group name or externalInput value in the
+      curly braces for the first range, the braces may be eliminated and
+      <code><b>i:</code></b> used rather than <code><b>I:</code></b>.  These
+      are equivalent:
+    <pre>
+    I: {} 0 3
+    i: {} 0 3
+    i: 0 3</pre>
+    <p>
+      One more example:
+    <pre>
+    [defI:- actI:1]
+    i: 0-3 5 8 {2.0} 4 9-11</pre>
+    <p>
+      The above case has two ranges.  Units 0, 1, 2, 3, 5, and 8 will have
+      externalInput 1.0.  Units 4, 9, 10, and 11 will have externalInput 2.0, 
+      and units 6, 7, and anything above 12 will have the default input, which
+      is NaN.  Therefore, those units will computed their own inputs and
+      targets using any input combining and transfer function they may have.
+    <p>
+      Sparse targets are similar to sparse inputs, except
+      <code><b>T:</code></b> or <code><b>t:</code></b> are used.  Here is one
+      way to make sure an event has no targets:
+    <pre>
+    T:{-}*</pre>
+    <p>
+      A <code><b>b:</code></b> indicates <i>both</i> inputs and targets.  It
+      is equivalent to using <code><b>i:</code></b> and then repeating the
+      whole thing again with a <code><b>t:</code></b>.
+
+
+    <h4>Examples</h4>
+      Here is a very simple example file for an XOR problem:
+    <pre>
+    I:0 0 T:0;
+    I:0 1 T:1;
+    I:1 0 T:1;
+    I:1 1 T:0;</pre>
+    <p>
+      Here is an equivalent file that is ever so slightly smaller because it
+      uses sparse inputs:
+    <pre>
+    ;;
+    i:1 t:0;
+    i:0 t:0;
+    i:*;</pre>
+    <p>
+      This is a poorly done auto-encoder example file:
+    <pre>
+    I:1 0 0 0
+    T:1 0 0 0;
+    I:0 1 0 0
+    T:0 1 0 0;
+    I:0 0 1 0
+    T:0 0 1 0;
+    I:0 0 0 1
+    T:0 0 0 1;</pre>
+    <p>
+      Here it is improved using sparse encodings:
+    <pre>
+    i:0 t:0;
+    i:1 t:1;
+    i:2 t:2;
+    i:3 t:3;</pre>
+    <p>
+      It can be compressed further using the "both" symbol:
+    <pre>
+    b:0; b:1; b:2; b:3;</pre>
+
+      Here is an XOR example file with many bells and whistles:
+    <pre>
+    # Crazy XOR
+    proc: {
+      puts "You just loaded the crazy XOR file, beware!"
+      setTime 3
+    }
+    max:2 min:0.5
+    
+    # Here is the first example.  It has two events:
+    name:{0 0}
+    freq:2.7
+    proc: {puts "this one's easy"}
+    2
+    [0 max:2 min: 1]
+    [1 max:2.5 proc:{puts "starting the second event"}]
+    # Only specifying inputs for the first event and targets for the second:
+    [0] I: 0 0
+    [1] T: 0;
+    
+    # Here is the second example.  It has one event:
+    freq: 4.5
+    name: "0 1"
+    proc:{puts "example 2"}
+    # This means all (one) events have maxTime of 3.5:
+    [max:3.5]
+    i:1
+    T:1;
+    
+    # Here is the third example.  It has two events with the default headers:
+    name:1-0
+    2
+    # Both events use inputs "1 0", but the first has no targets.
+    [] I: 1 0
+    [1] t:*;
+    
+    # Here is the fourth example.  It has three events:
+    name: {1 1}
+    3
+    proc: {puts "This is the toughy"}
+    # Same inputs for all three events, no target on middle event:
+    [0-1 min:1.5]
+    I: 1 1
+    [0 2]
+    T: 0;</pre>
+
+    <h3>Binary Format</h3>
+    <p>
+      Binary examples files begin with the magic cookie 0xaaaaaaaa, which
+      happens to be equal to -1431655766 or 2863311530 unsigned.  The files
+      must be written with four byte integers and four byte reals.  Both must
+      be big-endian.  When generating binary files on your own, you can
+      convert to standard network byte order and back to your computer's byte
+      order using the <i>htonl()</i> and <i>ntohl()</i> commands.  Most
+      machines happen to use standard, big-endian byte order, so you may be
+      able to ignore this step if you wished.  Pentiums use little-endian
+      order, however.
+    <p>
+      Below is the format for binary files, in which <code>&lt;I
+      ></code> denotes a binary integer, <code>&lt;R ></code>
+      denotes a binary real number, <code>&lt;B ></code> denotes a
+      boolean value (0 or 1), which is encoded as a single byte, and
+      <code>&lt;S ></code> denotes a string written byte by byte, with a
+      terminating '\0'.  Nothing is optional in the binary format.
+
+    <pre>
+    &lt;I magicExampleCookie>
+    &lt;I sizeof(real)>
+    &lt;S set-proc>
+    &lt;R set-maxTime>
+    &lt;R set-minTime>
+    &lt;R set-graceTime>
+    &lt;R set-defaultInput>
+    &lt;R set-activeInput>
+    &lt;R set-defaultTarget>
+    &lt;R set-activeTarget>
+
+    &lt;I num-examples>
+    <font color=blue>for each example:</font>
+      &lt;S example-name>
+      &lt;S example-proc>
+      &lt;R example-frequency>
+      &lt;I example-numEvents>
+
+      &lt;I example-number-of-special-events>
+      <font color=blue>for each special event:</font>
+        &lt;I event-num>
+        &lt;S event-proc>
+        &lt;R event-maxTime>
+        &lt;R event-minTime>
+        &lt;R event-graceTime>
+        &lt;R event-defaultInput>
+        &lt;R event-activeInput>
+        &lt;R event-defaultTarget>
+        &lt;R event-activeTarget>
+ 
+      &lt;I example-numInputSets>
+      <font color=blue>for each set of events that share inputs:</font>
+        &lt;I set-numEventsInList>
+        <font color=blue>for each event specifier in the list:</font>
+          &lt;I event-num>             <font color=blue>event number is negative for the end of a span</font>
+        &lt;I num-ranges>
+        <font color=blue>for each input range:</font>
+          &lt;S range-groupName>
+          &lt;I range-numUnits>
+          &lt;B range-sparseEncoding?>
+          <font color=blue>if a dense encoding:</font>
+            &lt;I range-firstUnit>
+            <font color=blue>for each unit:</font>
+              &lt;R unit-externalInput>
+          <font color=blue>if a sparse encoding:</font>
+            &lt;R range-externalInput>
+            <font color=blue>for each unit:</font>
+              &lt;I unit-index>
+        &lt;B shared-targets>
+          <font color=blue>if events use these inputs as targets:</font>
+          &lt;I set-numEventsInList>
+          <font color=blue>for each event specifier in the list:</font>
+            &lt;I event-num>           <font color=blue>event number is negative for the end of a span</font>
+ 
+      &lt;I example-numTargetSets>
+      <font color=blue>for each set of events that share targets:</font>
+        &lt;I set-numEventsInList>
+        <font color=blue>for each event specifier in the list:</font>
+          &lt;I event-num>             <font color=blue>event number is negative for the end of a span</font>
+        &lt;I num-ranges>
+        <font color=blue>for each target range:</font>
+          &lt;S range-groupName>
+          &lt;I range-numUnits>
+          &lt;B range-sparseEncoding?>
+          <font color=blue>if a dense encoding:</font>
+            &lt;I range-firstUnit>
+            <font color=blue>for each unit:</font>
+              &lt;R unit-target>
+          <font color=blue>if a sparse encoding:</font>
+            &lt;R range-target>
+            <font color=blue>for each unit:</font>
+              &lt;I unit-index></pre>
+
+    <p>
+      The lists of events and the list of sparse input or output units are
+      encoded as series of integers.  Positive integers represent individual
+      indices or the start to a range of indices.  Negative numbers represent
+      the end of a range of indices.  For example, the input units 2-5, 6,
+      and 9-13 would be encoded as the following integers: 2 -5 6 9 -13.  A
+      single negative value matches all units and represents a *.
+
+    <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Nov 20 15:44:22 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: plotRow</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>plotRow</font> - defines one or more rows of the unit
+      display plot
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    plotRow [&lt;numRows>] [next &lt;group> &lt;n> | lnext &lt;group> &lt;n> |
+        cnext &lt;group> &lt;n> | rnext &lt;group> &lt;n> | span &lt;group> &lt;start> &lt;n> |
+        unit &lt;unit> | blank &lt;n> | fill]*</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This is the main command for describing the network layout used in the
+      Unit Viewer.  It adds one or more rows of unit cells to the bottom of
+      the layout.  The actual drawing in the Unit Viewer is not changed until
+      <a href="drawUnits.html">drawUnits</a> is called or the Unit Viewer is
+      refreshed.
+    <p>
+      The first optional argument specifies the number of rows that are to be
+      produced by this command.  Essentially, this is the number of times the
+      subsequent commands are to be repeated and a new row produced.  A value
+      of * will cause the commands to be repeated as long as they result in at
+      least one unit being displayed.  If no value is specified, this defaults
+      to 1.
+    <p>
+      With no additional arguments, <code>plotRow</code> will leave the
+      specified number of rows blank.  Otherwise, any number of plot commands
+      may be given.  Each command describes a layout <i>block</i>.  The blocks
+      will be packed together from left to right on the row in the order in
+      which their commands are specified.  Some blocks are of fixed width and
+      others are of flexible width.  Each command may be abbreviated to its
+      first character.
+    <p>
+      <i>next</i> takes a group and an integer.  It will plot the next
+      <i>n</i> units of the group that have not already been plotted.
+      Ordinarily, the width of the block created by this command is <i>n</i>.
+      However, if there are no longer <i>n</i> unused units remaining, the
+      width of the block will be the actual number of units plotted.
+    <p>
+      <i>lnext</i> is similar to <i>next</i>, but the width of the block
+      created will always be <i>n</i>.  If there are no longer <i>n</i> unused
+      units remaining, those units plotted will be left-justified in the block
+      and the rest of the block will be left blank.
+    <p>
+      <i>cnext</i> is identical to <i>lnext</i> except that units in partially
+      full blocks will be centered within the block rather than left
+      justified.
+    <p>
+      <i>rnext</i> is identical to <i>lnext</i> except that units in partially
+      full blocks will be right rather than left justified.
+    <p>
+      <i>span</i> plots a range of <i>n</i> units from the group beginning
+      with the unit whose number is given by <i>start</i>.  The width of the
+      block will always be <i>n</i>.  If a unit in the span has already been
+      plotted, its position will be blank.
+    <p>
+      <i>unit</i> plots a single unit in a block of width 1.  The unit will be
+      replotted even if it has already been plotted.  In this case, a blank
+      space will be left in its previous location in the layout.
+    <p>
+      <i>blank</i> creates an empty block of width <i>n</i>.
+    <p>
+      <i>fill</i> creates a block of variable width.  Once all of the other
+      blocks in the row have been created, if the total number of columns
+      taken up by those blocks is less than the networks <i>plotCol</i> value,
+      any <i>fill</i> blocks will be expanded roughly equally to take up any
+      remaining space.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To layout groups <code>hidden1</code> and <code>hidden2</code> in two
+      columns of width 5 with a column one cell wide separating them and units
+      in the last row left justified within their blocks:
+    <pre>
+    lens> plotRow * l hidden1 5 b 1 l hidden2 5</pre>
+    <p>
+      To plot units <code>input:0</code> and <code>input:9</code> at the left
+      and right of a row and then plot the first ten input units with spaces
+      where units 0 and 9 would have been:
+    <pre>
+    lens> plotRow u input:0 f u input:9
+    lens> plotRow s input 0 10</pre>
+    <p>
+      To layout the entire network in columns of width two rather than in rows:
+    <pre>
+    lens> plotRow * n input 2 b 1 n hidden 2 b 1 n output 2</pre>
+    <p>
+      To arrange a group of 86 units in a circle:
+    <pre>
+    lens> set r 5.5
+    lens> for {set i 1} {$i &lt; 2 * $r} {incr i} {
+    > plotRow f n input [expr 2 * sqrt(2 * $i * $r - $i * $i)] f }</pre>
+    <p>
+    <h3>SEE ALSO</h3>
+    <a href="resetPlot.html">resetPlot</a>,
+    <a href="plotAll.html">plotAll</a>,
+    <a href="drawUnits.html">drawUnits</a>,
+    <a href="autoPlot.html">autoPlot</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 11:16:24 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

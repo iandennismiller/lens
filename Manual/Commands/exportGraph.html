@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: exportGraph</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>exportGraph</font> - export the data in a graph to a file
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    exportGraph &lt;graph> &lt;file-name> [-labels | -gnuplot]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This command writes the data in a graph to a file for analysis
+      or graphing by an external program.  By default, all of the visible
+      traces are exported, with one tab-separated column for each trace.
+      If the -labels option is given, the trace's labels will be
+      written as column headers.
+    <p>
+      If the -gnuplot option is used, the data will be exported in a
+      format useable by the gnuplot program.  This lists the traces in
+      sequence with two blank spaces between them.
+    <p>
+      You can read more about graphs and traces in the <a
+	href="../graphs.html">Graphs section</a> of the main manual.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To export the data in graph 2 to the file foo.dat with trace labels:
+    <pre>
+    lens> exportGraph 2 foo.dat -l</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="graphObject.html">graphObject</a>,
+    <a href="graph.html">graph</a>,
+    <a href="trace.html">trace</a>
+
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Nov 15 10:52:38 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

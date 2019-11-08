@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: disconnectGroupUnit</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>disconnectGroupUnit</font> - deletes links from a group to
+      a unit
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    disconnectGroupUnit &lt;group> &lt;unit> [-type &lt;link-type>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      This removes all links of the specified type that project from the group
+      to the unit.  If no type is given, all links are removed.
+      
+    <h3>EXAMPLES</h3>
+    <p>
+      To remove all links of type "special" from the "input" group to the unit
+      "hidden:3":
+    <pre>
+    lens> disconnectGroupUnit input hidden:3 -type special</pre>
+
+    <h3>SEE ALSO</h3>
+    <a href="disconnectGroups.html">disconnectGroups</a>,
+    <a href="disconnectUnits.html">disconnectUnits</a>,
+    <a href="deleteLinks.html">deleteLinks</a>,
+    <a href="deleteGroupInputs.html">deleteGroupInputs</a>,
+    <a href="deleteGroupOutputs.html">deleteGroupOutputs</a>,
+    <a href="deleteUnitInputs.html">deleteUnitInputs</a>,
+    <a href="deleteUnitOutputs.html">deleteUnitOutputs</a>,
+    <a href="connectGroups.html">connectGroups</a>,
+    <a href="addLinkType.html">addLinkType</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Feb 24 16:57:12 EST 1999
+<!-- hhmts end -->
+  </body>
+</html>

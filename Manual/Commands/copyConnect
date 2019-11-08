@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: copyConnect</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <b><font size=5>copyConnect</font> - connects a group to an IN_, OUT_, or TARGET_COPY group
+    </b>
+    <h3>USAGE</h3>
+    <pre>
+    copyConnect &lt;source-group> &lt;copy-group> &lt;field>
+        [-reset &lt;reset-on-example> | -initOutput &lt;init-output>]</pre>
+
+    <h3>DESCRIPTION</h3> 
+    <p>
+      When a group is given the type IN_COPY, OUT_COPY, or TARGET_COPY, it will
+      copy its inputs, outputs, or targets from the units of another, source,
+      group.  However, the values needn't be copied from the same field in the
+      units of the source group.  For example, inputs to the copy group
+      needn't be copied from the source group's inputs.  You could copy
+      the inputs from the outputs or targets or externalInputs of the source
+      group.
+    <p>
+      Once a group has been given an IN_COPY, OUT_COPY, or TARGET_COPY type,
+      <code>copyConnect</code> must be called to tell it which is its source
+      group and which field of the source group's units the values are to be
+      copied from.
+    <p>
+      The source and copy groups must have the same number of units.
+    <p>
+      Valid source group <i>field</i>s are <code>inputs</code>,
+      <code>externalInputs</code>, <code>outputs</code>, 
+      <code>targets</code>, <code>inputDerivs</code>, and 
+      <code>outputDerivs</code>.
+    <p>
+      Copying from outputs to outputs is similar to what would happen if you
+      used an ELMAN type rather than OUT_COPY and called <a
+      href="elmanConnect.html">elmanConnect</a>, rather than
+      <code>copyConnect</code>.  However, these differ in a few important
+      ways.  Error is backpropagated across an Elman connection, but not
+      across a copy connection.  The Elman connection adds the source values
+      to the outputs, but the copy connection sets the outputs to the source
+      values.  Typically, the context group precedes the source group in the
+      group ordering in an Elman connection.  But in a copy connection, the
+      copy group will typically follow the source group.
+    <p>
+      If the copy group has more than one IN_COPY, OUT_COPY, or TARGET_COPY
+      type specified, the <code>copyConnect</code> command applies to the
+      first one that doesn't yet have a source group.  Not that you'd ever
+      actually want more than one.
+
+    <h3>EXAMPLES</h3>
+    <p>
+      To make group "foo" copy its outputs from the inputs of group "bar" and
+      copy its targets from the outputs of group "baz", do:
+    <pre>
+    lens> addGroup foo 10 OUT_COPY TARGET_COPY
+    lens> copyConnect bar foo inputs
+    lens> copyConnect baz foo outputs</pre>
+    
+    <h3>SEE ALSO</h3>
+    <a href="addGroup.html">addGroup</a>, 
+    <a href="groupType.html">groupType</a>,
+    <a href="elmanConnect.html">elmanConnect</a>
+    <p><hr>
+<!-- Created: Sun Feb  1 15:20:53 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Mon Dec 11 12:03:48 EST 2000
+<!-- hhmts end -->
+  </body>
+</html>

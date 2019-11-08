@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LENS Manual: Objects</title>
+  </head>
+
+  <body bgcolor="#e5e5e5">
+    <a href="index.html"><img src="Images/lens.small.gif" border="#e5e5e5"
+	alt="LENS"></a>
+    <h1>Special Topics: Objects</h1>
+    <hr>
+    <p>
+      <i>Objects</i> are the C structures and their fields that have been
+      registered so that they are accessible from within the Tcl shell.  Most, but
+      not all, structures used in Lens are accessible, although many are
+      write-protected.  The empty name, "" or {}, always refers to the current
+      network.  No variables or structures are accessible unless they can be
+      reached from the current network, but the current network does have
+      links to all example sets and all other networks via the <i>root</i>
+      object.
+    <p>
+      The object structure can be traversed with the <a
+      href="objectViewer.html">Object Viewer</a>.  Structures and fields can
+      also be displayed in text with the <a
+      href="Commands/getObject.html">getObject</a> command and the values of
+      basic fields (such as integers, reals, strings, flags, masks, and Tcl
+      commands) can be set using <a
+      href="Commands/setObject.html">setObject</a>.
+    <p>
+      An object name or path is a list of fields separated by periods, as in
+      <code>trainingSet.currentExample.numEvents</code>.  Structures can also
+      contain one- and two-dimensional arrays.  The preferred method of
+      indexing arrays is with the index in parentheses, as in
+      <code>group(3)</code>.  Two-dimensional arrays should be indexed with a
+      single set of parentheses and a comma separating the indices, as in
+      <code>group(4).ext.myarray(3,7)</code>.  These indexing methods conform
+      to Tcl style.  They can also be indexed with two
+      parentheses in succession, as in
+      <code>group(4).ext.myarray(3)(7)</code>.
+    <p>
+      C style uses square brackets rather than parentheses for array indices.
+      This is also possible in Lens but can cause problems since the
+      interpreter will attempt to do command substitution on anything in
+      square brackets and this must be <a href="tcltk.html">counteracted</a>.
+    <p>
+      As a shortcut, you can refer to networks, example sets, or groups and
+      units in the current network directly by name.  Thus, if the third group
+      were named "hidden", you could refer to its size with either
+      <code>group(2).numUnits</code> or <code>hidden.numUnits</code>.  You
+      should not use periods in the names of objects that you might want to
+      reference directly as it will cause problems.
+      <p>
+      Units can be referred to directly with the group name followed by a
+      colon and the unit number, as in "hidden:3".
+    <p>
+      To understand the meaning of particular objects, see the section on <a
+	href="progStructures.html">The Structures</a>.  One object worth
+      mentioning is the <i>root</i> field in each network.  This is a
+      structure that contains arrays of all of the networks and example sets
+      currently loaded and the number of each.  This allows the user to access
+      networks and example sets other than those currently in use.
+    <p>
+      If there is no current network, then the root structure is the head of
+      the object tree.  In this case the number of example sets is
+      <code>numExampleSets</code>.  But if there is a network in use,
+      <code>root.numExampleSets</code> is the path to the number of example
+      sets.  However, the root structure contains a link to itself, so
+      <code>root.numExampleSets</code> can be used to access the number of
+      example sets whether or not there is a current network.
+      <p>
+    <hr>
+    <address><a href="mailto:dr+lens@tedlab.mit.edu">Douglas Rohde</a></address>
+<!-- Created: Wed Jan 14 14:32:59 EST 1998 -->
+<!-- hhmts start -->
+Last modified: Wed Apr 19 20:02:53 EDT 2000
+<!-- hhmts end -->
+  </body>
+</html>
