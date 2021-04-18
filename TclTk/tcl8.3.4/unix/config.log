@@ -6,8 +6,6 @@ configure:841: checking how to run the C preprocessor
 configure:924: checking for unistd.h
 configure:924: checking for limits.h
 configure:967: checking for building with threads
-configure:1252: checking if the compiler understands -pipe
-configure:1263: cc -pipe -c   conftest.c 1>&5
 configure:1286: checking for getcwd
 configure:1348: checking for opendir
 configure:1348: checking for strstr
@@ -20,7 +18,7 @@ configure:1565: checking for wait3
 configure:1617: checking for uname
 configure:1669: checking for realpath
 configure:1733: checking dirent.h
-configure:1761: cc -pipe -o conftest    conftest.c  1>&5
+configure:1761: cc -o conftest    conftest.c  1>&5
 configure:1782: checking for errno.h
 configure:1819: checking for float.h
 configure:1856: checking for values.h
@@ -32,9 +30,13 @@ configure:2122: checking for dlfcn.h
 configure:2164: checking for unistd.h
 configure:2164: checking for sys/param.h
 configure:2211: checking termios vs. termio vs. sgtty
-configure:2233: cc -pipe -o conftest    conftest.c  1>&5
+configure:2233: cc -o conftest    conftest.c  1>&5
+configure:2221:1: warning: type specifier missing, defaults to 'int' [-Wimplicit-int]
+main()
+^
+1 warning generated.
 configure:2470: checking fd_set and sys/select
-configure:2479: cc -pipe -c   conftest.c 1>&5
+configure:2479: cc -c   conftest.c 1>&5
 configure:2522: checking whether struct tm is in sys/time.h or time.h
 configure:2560: checking for sys/time.h
 configure:2597: checking whether time.h and sys/time.h may both be included
@@ -42,9 +44,11 @@ configure:2632: checking for tm_zone in struct tm
 configure:2705: checking for gmtime_r
 configure:2705: checking for localtime_r
 configure:2759: checking tm_tzadj in struct tm
-configure:2768: cc -pipe -c   conftest.c 1>&5
-configure: In function 'main':
-configure:2764: error: 'struct tm' has no member named 'tm_tzadj'
+configure:2768: cc -c   conftest.c 1>&5
+configure:2764:18: error: no member named 'tm_tzadj' in 'struct tm'
+struct tm tm; tm.tm_tzadj;
+              ~~ ^
+1 error generated.
 configure: failed program was:
 #line 2761 "configure"
 #include "confdefs.h"
@@ -53,37 +57,59 @@ int main() {
 struct tm tm; tm.tm_tzadj;
 ; return 0; }
 configure:2784: checking tm_gmtoff in struct tm
-configure:2793: cc -pipe -c   conftest.c 1>&5
+configure:2793: cc -c   conftest.c 1>&5
+configure:2789:18: warning: expression result unused [-Wunused-value]
+struct tm tm; tm.tm_gmtoff;
+              ~~ ^~~~~~~~~
+1 warning generated.
 configure:2814: checking long timezone variable
-configure:2825: cc -pipe -c   conftest.c 1>&5
-configure: In function 'main':
-configure:2821: warning: incompatible implicit declaration of built-in function 'exit'
+configure:2825: cc -c   conftest.c 1>&5
+configure:2821:6: warning: implicitly declaring library function 'exit' with type 'void (int) __attribute__((noreturn))' [-Wimplicit-function-declaration]
+            exit (0);
+            ^
+configure:2821:6: note: include the header <stdlib.h> or explicitly provide a declaration for 'exit'
+1 warning generated.
 configure:2880: checking for st_blksize in struct stat
 configure:2914: checking for fstatfs
 configure:2971: checking for 8-bit clean memcmp
 configure:3013: checking for memmove
 configure:3074: checking proper strstr implementation
-configure:3089: cc -pipe -o conftest    conftest.c  1>&5
-configure:3081: warning: conflicting types for built-in function 'strstr'
-configure: In function 'main':
-configure:3084: warning: incompatible implicit declaration of built-in function 'exit'
+configure:3089: cc -o conftest    conftest.c  1>&5
+configure:3081:12: warning: incompatible redeclaration of library function 'strstr' [-Wincompatible-library-redeclaration]
+extern int strstr();
+           ^
+configure:3081:12: note: 'strstr' is a builtin with type 'char *(const char *, const char *)'
+configure:3084:5: warning: implicitly declaring library function 'exit' with type 'void (int) __attribute__((noreturn))' [-Wimplicit-function-declaration]
+    exit(strstr("\0test", "test") ? 1 : 0);
+    ^
+configure:3084:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'exit'
+2 warnings generated.
 configure:3115: checking for strtoul
-configure:3183: cc -pipe -o conftest    conftest.c  1>&5
-configure: In function 'main':
-configure:3177: warning: incompatible implicit declaration of built-in function 'exit'
-configure:3179: warning: incompatible implicit declaration of built-in function 'exit'
+configure:3183: cc -o conftest    conftest.c  1>&5
+configure:3169:12: warning: incompatible redeclaration of library function 'strtoul' [-Wincompatible-library-redeclaration]
+extern int strtoul();
+           ^
+configure:3169:12: note: 'strtoul' is a builtin with type 'unsigned long (const char *, char **, int)'
+configure:3177:9: warning: implicitly declaring library function 'exit' with type 'void (int) __attribute__((noreturn))' [-Wimplicit-function-declaration]
+        exit(1);
+        ^
+configure:3177:9: note: include the header <stdlib.h> or explicitly provide a declaration for 'exit'
+2 warnings generated.
 configure:3206: checking for strtod
-configure:3274: cc -pipe -o conftest    conftest.c  1>&5
-configure: In function 'main':
-configure:3268: warning: incompatible implicit declaration of built-in function 'exit'
-configure:3270: warning: incompatible implicit declaration of built-in function 'exit'
+configure:3274: cc -o conftest    conftest.c  1>&5
+configure:3268:2: warning: implicitly declaring library function 'exit' with type 'void (int) __attribute__((noreturn))' [-Wimplicit-function-declaration]
+        exit(1);
+        ^
+configure:3268:2: note: include the header <stdlib.h> or explicitly provide a declaration for 'exit'
+1 warning generated.
 configure:3300: checking for strtod
 configure:3350: checking for Solaris2.4/Tru64 strtod bugs
-configure:3375: cc -pipe -o conftest    conftest.c  1>&5
-configure: In function 'main':
-configure:3365: warning: incompatible implicit declaration of built-in function 'exit'
-configure:3369: warning: incompatible implicit declaration of built-in function 'exit'
-configure:3371: warning: incompatible implicit declaration of built-in function 'exit'
+configure:3375: cc -o conftest    conftest.c  1>&5
+configure:3365:7: warning: implicitly declaring library function 'exit' with type 'void (int) __attribute__((noreturn))' [-Wimplicit-function-declaration]
+                    exit(1);
+                    ^
+configure:3365:7: note: include the header <stdlib.h> or explicitly provide a declaration for 'exit'
+1 warning generated.
 configure:3406: checking for ANSI C header files
 configure:3510: checking for mode_t
 configure:3543: checking for pid_t
@@ -91,16 +117,16 @@ configure:3576: checking for size_t
 configure:3609: checking for uid_t in sys/types.h
 configure:3651: checking for opendir
 configure:3712: checking union wait
-configure:3726: cc -pipe -o conftest    conftest.c  1>&5
+configure:3726: cc -o conftest    conftest.c  1>&5
 configure:3750: checking matherr support
-configure:3763: cc -pipe -c   conftest.c 1>&5
+configure:3763: cc -c   conftest.c 1>&5
 configure:3788: checking for strncasecmp
 configure:3938: checking for BSDgettimeofday
 configure:3988: checking for gettimeofday
 configure:4043: checking for gettimeofday declaration
 configure:4073: checking whether char is unsigned
 configure:4136: checking signed char declarations
-configure:4148: cc -pipe -c   conftest.c 1>&5
+configure:4148: cc -c   conftest.c 1>&5
 configure:4179: checking for sin
 configure:4228: checking for main in -lieee
 configure:4270: checking for main in -linet

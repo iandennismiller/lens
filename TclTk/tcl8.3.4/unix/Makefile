@@ -24,8 +24,8 @@ VERSION 		= 8.3
 # to the "configure" script.  The *dir vars are standard configure
 # substitutions that are based off prefix and exec_prefix.
 
-prefix			= /export/home/barmstrong/Lens/Bin/x86_64
-exec_prefix		= /export/home/barmstrong/Lens/Bin/x86_64
+prefix			= /usr/local
+exec_prefix		= /usr/local
 bindir			= ${exec_prefix}/bin
 libdir			= ${exec_prefix}/lib
 includedir		= ${prefix}/include
@@ -71,17 +71,17 @@ MAN3_INSTALL_DIR	= $(MAN_INSTALL_DIR)/man3
 MANN_INSTALL_DIR	= $(MAN_INSTALL_DIR)/mann
 
 # Package search path.
-TCL_PACKAGE_PATH	= /export/home/barmstrong/Lens/Bin/x86_64/lib
+TCL_PACKAGE_PATH	= /usr/local/lib
 
 # Libraries built with optimization switches have this additional extension
 TCL_DBGX		= 
 
 # warning flags
-CFLAGS_WARNING		= -Wall -Wconversion -Wno-implicit-int
+CFLAGS_WARNING		= 
 
 # The default switches for optimization or debugging
 CFLAGS_DEBUG		= -g
-CFLAGS_OPTIMIZE		= -O -D__NO_STRING_INLINES -D__NO_MATH_INLINES
+CFLAGS_OPTIMIZE		= -O3
 
 # To change the compiler switches, for example to change from optimization to
 # debugging symbols, change the following line:
@@ -93,7 +93,7 @@ CFLAGS			=  $(CFLAGS_OPTIMIZE)
 # Flags to pass to the linker
 LDFLAGS_DEBUG		= 
 LDFLAGS_OPTIMIZE	= 
-LDFLAGS			= -rdynamic $(LDFLAGS_OPTIMIZE)
+LDFLAGS			= -prebind $(LDFLAGS_OPTIMIZE)
 
 # To disable ANSI-C procedure prototypes reverse the comment characters
 # on the following lines:
@@ -189,10 +189,10 @@ TCL_EXE			= tclsh
 # these definitions by hand.
 
 STLIB_LD		= ${AR} cr
-SHLIB_LD		= cc -pipe -shared
-SHLIB_CFLAGS		= -fPIC
+SHLIB_LD		= cc -dynamiclib ${LDFLAGS}
+SHLIB_CFLAGS		= -fno-common
 
-SHLIB_SUFFIX		= .so
+SHLIB_SUFFIX		= .dylib
 #SHLIB_SUFFIX		=
 
 DLTEST_TARGETS		= dltest/pkg5${SHLIB_SUFFIX} dltest/Makefile
@@ -205,7 +205,7 @@ DLTEST_TARGETS		= dltest/pkg5${SHLIB_SUFFIX} dltest/Makefile
 BUILD_DLTEST		= $(DLTEST_TARGETS)
 #BUILD_DLTEST		=
 
-TCL_LIB_FILE		= libtcl8.3${TCL_DBGX}.so
+TCL_LIB_FILE		= libtcl8.3${TCL_DBGX}.dylib
 #TCL_LIB_FILE		= libtcl.a
 
 TCL_LIB_FLAG		= -ltcl8.3${TCL_DBGX}
@@ -222,7 +222,7 @@ TCL_BUILD_EXP_FILE	=
 
 COMPAT_OBJS		= 
 
-AC_FLAGS		=   -DHAVE_UNISTD_H=1 -DHAVE_LIMITS_H=1 -DHAVE_GETCWD=1 -DHAVE_OPENDIR=1 -DHAVE_STRSTR=1 -DHAVE_STRTOL=1 -DHAVE_TMPNAM=1 -DHAVE_WAITPID=1 -DHAVE_UNISTD_H=1 -DHAVE_SYS_PARAM_H=1 -DUSE_TERMIOS=1 -DHAVE_SYS_TIME_H=1 -DTIME_WITH_SYS_TIME=1 -DHAVE_TM_ZONE=1 -DHAVE_GMTIME_R=1 -DHAVE_LOCALTIME_R=1 -DHAVE_TM_GMTOFF=1 -DHAVE_TIMEZONE_VAR=1 -DHAVE_ST_BLKSIZE=1 -DSTDC_HEADERS=1 -DNEED_MATHERR=1 -DHAVE_SIGNED_CHAR=1 -DHAVE_SYS_IOCTL_H=1 
+AC_FLAGS		= -arch ppc -pipe  -DHAVE_UNISTD_H=1 -DHAVE_LIMITS_H=1 -DHAVE_GETCWD=1 -DHAVE_OPENDIR=1 -DHAVE_STRSTR=1 -DHAVE_STRTOL=1 -DHAVE_TMPNAM=1 -DHAVE_WAITPID=1 -DHAVE_UNISTD_H=1 -DHAVE_SYS_PARAM_H=1 -DUSE_TERMIOS=1 -DHAVE_SYS_TIME_H=1 -DTIME_WITH_SYS_TIME=1 -DHAVE_TM_ZONE=1 -DHAVE_GMTIME_R=1 -DHAVE_LOCALTIME_R=1 -DHAVE_TM_GMTOFF=1 -DHAVE_TIMEZONE_VAR=1 -DHAVE_ST_BLKSIZE=1 -DSTDC_HEADERS=1 -DNEED_MATHERR=1 -DHAVE_SIGNED_CHAR=1 -DHAVE_SYS_IOCTL_H=1 
 AR			= ar
 RANLIB			= ranlib
 SRC_DIR			= .
@@ -232,12 +232,12 @@ COMPAT_DIR		= $(TOP_DIR)/compat
 TOOL_DIR		= $(TOP_DIR)/tools
 UNIX_DIR		= $(TOP_DIR)/unix
 # Must be absolute because of the cd dltest $(DLTEST_DIR)/configure below.
-DLTEST_DIR		= /export/home/barmstrong/Lens/TclTk/tcl8.3.4/unix/dltest
+DLTEST_DIR		= /Users/idm/Work/lens/TclTk/tcl8.3.4/unix/dltest
 # Must be absolute to so the corresponding tcltest's tcl_library is absolute.
-TCL_BUILDTIME_LIBRARY	= /export/home/barmstrong/Lens/TclTk/tcl8.3.4/library
+TCL_BUILDTIME_LIBRARY	= /Users/idm/Work/lens/TclTk/tcl8.3.4/library
 
-CC			= cc -pipe
-#CC			= purify -best-effort cc -pipe -DPURIFY
+CC			= cc
+#CC			= purify -best-effort cc -DPURIFY
 
 #----------------------------------------------------------------
 # The information below should be usable as is.  The configure
@@ -257,7 +257,7 @@ STUB_CC_SWITCHES = ${CFLAGS} ${CFLAGS_WARNING} ${SHLIB_CFLAGS} \
 ${AC_FLAGS} ${MATH_FLAGS} ${GENERIC_FLAGS} ${PROTO_FLAGS} ${MEM_DEBUG_FLAGS} \
 ${COMPILE_DEBUG_FLAGS} ${ENV_FLAGS} -DTCL_SHLIB_EXT=\"${SHLIB_SUFFIX}\"
 
-LIBS		= -ldl  $(MATH_LIBS)
+LIBS		=   $(MATH_LIBS)
 
 DEPEND_SWITCHES	= ${CFLAGS} -I${GENERIC_DIR} -I${SRC_DIR} \
 ${AC_FLAGS} ${MATH_FLAGS} \
@@ -287,7 +287,7 @@ GENERIC_OBJS = regcomp.o regexec.o regfree.o regerror.o tclAlloc.o \
 
 STUB_LIB_OBJS = tclStubLib.o ${COMPAT_OBJS}
 
-OBJS = ${GENERIC_OBJS} ${UNIX_OBJS} ${NOTIFY_OBJS} ${COMPAT_OBJS} tclLoadDl.o
+OBJS = ${GENERIC_OBJS} ${UNIX_OBJS} ${NOTIFY_OBJS} ${COMPAT_OBJS} tclLoadDyld.o
 
 TCL_DECLS = \
 	$(GENERIC_DIR)/tcl.decls \
@@ -418,8 +418,8 @@ doc:
 # a shared library or non-shared library for Tcl.
 ${TCL_LIB_FILE}: ${OBJS} ${STUB_LIB_FILE}
 	rm -f ${TCL_LIB_FILE}
-	${SHLIB_LD}  -o $@ ${OBJS} ${LIBS}
-	if test "xtclLoadDl.o" = "xtclLoadAout.o"; then \
+	${SHLIB_LD} -compatibility_version 8 -current_version ${VERSION} -install_name ${LIB_RUNTIME_DIR}/${TCL_LIB_FILE} -prebind -seg1addr a000000 -o $@ ${OBJS} 
+	if test "xtclLoadDyld.o" = "xtclLoadAout.o"; then \
 		$(RANLIB) ${TCL_LIB_FILE}; \
 	fi
 
@@ -441,12 +441,12 @@ objs: ${OBJS}
 
 
 tclsh: ${TCLSH_OBJS} ${TCL_LIB_FILE}
-	${CC} ${LDFLAGS} ${TCLSH_OBJS} -L/export/home/barmstrong/Lens/TclTk/tcl8.3.4/unix -ltcl8.3${TCL_DBGX} ${LIBS} \
-		-Wl,-rpath,${LIB_RUNTIME_DIR} -o tclsh
+	${CC} ${LDFLAGS} ${TCLSH_OBJS} -L/Users/idm/Work/lens/TclTk/tcl8.3.4/unix -ltcl8.3${TCL_DBGX} ${LIBS} \
+		 -o tclsh
 
 tcltest: ${TCLTEST_OBJS} ${TCL_LIB_FILE} ${BUILD_DLTEST}
-	${CC} ${LDFLAGS} ${TCLTEST_OBJS} -L/export/home/barmstrong/Lens/TclTk/tcl8.3.4/unix -ltcl8.3${TCL_DBGX} ${LIBS} \
-		-Wl,-rpath,${LIB_RUNTIME_DIR} -o tcltest
+	${CC} ${LDFLAGS} ${TCLTEST_OBJS} -L/Users/idm/Work/lens/TclTk/tcl8.3.4/unix -ltcl8.3${TCL_DBGX} ${LIBS} \
+		 -o tcltest
 
 # Note, in the target below TCL_LIBRARY needs to be set or else
 # "make test" won't work in the case where the compilation directory
@@ -540,7 +540,7 @@ install-binaries: binaries
 	    fi
 	@echo "Installing $(TCL_LIB_FILE) to $(LIB_INSTALL_DIR)/"
 	@$(INSTALL_LIBRARY) $(TCL_LIB_FILE) $(LIB_INSTALL_DIR)/$(TCL_LIB_FILE)
-	@if test "xtclLoadDl.o" = "xtclLoadAout.o"; then \
+	@if test "xtclLoadDyld.o" = "xtclLoadAout.o"; then \
 	    (cd $(LIB_INSTALL_DIR); $(RANLIB) $(TCL_LIB_FILE)); \
 	    fi
 	@chmod 555 $(LIB_INSTALL_DIR)/$(TCL_LIB_FILE)
@@ -989,10 +989,10 @@ tclUnixInit.o: $(UNIX_DIR)/tclUnixInit.c $(GENERIC_DIR)/tclInitScript.h tclConfi
 # the Xt based notifier can modify them to suit their own installation.
 
 xttest:  ${XTTEST_OBJS} ${GENERIC_OBJS} ${UNIX_OBJS} ${COMPAT_OBJS} \
-	tclLoadDl.o ${BUILD_DLTEST}
+	tclLoadDyld.o ${BUILD_DLTEST}
 	${CC} ${XTTEST_OBJS} ${GENERIC_OBJS} ${UNIX_OBJS} ${COMPAT_OBJS} \
-		tclLoadDl.o -L/export/home/barmstrong/Lens/TclTk/tcl8.3.4/unix -ltcl8.3${TCL_DBGX} ${LIBS} \
-		-Wl,-rpath,${LIB_RUNTIME_DIR} -L/usr/openwin/lib -lXt -o xttest
+		tclLoadDyld.o -L/Users/idm/Work/lens/TclTk/tcl8.3.4/unix -ltcl8.3${TCL_DBGX} ${LIBS} \
+		 -L/usr/openwin/lib -lXt -o xttest
 
 tclXtNotify.o: $(UNIX_DIR)/tclXtNotify.c
 	$(CC) -c $(CC_SWITCHES) -I/usr/openwin/include \

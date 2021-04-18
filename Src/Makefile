@@ -9,20 +9,20 @@ ifeq ($(MACHINE),WINDOWS)
   TCLDIR= ../TclTk
   BINDIR= $(TOP)/Bin
   INCL=   -I$(TCLDIR)/include
-  LIBS=   -L$(TCLDIR)/lib -ltk83 -ltcl83 -lm $(SYSLIB)
+  LIBS=   -L$(TCLDIR)/lib -ltk85 -ltcl85 -lm $(SYSLIB)
 else
   O=      ../Obj/$(HOSTTYPE)
-  TCLVER= 8.3.4
+  TCLVER= 8.6.10
   TCLDIR= ../TclTk
   BINDIR= $(TOP)/Bin/x86_64
   ifeq ($(MACHINE),MACINTOSH)
     INCL=   -I$(TCLDIR)/tcl$(TCLVER)/generic -I$(TCLDIR)/tk$(TCLVER)/generic \
-	-I/usr/X11R6/include
-    LIBS=   -L/usr/X11R6/lib -lX11 -L~/Lens/Bin/x86_64 \
+	-I/opt/X11/include
+    LIBS=   -L/opt/X11/lib -lX11 -L~/Work/Lens/Bin/x86_64 \
 	$(SYSLIB)
   else
     INCL=   -I$(TCLDIR)/tcl$(TCLVER)/generic -I$(TCLDIR)/tk$(TCLVER)/generic
-    LIBS=    -lX11 ~/Lens/Bin/x86_64/libtcl8.3.so ~/Lens/Bin/x86_64/libtk8.3.so  -lm $(SYSLIB) 
+    LIBS=    -lX11 /usr/lib/libtcl8.5.dylib /usr/lib/libtk8.5.dylib  -lm $(SYSLIB) 
     endif
 endif
 EXEC_OBJS= $(O)/main.o $(patsubst %,$(O)/%.o,$(SRCS))

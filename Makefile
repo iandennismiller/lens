@@ -1,36 +1,12 @@
 # Defaults flags:
-#CC        = gcc
-# CFLAGS    = -Wall -O4 -march=i486
-# 2013-04-29 - jcorral - moving CFLAGS to generic
-#CFLAGS = -Wall  # -O4
-
-#bca Dec 10, 2013
-
-###FOR GCC #######################################
-#CC = gcc
-#CFLAGs = -Wall -O4 -DAVOID_NAN_TEST
-#SYSLIB    = -export-dynamic -ldl -L/usr/X11R6/lib64
-
-
-
-###FOR ICC #######################################
-CC = icc 
-# On BCBL computers, Intel® Xeon® Processor E5-2670 
-# Best performance with 02 optimization, not 03, although
-# both are comparable.  Similarly, -ipo and -no-prec-div
-# do not have much of an effect.  Including -AVX after 
-# -axAVX does, however, seem to give a noticable boost.
-FLAGS = -Wall -O2  -xAVX -axAVX -ipo 
-SYSLIB =   -ldl -lstdc++ -L/usr/X11R6/lib64 
-
-
-MACHINE   = LINUX
+CC        = gcc
+CFLAGS    = -Wall -O4 -march=x86-64 -I/opt/X11/include
+MACHINE   = MACOS
 #CC        = icc
 #CFLAGS    = -w1 -O3 -march=pentiumiii -mcpu=pentiumpro -DAVOID_NAN_TEST
 #MACHINE   = INTEL
 MAKE      = /usr/bin/make
-#SYSLIB    = -export-dynamic -ldl -L/usr/X11R6/lib
-HOSTTYPE = x86_64
+SYSLIB    = -export-dynamic -ldl -L/opt/X11/lib
 
 # Windows 95/98/NT using Cygwin:
 ifeq ($(HOSTTYPE),i686)
@@ -41,7 +17,7 @@ ifeq ($(HOSTTYPE),i686)
   SYSLIB    =
 endif
 # Macintosh X:
-ifeq ($(HOSTTYPE),macintosh)
+ifeq ($(HOSTTYPE),macosx)
   MACHINE   = MACINTOSH
   MAKE      = make
   CC        = cc
